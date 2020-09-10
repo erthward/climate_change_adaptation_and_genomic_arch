@@ -1,14 +1,14 @@
 # prelim_params.py
 
-# flake8: noqa
 
+# set up the landscape
 import numpy as np
-
 b4 = np.vstack([np.linspace(1, 0, 50) for _ in range(50)])
 af = np.vstack([np.linspace(1, 0.5, 50) for _ in range(50)])
 stable = np.vstack([np.linspace(1, 0, 50) for _ in range(50)])
 K = np.ones((50,50))
 
+# show the landscape, for debugging, if requested
 debug_landscape = False
 if debug_landscape:
     import matplotlib.pyplot as plt
@@ -81,9 +81,9 @@ params = {
             #layer name (LAYER NAMES MUST BE UNIQUE!)
             'shift': {
 
-        #######################################
-        #### layer num. 0: init parameters ####
-        #######################################
+        #-------------------------------------#
+        #--- layer num. 0: init parameters ---#
+        #-------------------------------------#
 
                 #initiating parameters for this layer
                 'init': {
@@ -104,9 +104,9 @@ params = {
 
                     }, # <END> 'init'
 
-            #########################################
-            #### layer num. 0: change parameters ####
-            #########################################
+            #---------------------------------------#
+            #--- layer num. 0: change parameters ---#
+            #---------------------------------------#
 
                 #landscape-change events for this Layer
                 'change': {
@@ -131,9 +131,9 @@ params = {
             #layer name (LAYER NAMES MUST BE UNIQUE!)
             'stable': {
 
-        #######################################
-        #### layer num. 1: init parameters ####
-        #######################################
+        #-------------------------------------#
+        #--- layer num. 1: init parameters ---#
+        #-------------------------------------#
 
                 #initiating parameters for this layer
                 'init': {
@@ -160,9 +160,9 @@ params = {
             #layer name (LAYER NAMES MUST BE UNIQUE!)
             'K': {
 
-        #######################################
-        #### layer num. 2: init parameters ####
-        #######################################
+        #-------------------------------------#
+        #--- layer num. 2: init parameters ---#
+        #-------------------------------------#
 
                 #initiating parameters for this layer
                 'init': {
@@ -189,9 +189,9 @@ params = {
         #layer name (LAYER NAMES MUST BE UNIQUE!)
         'move': {
 
-        #######################################
-        #### layer num. 2: init parameters ####
-        #######################################
+        #-------------------------------------#
+        #--- layer num. 2: init parameters ---#
+        #-------------------------------------#
 
                 #initiating parameters for this layer
                 'init': {
@@ -236,9 +236,9 @@ params = {
             #species name (SPECIES NAMES MUST BE UNIQUE!)
             'spp_0': {
 
-            #####################################
-            #### spp num. 0: init parameters ####
-            #####################################
+            #-----------------------------------#
+            #--- spp num. 0: init parameters ---#
+            #-----------------------------------#
 
                 'init': {
                     #starting number of individs
@@ -249,9 +249,9 @@ params = {
                     'K_factor':         2,
                     }, # <END> 'init'
 
-            #######################################
-            #### spp num. 0: mating parameters ####
-            #######################################
+            #-------------------------------------#
+            #--- spp num. 0: mating parameters ---#
+            #-------------------------------------#
 
                 'mating'    : {
                     #age(s) at sexual maturity (if tuple, female first)
@@ -274,9 +274,9 @@ params = {
                     'mating_radius':            5,
                     }, # <END> 'mating'
 
-            ##########################################
-            #### spp num. 0: mortality parameters ####
-            ##########################################
+            #----------------------------------------#
+            #--- spp num. 0: mortality parameters ---#
+            #----------------------------------------#
 
                 'mortality'     : {
                     #maximum age
@@ -289,9 +289,9 @@ params = {
                     'density_grid_window_width':    None,
                     }, # <END> 'mortality'
 
-            #########################################
-            #### spp num. 0: movement parameters ####
-            #########################################
+            #---------------------------------------#
+            #--- spp num. 0: movement parameters ---#
+            #---------------------------------------#
 
                 'movement': {
                     #whether or not the species is mobile
@@ -301,13 +301,15 @@ params = {
                     #concentration of distr of movement direction
                     'direction_distr_kappa':    0,
                     #mean of distr of movement distance
-                    'distance_distr_mu':        0.25,
+                    'movement_distance_distr_param1':        0.25,
                     #variance of distr of movement distance
-                    'distance_distr_sigma':     0.5,
+                    'movement_distance_distr_param2':     0.5,
+                    'movement_distance_distr':             'wald',
                     #mean of distr of dispersal distance
-                    'dispersal_distr_mu':       0.5,
+                    'dispersal_distance_distr_param1':       0.5,
                     #variance of distr of dispersal distance
-                    'dispersal_distr_sigma':    0.5,
+                    'dispersal_distance_distr_param2':    0.5,
+                    'dispersal_distance_distr':             'wald',
                     #TODO: UNCOMMENT move_surf SECTION IF NEEDED!
                     #'move_surf':    {
                     #    'layer': 'move',
@@ -317,9 +319,9 @@ params = {
                     },    # <END> 'movement'
 
 
-            #####################################################
-            #### spp num. 0: genomic architecture parameters ####
-            #####################################################
+            #---------------------------------------------------#
+            #--- spp num. 0: genomic architecture parameters ---#
+            #---------------------------------------------------#
 
                 'gen_arch': {
                     #file defining custom genomic arch
@@ -361,9 +363,9 @@ params = {
 
                     'traits': {
 
-                        ###########################
-                        ####trait 0 parameters ####
-                        ###########################
+                        #-------------------------#
+                        #---trait 0 parameters ---#
+                        #-------------------------#
                         #trait name (TRAIT NAMES MUST BE UNIQUE!)
                         'trait_0': {
                             #trait-selection Layer name
@@ -386,9 +388,9 @@ params = {
                             'univ_adv':             False
                             }, # <END> trait 0
 
-                        ###########################
-                        ####trait 1 parameters ####
-                        ###########################
+                        #-------------------------#
+                        #---trait 1 parameters ---#
+                        #-------------------------#
                         #trait name (TRAIT NAMES MUST BE UNIQUE!)
                         'trait_1': {
                             #trait-selection Layer name

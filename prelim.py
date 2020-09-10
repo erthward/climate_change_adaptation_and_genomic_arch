@@ -13,6 +13,47 @@ import bisect
 import time
 
 
+#################
+# set main params
+#################
+
+# set time when environmental change begins
+change_T = 10 #500
+# set total time
+T = 20 #800
+# set number of iterations for each sim
+n_its = 1
+# set the different numbers of loci to use
+n_loci = [5, 20, 100]
+# reset the K_factor (if desired)
+K_factor=0.25
+
+# flag indicating whether or not to plot the lineage map
+map_gene_flow = True
+
+
+# create ParamsDict objects
+filepath=('/home/drew/Desktop/stuff/berk/research/projects/sim/'
+          'ch2_adapt_clim_chng_genarch/prelim_params.py')
+unlinked_params = gnx.read_parameters_file(filepath=filepath)
+
+# tweak the carrying capacity, if requested
+if K_factor is not None:
+    unlinked_params['comm']['species']['spp_0']['init']['K_factor'] = K_factor
+
+linked_params = copy.deepcopy(unlinked_params)
+
+# set the linkage values for the linked scenarios' params
+linked_params['comm']['species']['spp_0']['gen_arch']['r_distr_alpha'] = 5000
+linked_params['comm']['species']['spp_0']['gen_arch']['r_distr_beta'] = 1e7
+
+
+
+
+
+##################
+# define functions
+##################
 
 def save_data(l, mod, data_dict):
     neut_loci = np.random.choice(mod.comm[0].gen_arch.neut_loci, l,
@@ -37,13 +78,6 @@ def run_sims_l_loci(l, u_params, l_params, n_its=1,
     #create deep copies of the params
     unlinked_params = copy.deepcopy(u_params)
     linked_params = copy.deepcopy(l_params)
-    
-    # edit the parameters so that no environmental change occurs,
-    # if with_env_change is False
-    if not with_env_change:
-        unlinked_params['landscape']['layers']['shift'].pop('change');
-        linked_params['landscape']['layers']['shift'].pop('change');
-    
 
     # set the model names (so that they save data correctly in separate
     # directories)
@@ -53,6 +87,21 @@ def run_sims_l_loci(l, u_params, l_params, n_its=1,
     # get the start-time of the environmental change event (for plotting later)
     change_start_t = unlinked_params.landscape.layers.shift.change[0].start_t
 
+    # edit the parameters so that no environmental change occurs,
+    # and there is no gradient, if with_env_change is False
+    if not with_env_change:
+        unlinked_params['landscape']['layers']['shift'].pop('change');
+        linked_params['landscape']['layers']['shift'].pop('change');
+        unlinked_params['landscape']['layers']['shift']['init'][
+            'defined']['rast'] = np.ones((50, 50))*0.5
+        unlinked_params['landscape']['layers']['stable']['init'][
+            'defined']['rast'] = np.ones((50, 50))*0.5
+        linked_params['landscape']['layers']['shift']['init'][
+            'defined']['rast'] = np.ones((50, 50))*0.5
+        linked_params['landscape']['layers']['stable']['init'][
+            'defined']['rast'] = np.ones((50, 50))*0.5
+
+
     # set the numbers of loci for both scenarios, the
     # effect-size distribution to match the number of loci,
     # and the total genome lengths
@@ -61,6 +110,13 @@ def run_sims_l_loci(l, u_params, l_params, n_its=1,
         for trt in p['comm']['species']['spp_0']['gen_arch']['traits'].values():
             trt['n_loci'] = l
             trt['alpha_distr_mu'] = 1/l
+
+    # set the plotting colors
+    if with_env_change:
+        line_color = '#f59f2f' # orange
+    else:
+        line_color = '#f2d43a' # yellow
+
 
     # create the main and lineage figures
     fig = plt.figure('main %i' % l)
@@ -72,7 +128,7 @@ def run_sims_l_loci(l, u_params, l_params, n_its=1,
                          'gray, nonneutral in dark gray') % l)
     else:
         gf_fig = None
-    
+
 
     # create lineage-stat data structures
     # for each stat, the first list will hold non-neutral locus data, the
@@ -156,12 +212,14 @@ def run_sims_l_loci(l, u_params, l_params, n_its=1,
             mod.plot_phenotype(0, 1, alpha=0.5)
             ax4 = fig.add_subplot(254)
             ax4.set_title('Unlinked, pop size over time', size=16)
-            mod.plot_pop_growth(0)
+            mod.plot_pop_growth(0, actual=False)
+            ax4.plot(range(len(mod.comm[0].Nt)), mod.comm[0].Nt,
+                     color=line_color)
             ax4.plot([change_start_t] * 2, [0, max(mod.comm[0].Nt)], ':k',
                      alpha=0.5)
             ax5 = fig.add_subplot(255)
             ax5.set_title('Unlinked, fitness over time', size=16)
-            ax5.plot(range(len(unlinked_fit)), unlinked_fit)
+            ax5.plot(range(len(unlinked_fit)), unlinked_fit, color=line_color)
             ax5.plot([change_start_t] * 2, [0, 1], ':k', alpha=0.5)
             ax5.set_xlabel('t')
             ax5.set_ylabel('fitness')
@@ -259,12 +317,14 @@ def run_sims_l_loci(l, u_params, l_params, n_its=1,
             mod.plot_phenotype(0, 1, alpha=0.5)
             ax9 = fig.add_subplot(259)
             ax9.set_title('Linked, pop size over time', size=16)
-            mod.plot_pop_growth(0)
+            mod.plot_pop_growth(0, actual=False)
+            ax9.plot(range(len(mod.comm[0].Nt)), mod.comm[0].Nt,
+                     color=line_color)
             ax9.plot([change_start_t] * 2, [0, max(mod.comm[0].Nt)], ':k',
                      alpha=0.5)
             ax10 = fig.add_subplot(2, 5, 10)
             ax10.set_title('Linked, fitness over time', size=16)
-            ax10.plot(range(len(linked_fit)), linked_fit)
+            ax10.plot(range(len(linked_fit)), linked_fit, color=line_color)
             ax10.plot([change_start_t] * 2, [0, 1], ':k', alpha=0.5)
             ax10.set_xlabel('t')
             ax10.set_ylabel('fitness')
@@ -298,44 +358,27 @@ def run_sims_l_loci(l, u_params, l_params, n_its=1,
     return(fig, gf_fig, unlinked_data_dict, linked_data_dict)
 
 
-##########################################
-##########################################
-##########################################
 
-# set time when environmental change begins
-change_T = 500
-# set total time
-T = 800
-# set number of iterations for each sim
-n_its = 1
-# set the different numbers of loci to use
-n_loci = [5, 20, 100]
+###################################
+# create containers for the figures
+###################################
 
-# flag indicating whether or not to plot the lineage map
-map_gene_flow = True
-
-
-# create ParamsDict objects
-filepath=('/home/drew/Desktop/stuff/berk/research/projects/sim/'
-          'ch2_adapt_clim_chng_genarch/prelim_params.py')
-unlinked_params = gnx.read_parameters_file(filepath=filepath)
-linked_params = copy.deepcopy(unlinked_params)
-
-# set the linkage values for the linked scenarios' params
-linked_params['comm']['species']['spp_0']['gen_arch']['r_distr_alpha'] = 5000
-linked_params['comm']['species']['spp_0']['gen_arch']['r_distr_beta'] = 1e7
-
-# create containers for the figures that will be created
 fig_dict = {}
 gene_flow_fig_dict = {}
-neut_fig_dict = {}
-neut_gene_flow_fig_dict = {}
+null_fig_dict = {}
+null_gene_flow_fig_dict = {}
 
 # create containers for the spatial-pedigree data that will be calculated
 unlinked_data_dicts = {}
 linked_data_dicts = {}
-neut_unlinked_data_dicts = {}
-neut_linked_data_dicts = {}
+null_unlinked_data_dicts = {}
+null_linked_data_dicts = {}
+
+
+
+##############
+# run the sims
+##############
 
 for l in n_loci:
     # run a linked/unlinked pair of scenarios for each number of loci
@@ -365,9 +408,9 @@ for l in n_loci:
 
 
 
-#################################
-#### MAKE GENE-FLOW ANALYSIS FIGS
-#################################
+##############################
+# make gene-flow analysis figs
+##############################
 
 data_dict_dict = {'linked': linked_data_dicts,
                   'unlinked': unlinked_data_dicts
@@ -399,10 +442,7 @@ for metric in ['dir', 'dist', 'speed']:
                 ax.hist(data_dict[l][metric][n], bins = 50, alpha=0.7,
                         label='shift: ' + neutrality, color=hist_cols.pop())
             for n, neutrality in enumerate(['non-neutral', 'neutral']):
-                ax.hist(null_data_dict_dict['linked'][l][metric][n], bins=50,
-                        alpha=0.7, label='null: ' +
-                        neutrality,color=hist_cols.pop())
-                ax.hist(null_data_dict_dict['unlinked'][l][metric][n], bins=50,
+                ax.hist(null_data_dict_dict[linkage][l][metric][n], bins=50,
                         alpha=0.7, label='null: ' +
                         neutrality,color=hist_cols.pop())
             if ax_num == 18:
