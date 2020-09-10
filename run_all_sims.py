@@ -43,13 +43,13 @@ linkages_dict = {'none': {'r_distr_alpha': 0.5,
 # params to reduce runtime for debugging/development
 #---------------------------------------------------
 # set time when environmental change begins
-change_T = 10 #500
+change_T = 500
 # set total time over which environmental change takes place
-T = 20 #800
+T = 750
 # calc length of environmental change period
 deltaT_env_change = T - change_T
 # reset the K_factor (if desired)
-K_factor=0.25
+K_factor=1
 
 #--------------------------
 # params for output control
@@ -250,6 +250,9 @@ def run_sim(nullness, linkage, genicity, n_its, params, output):
         # create the model
         mod = gnx.make_model(gnx.make_params_dict(copy_params))
 
+        # save the original carrying capacity raster (to use in plotting later)
+        orig_K = np.copy(mod.comm[0].K)
+
         # check that the number of trait 0 loci is correct
         assert len(mod.comm[0].gen_arch.traits[0].loci) == genicity, (
                 'EXPECETED %i LOCI BUT GOT %i!') % (
@@ -275,17 +278,19 @@ def run_sim(nullness, linkage, genicity, n_its, params, output):
         # add the pre-change population to the fig,
         # if this is the first iteration
         if n_it == 0:
+
+
             # before-change phenotypic map
             row_idx, col_idx = get_fig_time_row_col_idxs(linkage, genicity,
                                                          'before')
             ax = fig_time.add_subplot(gs_time[row_idx, col_idx])
             #mod.plot_phenotype(0, 0, alpha=0.5)
-            ax.imshow(mod.land[0].rast, cmap='coolwarm')
+            ax.imshow(mod.land[0].rast, cmap='coolwarm', vmin=0, vmax=1)
             ax.scatter(mod.comm[0]._get_x()-0.5,
                        mod.comm[0]._get_y()-0.5,
                        c=mod.comm[0]._get_z(0),
                        cmap='coolwarm',
-                       s=25)
+                       vmin=0, vmax=1, s=12)
             ax.set_xticks([])
             ax.set_yticks([])
 
@@ -316,36 +321,39 @@ def run_sim(nullness, linkage, genicity, n_its, params, output):
         # add the post-change population and other plots to the fig,
         # if this is the first iteration
         if n_it == 0:
+
+
             # after-change phenotypic map
             row_idx, col_idx = get_fig_time_row_col_idxs(linkage, genicity,
                                                          'after')
             ax = fig_time.add_subplot(gs_time[row_idx, col_idx])
             #mod.plot_phenotype(0, 0, alpha=0.5)
-            ax.imshow(mod.land[0].rast, cmap='coolwarm')
+            ax.imshow(mod.land[0].rast, cmap='coolwarm', vmin=0, vmax=1)
             ax.scatter(mod.comm[0]._get_x()-0.5,
                        mod.comm[0]._get_y()-0.5,
                        c=mod.comm[0]._get_z(0),
                        cmap='coolwarm',
-                       s=25)
+                       vmin=0, vmax=1, s=12)
             ax.set_xticks([])
             ax.set_yticks([])
+
 
             # pop-growth plot
             row_idx, col_idx = get_fig_time_row_col_idxs(linkage, genicity,
                                                          'Nt')
             ax = fig_time.add_subplot(gs_time[row_idx, col_idx])
-            ts = [*np.linspace(-len(mod.comm[0].Nt), T-1, len(mod.comm[0].Nt))]
-            x0 = mod.comm[0].Nt[0]/mod.comm[0].K.sum() 
+            ts = [*range(T)]
+            x0 = mod.comm[0].Nt[-T]/orig_K.sum() 
             logistic = [gnx.structs.species._calc_logistic_soln(x0,
-                                    mod.comm[0].R, t) for t in range(len(ts))]
+                                                mod.comm[0].R, t) for t in ts]
             ax.plot(ts, logistic, color=colors[nullness]['neut'], alpha=0.5)
-            ax.plot(ts, mod.comm[0].Nt, color=colors[nullness]['nonneut'])
+            ax.plot(ts, mod.comm[0].Nt[-T:], color=colors[nullness]['nonneut'])
             #mod.plot_pop_growth(0, expected_color='gray',
             #                    actual_color=colors[nullness]['nonneut'])
             ax.plot([change_T]*2, [0, max(mod.comm[0].Nt)], ':k')
-            ax.plot([-1]*2, [0, max(mod.comm[0].Nt)], '-k')
             ax.set_xlabel('t', size=8)
             ax.set_ylabel('N(t)', size=8)
+
 
             # mean fitness change plot
             row_idx, col_idx = get_fig_time_row_col_idxs(linkage, genicity,
