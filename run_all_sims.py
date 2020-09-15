@@ -16,6 +16,7 @@ import copy
 import tskit
 import bisect
 import time
+import os
 
 
 #/\/\/\/\/\/\/\/\
@@ -83,8 +84,11 @@ collab_size = 16
 # filepaths
 #----------
 # create ParamsDict objects
-filepath=('/home/drew/Desktop/stuff/berk/research/projects/sim/'
-          'ch2_adapt_clim_chng_genarch/prelim_params.py')
+#filepath=('/home/drew/Desktop/stuff/berk/research/projects/sim/'
+#          'ch2_adapt_clim_chng_genarch/prelim_params.py')
+filepath=('/global/home/users/drewhart/ch2/'
+          'climate_change_adaptation_and_genomic_arch/prelim_params.py')
+outpath = '/global/home/users/drewhart/ch2/output/'
 
 #---------------------------------
 # read, tweak, and copy the params
@@ -466,5 +470,9 @@ for genicity_n, genicity in enumerate(genicities):
                     # TODO standardize axes
 
 # show all the figures
-fig_time.show()
-fig_hist.show()
+#fig_time.show()
+#fig_hist.show()
+
+# save all the figures
+fig_time.savefig(os.path.join(outpath, 'fig_time.png'), format='png', dpi=1000)
+fig_hist.savefig(os.path.join(outpath, 'fig_hist.png'), format='png', dpi=1000)
