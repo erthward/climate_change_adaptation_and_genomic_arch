@@ -5,18 +5,19 @@
 
 '''
 TODO:
-    - start test-running and debugging
+    - code up the statistical tests
 '''
 
 import geonomics as gnx
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import pandas as pd
 import copy
 import tskit
 import bisect
 import time
-
+import os
 
 #/\/\/\/\/\/\/\/\
 # set main params
@@ -30,8 +31,8 @@ n_its = 2
 # set the different numbers of loci to use
 genicities = [5, 20, 100]
 # set the different linkage levels to use
-linkages = ['none', 'weak', 'strong']
-linkages_dict = {'none': {'r_distr_alpha': 0.5,
+linkages = ['independent', 'weak', 'strong']
+linkages_dict = {'independent': {'r_distr_alpha': 0.5,
                      'r_distr_beta': None},
             'weak': {'r_distr_alpha': 0.05,
                      'r_distr_beta': None},
@@ -43,13 +44,15 @@ linkages_dict = {'none': {'r_distr_alpha': 0.5,
 # params to reduce runtime for debugging/development
 #---------------------------------------------------
 # set time when environmental change begins
-change_T = 500
+change_T = 5#00
 # set total time over which environmental change takes place
-T = 750
+T = 7#50
 # calc length of environmental change period
 deltaT_env_change = T - change_T
 # reset the K_factor (if desired)
-K_factor=1
+K_factor = 1
+# print out debugging info?
+debug_verbose = True
 
 #--------------------------
 # params for output control
@@ -73,7 +76,7 @@ map_gene_flow = True
 # set colors
 colors = {'null': {'nonneut': '#237ade',  # dark blue
                    'neut': '#94b3d6'},    # light blue
-          'main': {'nonneut': '#d60957',  # dark rose
+          'non-null': {'nonneut': '#d60957',  # dark rose
                    'neut': '#d98daa'}}    # light rose
 rowlab_size = 16
 collab_size = 16
@@ -85,6 +88,10 @@ collab_size = 16
 # create ParamsDict objects
 filepath=('/home/drew/Desktop/stuff/berk/research/projects/sim/'
           'ch2_adapt_clim_chng_genarch/prelim_params.py')
+
+# path to dir for output CSVs
+csvpath = ('home/drew/Desktop/stuff/berk/research/projects/sim/'
+          'ch2_adapt_clim_chng_genarch')
 
 #---------------------------------
 # read, tweak, and copy the params
@@ -107,9 +114,9 @@ output = {nullness: {linkage: {genicity: {stat: {it: {neutrality: []
                                           for stat in gene_flow_stats}
                                for genicity in genicities}
                      for linkage in linkages}
-          for nullness in ['main', 'null']}
+          for nullness in ['non-null', 'null']}
 # add sections for the non-gene flow stats
-for nullness in ['main', 'null']:
+for nullness in ['non-null', 'null']:
     for linkage in linkages:
         for genicity in genicities:
             for stat in other_stats:
@@ -127,9 +134,13 @@ for nullness in ['main', 'null']:
 #------------------
 # timecourse figure
 #------------------
-fig_time = plt.figure('time')
-fig_time.suptitle(('example simulation time-courses, across linkage-genicity'
-                   ' combinations'))
+fig_time = {'non-null': plt.figure('time'),
+            'null': plt.figure('time, null')}
+[fig.suptitle(('example simulation time-courses, across linkage-genicity'
+               ' combinations; NULLNESS:'
+               ' %s' % nullness)) for nullness, fig in zip(['non-null', 'null'],
+                                                           fig_time.values())]
+
 gs_time = mpl.gridspec.GridSpec(2*len(linkages), 2*len(genicities))
 # use dicts to store the row and col indices in the gridspec that
 # correspond with each of the linkage-genicity combo scenarios
@@ -234,15 +245,33 @@ def set_params(params, linkage, genicity, nullness):
     return copy_params
 
 
+def calc_actual_recomb_rates(spp):
+    r = spp.gen_arch.recombinations
+    cts = {i:0 for i in range(len(spp.gen_arch.nonneut_loci))}
+    for k in r._subsetters.keys():
+        subsetter = r._get_subsetter(k)
+        binary = 1*np.array([*subsetter])
+        reshaped = binary.reshape((len(binary)//2, 2))
+        diffs = np.diff(np.diff(reshaped, axis=1), axis=0)
+        indices = np.argwhere(diffs!=0)[:,0]
+        for ind in indices:
+            cts[ind] += 1
+    ests = [v/len(r._subsetters) for v in cts.values()]
+    return ests
+
+
 def run_sim(nullness, linkage, genicity, n_its, params, output):
     '''Run the simulations for a given set of parameters and hyperparameters
     '''
     # get the correct params for this sim
     copy_params = set_params(params, linkage, genicity, nullness)
 
+    # set up stats lists to be returned
+    delta_Nt = []
+    delta_fit = []
+
     # loop through the iterations
     for n_it in range(n_its):
-        print('\n%sITERATION NUMBER %i\n' % (script_println_header, n_it))
 
         # empty list for the fitness data for this model
         fit_data = []
@@ -257,6 +286,27 @@ def run_sim(nullness, linkage, genicity, n_its, params, output):
         assert len(mod.comm[0].gen_arch.traits[0].loci) == genicity, (
                 'EXPECETED %i LOCI BUT GOT %i!') % (
                 genicity, len(mod.comm[0].gen_arch.traits[0].loci))
+
+        # print info to verify parameterization is correct, if requested
+        # and on the first iteration
+        if debug_verbose and n_it == 0:
+            gen_arch_params = copy_params['comm']['species']['spp_0']['gen_arch']
+            genicities = [gen_arch_params['traits']['trait_0']['n_loci'],
+                          gen_arch_params['traits']['trait_1']['n_loci']]
+            print('\t\t\tGENICITIES: %s' % str(genicities))
+            print(('\t\t\tNON-NEUT GENES:\n'
+                   '\t\t\t\tt0:%s\n'
+                   '\t\t\t\tt1:%s') % (str(mod.comm[0].gen_arch.traits[0].loci),
+                                      str(mod.comm[0].gen_arch.traits[1].loci)))
+                                     
+            linkage_nums = [gen_arch_params['r_distr_alpha'],
+                            gen_arch_params['r_distr_beta']]
+            print('\t\t\tLINKAGE: %s' % str(linkage_nums))
+            print(('\t\t\tRECOMB RATES: '
+                    '%s') % str(calc_actual_recomb_rates(mod.comm[0])))
+
+        #print iteration number
+        print('\n%sITERATION NUMBER %i\n' % (script_println_header, n_it))
 
         # burn the model in
         mod.walk(10000, mode='burn')
@@ -275,6 +325,10 @@ def run_sim(nullness, linkage, genicity, n_its, params, output):
             # save the fitness data for this timestep
             fit_data.append(np.mean(mod.comm[0]._get_fit()))
 
+        # calculate the mean vars before the shift
+        mean_Nt_b4 = np.mean(mod.comm[0][-deltaT_env_change:])
+        mean_fit_b4 = np.mean(fit_data[-deltaT_env_change:])
+
         # add the pre-change population to the fig,
         # if this is the first iteration
         if n_it == 0:
@@ -283,14 +337,14 @@ def run_sim(nullness, linkage, genicity, n_its, params, output):
             # before-change phenotypic map
             row_idx, col_idx = get_fig_time_row_col_idxs(linkage, genicity,
                                                          'before')
-            ax = fig_time.add_subplot(gs_time[row_idx, col_idx])
+            ax = fig_time[nullness].add_subplot(gs_time[row_idx, col_idx])
             #mod.plot_phenotype(0, 0, alpha=0.5)
             ax.imshow(mod.land[0].rast, cmap='coolwarm', vmin=0, vmax=1)
             ax.scatter(mod.comm[0]._get_x()-0.5,
                        mod.comm[0]._get_y()-0.5,
                        c=mod.comm[0]._get_z(0),
                        cmap='coolwarm',
-                       vmin=0, vmax=1, s=12)
+                       vmin=0, vmax=1, s=5, alpha=0.2)
             ax.set_xticks([])
             ax.set_yticks([])
 
@@ -314,6 +368,13 @@ def run_sim(nullness, linkage, genicity, n_its, params, output):
             # save the fitness value
             fit_data.append(np.mean(mod.comm[0]._get_fit()))
 
+
+        # calculate the mean vars after the shift, then the diffs
+        mean_Nt_af = np.mean(mod.comm[0][-deltaT_env_change:])
+        mean_fit_af = np.mean(fit_data[-deltaT_env_change:])
+        delta_Nt.append(mean_Nt_af - mean_Nt_b4)
+        delta_fit.append(mean_fit_af - mean_fit_b4)
+
         # save the data
         save_data(nullness, genicity, linkage, n_it, mod, output,
                   deltaT_env_change, fit_data)
@@ -326,14 +387,14 @@ def run_sim(nullness, linkage, genicity, n_its, params, output):
             # after-change phenotypic map
             row_idx, col_idx = get_fig_time_row_col_idxs(linkage, genicity,
                                                          'after')
-            ax = fig_time.add_subplot(gs_time[row_idx, col_idx])
+            ax = fig_time[nullness].add_subplot(gs_time[row_idx, col_idx])
             #mod.plot_phenotype(0, 0, alpha=0.5)
             ax.imshow(mod.land[0].rast, cmap='coolwarm', vmin=0, vmax=1)
             ax.scatter(mod.comm[0]._get_x()-0.5,
                        mod.comm[0]._get_y()-0.5,
                        c=mod.comm[0]._get_z(0),
                        cmap='coolwarm',
-                       vmin=0, vmax=1, s=12)
+                       vmin=0, vmax=1, s=5, alpha=0.2)
             ax.set_xticks([])
             ax.set_yticks([])
 
@@ -341,11 +402,12 @@ def run_sim(nullness, linkage, genicity, n_its, params, output):
             # pop-growth plot
             row_idx, col_idx = get_fig_time_row_col_idxs(linkage, genicity,
                                                          'Nt')
-            ax = fig_time.add_subplot(gs_time[row_idx, col_idx])
+            ax = fig_time[nullness].add_subplot(gs_time[row_idx, col_idx])
             ts = [*range(T)]
             x0 = mod.comm[0].Nt[-T]/orig_K.sum() 
             logistic = [gnx.structs.species._calc_logistic_soln(x0,
                                                 mod.comm[0].R, t) for t in ts]
+            logistic = [n * orig_K.sum() for n in logistic]
             ax.plot(ts, logistic, color=colors[nullness]['neut'], alpha=0.5)
             ax.plot(ts, mod.comm[0].Nt[-T:], color=colors[nullness]['nonneut'])
             #mod.plot_pop_growth(0, expected_color='gray',
@@ -358,7 +420,7 @@ def run_sim(nullness, linkage, genicity, n_its, params, output):
             # mean fitness change plot
             row_idx, col_idx = get_fig_time_row_col_idxs(linkage, genicity,
                                                          'fit')
-            ax = fig_time.add_subplot(gs_time[row_idx, col_idx])
+            ax = fig_time[nullness].add_subplot(gs_time[row_idx, col_idx])
             ax.plot(range(len(fit_data)), fit_data,
                     color=colors[nullness]['nonneut'])
             ax.plot([change_T]*2, [0, 1], ':k')
@@ -396,11 +458,19 @@ def run_sim(nullness, linkage, genicity, n_its, params, output):
             #            individs=nonneut_individs[n*n_locs:n*n_locs+n_locs],
             #            color='#f2f2f2', phenotype=0, size=35)
 
+    return (delta_Nt, delta_fit)
 
 
 #/\/\/\/\/\/\/\/\/\/\/\/\
 # loop through iterations
 #\/\/\/\/\/\/\/\/\/\/\/\/
+
+# create empty columns for Nt and fit dataframe
+linkage_col = []
+genicity_col = []
+nullness_col = []
+delta_Nt_col = []
+delta_fit_col = []
 
 for linkage in linkages:
     for genicity in genicities:
@@ -408,25 +478,82 @@ for linkage in linkages:
         #-----------------------------------------
         # run simulation with environmental change
         #-----------------------------------------
-        run_sim('main', linkage, genicity, n_its, params, output)
+        delta_Nt, delta_fit = run_sim('non-null', linkage,
+                                      genicity, n_its, params, output)
         
         #--------------------
         # run null simulation
         #--------------------
-        run_sim('null', linkage, genicity, n_its, params, output)
+        delta_Nt_null, delta_fit_null = run_sim('null', linkage,
+                                                genicity, n_its, params, output)
 
         #-------------------------
-        # TODO null/non-null comparison
+        # null/non-null comparison
         #-------------------------
+
+        assert (len(delta_Nt) == len(delta_fit) ==
+                len(delta_Nt_null) == len(delta_fit_null) == n_its)
         
-        # calc and store null vs non-null comparison
+        linkage_col.extend([linkage]*n_its*2)
+        genicity_col.extend([genicity]*n_its*2)
+        nullness_col.extend(['non_null']*n_its)
+        nullness_col.extend(['null']*n_its)
+        delta_Nt_col.extend(delta_Nt)
+        delta_Nt_col.extend(delta_Nt_null)
+        delta_fit_col.extend(delta_fit)
+        delta_fit_col.extend(delta_fit_null)
+
+        assert (len(linkage_col) == len(genicity_col) == len(nullness_col) ==
+                len(delta_Nt_col) == len(delta_fit_col))
 
 
-# TODO: run overall tests/summaries of stored test results
+# gather delta Nt and delta fit data into a DataFrame
+df_Nt_fit = pd.DataFrame({'linkage': linkage_col,
+                          'genicity': genicity_col,
+                          'nullness': nullness_col,
+                          'delta_Nt': delta_Nt_col,
+                          'delta_fit': delta_fit_col})
 
 
+# gather gene flow data into DataFrames
+def make_stat_df(stat, output):
+    # create empty columns for gene flow df
+    genicity_col = []
+    linkage_col = []
+    nullness_col = []
+    neutrality_col = []
+    it_col = []
+    stat_col = []
+    # loop through and get data
+    for nullness, nullness_dict in output.items():
+        for linkage, linkage_dict in nullness_dict.items():
+            for genicity, genicity_dict in linkage_dict.items():
+                for genicity, genicity_dict in linkage_dict.items():
+                    for it, it_dict in genicity_dict[stat].items():
+                        for neutrality, data in it_dict.items():
+                            nrows = len(data)
+                            genicity_col.extend([genicity]*nrows)
+                            linkage_col.extend([linkage]*nrows)
+                            nullness_col.extend([nullness]*nrows)
+                            neutrality_col.extend([neutrality]*nrows)
+                            it_col.extend([it]*nrows)
+                            # replace Nones with NAs
+                            data = [np.nan if v is None else v for v in data]
+                            stat_col.extend(data)
+    # make into a dataframe
+    df = pd.DataFrame({'genicity': genicity_col,
+                       'linkage': linkage_col,
+                       'nullness': nullness_col,
+                       'neutrality': neutrality_col,
+                       'it': it_col,
+                       stat: stat_col})
+    return df
 
-
+df_dir = make_stat_df('dir', output)
+df_dist = make_stat_df('dist', output)
+print("\n\ndir and dist dfs' lengths' equal?:   ",
+      df_dir.shape[0] == df_dist.shape[0],
+      '\n\n')
 
 #/\/\/\/\/\/\/\
 # finalize figs
@@ -448,7 +575,7 @@ for genicity_n, genicity in enumerate(genicities):
             if row_idx == 0 and col_idx in [0, 3, 6]:
                 ax.set_title('genicity: %i' % genicity, size=collab_size)
             # plot a histogram of the unlinked and then linked data
-            for nullness in ['main', 'null']:
+            for nullness in ['non-null', 'null']:
                 for neut_idx, neutrality in enumerate(['neut', 'nonneut']):
                     data_dict = output[nullness][linkage][genicity][stat]
                     data = [v[neutrality] for v in data_dict.values()]
@@ -466,5 +593,17 @@ for genicity_n, genicity in enumerate(genicities):
                     # TODO standardize axes
 
 # show all the figures
-fig_time.show()
+[fig.show() for fig in fig_time.values()]
 fig_hist.show()
+
+
+#/\/\/\/\/\/\/\/\/\
+# output dataframes
+#\/\/\/\/\/\/\/\/\/
+
+# save dfs to disk
+df_Nt_fit.to_csv(os.path.join(csvpath, 'Nt_fit_output.csv'), index=False)
+df_dir.to_csv(os.path.join(csvpath, 'dir_output.csv'), index=False)
+df_dist.to_csv(os.path.join(csvpath, 'dist_output.csv'), index=False)
+
+
