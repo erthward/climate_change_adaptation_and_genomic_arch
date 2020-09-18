@@ -748,13 +748,20 @@ for genicity_n, genicity in enumerate(genicities):
 [fig.show() for fig in fig_time.values()]
 fig_hist.show()
 
+# save all the figures
+plt.tight_layout()
+rcParams['figure.figsize'] = 40, 12
+for name, fig in fig_time.values():
+    fig.savefig('fig_time_'+name+'.png', format='png', dpi=1000) 
+fig_hist.savefig('fig_hist.png', format='png', dpi=1000)
+
 
 #/\/\/\/\/\/\/\/\/\
 # output dataframes
 #\/\/\/\/\/\/\/\/\/
 
 # save dfs to disk
-df.to_csv(os.path.join(csvpath, 'ch2_output.csv'), index=False)
+df.to_csv(os.path.join(csvpath, 'output.csv'), index=False)
 #df_dir.to_csv(os.path.join(csvpath, 'dir_output.csv'), index=False)
 #df_dist.to_csv(os.path.join(csvpath, 'dist_output.csv'), index=False)
 
