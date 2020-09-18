@@ -5,7 +5,10 @@
 
 '''
 TODO:
-    - code up the statistical tests
+    - clean up all the now extremely gross data-structure code I've cobbled
+    together
+    - run on Savio
+    - code up more/better statistical tests
 '''
 
 import geonomics as gnx
@@ -13,6 +16,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
+import scipy.stats
 import copy
 import tskit
 import bisect
@@ -90,7 +94,7 @@ filepath=('/home/drew/Desktop/stuff/berk/research/projects/sim/'
           'ch2_adapt_clim_chng_genarch/prelim_params.py')
 
 # path to dir for output CSVs
-csvpath = ('home/drew/Desktop/stuff/berk/research/projects/sim/'
+csvpath = ('/home/drew/Desktop/stuff/berk/research/projects/sim/'
           'ch2_adapt_clim_chng_genarch')
 
 #---------------------------------
@@ -174,12 +178,53 @@ gs_hist = mpl.gridspec.GridSpec(len(linkages), 3*len(genicities))
 # define functions
 #\/\/\/\/\/\/\/\/\
 
+def estimate_vonmises_params(angs, p=2, return_sigmahat=True):
+    """
+    Estimates the mu and kappa parameters of a von Mises-Fisher distribution
+    based on a sample of angular data. Also optionally estimates standard
+    deviation, for construction of confidence intervals.
+
+    Follows estimation as laid out on
+    [Wikipedia](https://en.wikipedia.org/wiki/Von_Mises%E2%80%93Fisher_distribution#Estimation_of_paramaters).
+    """
+    # drop all NaN angles
+    angs = [*np.array(angs)[~np.isnan(angs)]]
+    # decompose angles into a 2xN array of x and y unit-vector components
+    xi = np.stack((np.cos(angs), np.sin(angs)))
+    # calculate the x- and y-component means (as a length-2 1d array)
+    xbar = np.sum(xi, axis=1)/len(angs)
+    # calculate norm (Euclidean length) of that mean vector
+    Rbar = np.sqrt(np.sum([val**2 for val in xbar]))
+    # estimate mu as mean vector normed by its length
+    muhat = xbar/Rbar
+    # convert the muhat vector back to its angular equivalent, for return val
+    muhat_ang = np.arctan2(*muhat[::-1])
+    # estimate kappa
+    kappahat = (Rbar*(p-Rbar**2))/(1-Rbar**2)
+    # estimate standard deviation
+    if return_sigmahat:
+        d = 1 - np.sum([muhat.dot(xi[:,i]) for i in range(xi.shape[1])])/len(angs) 
+        sigmahat = np.sqrt((d)/(len(angs)*(Rbar**2)))
+        return muhat_ang, kappahat, sigmahat
+    else:
+        return muhat_ang, kappahat
+
+
 def save_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
               fit_data):
     '''
     Save the current model's neutral and non-neutral locus data to its
     appropriate spot in the output dict
     '''
+    # output data structure for summary stats
+    stats_output = {'dist': {k: np.nan for k in ['mean_neut', 'mean_nonneut',
+                                                 'pval']},
+                    'dir': {k: np.nan for k in ['mu_neut', 'mu_nonneut',
+                                                'kappa_neut', 'kappa_nonneut',
+                                                'std_neut', 'std_nonneut',
+                                                'pval']}
+                   }
+
     # grab the non-neutral loci
     nonneut_loci = mod.comm[0].gen_arch.traits[0].loci
     # grab an equal amt of random neutral loci to the num of non-neutral loci
@@ -197,18 +242,45 @@ def save_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
                                                  loci=neut_loci)
     # save the gene-flow data in the right places
     for stat, dataset in nonneut_stats.items():
+        neut_data = []
+        nonneut_data = []
         # add the non-neutral stats to their lists
         for data in dataset.values():
             stat_list=output[nullness][linkage][genicity][stat][n_it]['nonneut']
             stat_list.extend(data)
+            neut_data.extend(data)
         # add the neutral data too
         for data in neut_stats[stat].values():
             stat_list = output[nullness][linkage][genicity][stat][n_it]['neut']
             stat_list.extend(data)
+            nonneut_data.extend(data)
+        #run the F-test, save its results and the mean neut and nonneut vals
+        neut_data = [val if val is not None else np.nan for val in neut_data]
+        nonneut_data = [val if val is not None else np.nan for val in nonneut_data]
+        if stat in ['dir', 'dist']:
+            f_test = scipy.stats.f_oneway(np.array(neut_data)[~np.isnan(
+                                                                    neut_data)],
+                                        np.array(nonneut_data)[~np.isnan(
+                                                                nonneut_data)])
+            stats_output[stat]['pval'] = f_test.pvalue      
+        if stat == 'dist':
+            stats_output[stat]['mean_dist_neut'] = np.nanmean(neut_data)
+            stats_output[stat]['mean_nonneut'] = np.nanmean(nonneut_data)
+        elif stat == 'dir':
+            neut_ests = estimate_vonmises_params(neut_data)
+            stats_output[stat]['mu_neut'] = neut_ests[0]
+            stats_output[stat]['kappa_neut'] = neut_ests[1]
+            stats_output[stat]['std_neut'] = neut_ests[2]
+            nonneut_ests = estimate_vonmises_params(nonneut_data)
+            stats_output[stat]['mu_nonneut'] = nonneut_ests[0]
+            stats_output[stat]['kappa_nonneut'] = nonneut_ests[1]
+            stats_output[stat]['std_nonneut'] = nonneut_ests[2]
 
     # save the non-gene-flow data in the right places
     output[nullness][linkage][genicity]['Nt'][n_it].extend(mod.comm[0].Nt)
     output[nullness][linkage][genicity]['fit'][n_it].extend(fit_data)
+
+    return(stats_output)
 
 
 def set_params(params, linkage, genicity, nullness):
@@ -269,6 +341,16 @@ def run_sim(nullness, linkage, genicity, n_its, params, output):
     # set up stats lists to be returned
     delta_Nt = []
     delta_fit = []
+    neut_nonneut_dirtest_pval = []
+    neut_nonneut_disttest_pval = []
+    mean_dist_neut = []
+    mean_dist_nonneut = []
+    mu_dir_neut = []
+    mu_dir_nonneut = []
+    kappa_dir_neut = []
+    kappa_dir_nonneut = []
+    std_dir_neut = []
+    std_dir_nonneut = []
 
     # loop through the iterations
     for n_it in range(n_its):
@@ -326,7 +408,7 @@ def run_sim(nullness, linkage, genicity, n_its, params, output):
             fit_data.append(np.mean(mod.comm[0]._get_fit()))
 
         # calculate the mean vars before the shift
-        mean_Nt_b4 = np.mean(mod.comm[0][-deltaT_env_change:])
+        mean_Nt_b4 = np.mean(mod.comm[0].Nt[-deltaT_env_change:])
         mean_fit_b4 = np.mean(fit_data[-deltaT_env_change:])
 
         # add the pre-change population to the fig,
@@ -370,14 +452,29 @@ def run_sim(nullness, linkage, genicity, n_its, params, output):
 
 
         # calculate the mean vars after the shift, then the diffs
-        mean_Nt_af = np.mean(mod.comm[0][-deltaT_env_change:])
+        mean_Nt_af = np.mean(mod.comm[0].Nt[-deltaT_env_change:])
         mean_fit_af = np.mean(fit_data[-deltaT_env_change:])
         delta_Nt.append(mean_Nt_af - mean_Nt_b4)
         delta_fit.append(mean_fit_af - mean_fit_b4)
 
         # save the data
-        save_data(nullness, genicity, linkage, n_it, mod, output,
-                  deltaT_env_change, fit_data)
+        stats_output = save_data(nullness, genicity, linkage, n_it, mod, output,
+                                 deltaT_env_change, fit_data)
+
+        # store the summary-stats output
+        dir_stats = stats_output['dir']
+        neut_nonneut_dirtest_pval.append(dir_stats['pval'])
+        mu_dir_neut.append(dir_stats['mu_neut'])
+        mu_dir_nonneut.append(dir_stats['mu_nonneut'])
+        kappa_dir_neut.append(dir_stats['kappa_neut'])
+        kappa_dir_nonneut.append(dir_stats['kappa_nonneut'])
+        std_dir_neut.append(dir_stats['std_neut'])
+        std_dir_nonneut.append(dir_stats['std_nonneut'])
+
+        dist_stats = stats_output['dist']
+        neut_nonneut_disttest_pval.append(dist_stats['pval'])
+        mean_dist_neut.append(dist_stats['mean_neut'])
+        mean_dist_nonneut.append(dist_stats['mean_nonneut'])
 
         # add the post-change population and other plots to the fig,
         # if this is the first iteration
@@ -458,7 +555,11 @@ def run_sim(nullness, linkage, genicity, n_its, params, output):
             #            individs=nonneut_individs[n*n_locs:n*n_locs+n_locs],
             #            color='#f2f2f2', phenotype=0, size=35)
 
-    return (delta_Nt, delta_fit)
+    return (delta_Nt, delta_fit, neut_nonneut_dirtest_pval,
+            neut_nonneut_disttest_pval, mean_dist_neut, mean_dist_nonneut,
+            mu_dir_neut, mu_dir_nonneut, kappa_dir_neut, kappa_dir_nonneut,
+            std_dir_neut, std_dir_nonneut)
+
 
 
 #/\/\/\/\/\/\/\/\/\/\/\/\
@@ -471,6 +572,17 @@ genicity_col = []
 nullness_col = []
 delta_Nt_col = []
 delta_fit_col = []
+dir_pval_col = []
+dist_pval_col = []
+mu_dir_neut_col = []
+mu_dir_nonneut_col = []
+kappa_dir_neut_col = []
+kappa_dir_nonneut_col = []
+std_dir_neut_col = []
+std_dir_nonneut_col = []
+mean_dist_neut_col = []
+mean_dist_nonneut_col = []
+
 
 for linkage in linkages:
     for genicity in genicities:
@@ -478,15 +590,24 @@ for linkage in linkages:
         #-----------------------------------------
         # run simulation with environmental change
         #-----------------------------------------
-        delta_Nt, delta_fit = run_sim('non-null', linkage,
-                                      genicity, n_its, params, output)
+        (delta_Nt, delta_fit, dirtest_pval,
+         disttest_pval, mean_dist_neut, mean_dist_nonneut,
+         mu_dir_neut, mu_dir_nonneut, kappa_dir_neut, kappa_dir_nonneut,
+         std_dir_neut, std_dir_nonneut) = run_sim('non-null', linkage,
+                                                  genicity, n_its,
+                                                  params, output)
         
         #--------------------
         # run null simulation
         #--------------------
-        delta_Nt_null, delta_fit_null = run_sim('null', linkage,
-                                                genicity, n_its, params, output)
-
+        (delta_Nt_null, delta_fit_null, dirtest_pval_null,
+         disttest_pval_null, mean_dist_neut_null,
+         mean_dist_nonneut_null, mu_dir_neut_null,
+         mu_dir_nonneut_null, kappa_dir_neut_null, kappa_dir_nonneut_null,
+         std_dir_neut_null, std_dir_nonneut_null) = run_sim('null', linkage,
+                                                  genicity, n_its,
+                                                  params, output)
+ 
         #-------------------------
         # null/non-null comparison
         #-------------------------
@@ -502,17 +623,48 @@ for linkage in linkages:
         delta_Nt_col.extend(delta_Nt_null)
         delta_fit_col.extend(delta_fit)
         delta_fit_col.extend(delta_fit_null)
+        dir_pval_col.extend(dirtest_pval)
+        dir_pval_col.extend(dirtest_pval_null)
+        dist_pval_col.extend(disttest_pval)
+        dist_pval_col.extend(disttest_pval_null)
+        mu_dir_neut_col.extend(mu_dir_neut)
+        mu_dir_neut_col.extend(mu_dir_neut_null)
+        mu_dir_nonneut_col.extend(mu_dir_nonneut)
+        mu_dir_nonneut_col.extend(mu_dir_nonneut_null)
+        kappa_dir_neut_col.extend(kappa_dir_neut)
+        kappa_dir_neut_col.extend(kappa_dir_neut_null)
+        kappa_dir_nonneut_col.extend(kappa_dir_nonneut)
+        kappa_dir_nonneut_col.extend(kappa_dir_nonneut_null)
+        std_dir_neut_col.extend(std_dir_neut)
+        std_dir_neut_col.extend(std_dir_neut_null)
+        std_dir_nonneut_col.extend(std_dir_nonneut)
+        std_dir_nonneut_col.extend(std_dir_nonneut_null)
+        mean_dist_neut_col.extend(mean_dist_neut)
+        mean_dist_neut_col.extend(mean_dist_neut_null)
+        mean_dist_nonneut_col.extend(mean_dist_nonneut)
+        mean_dist_nonneut_col.extend(mean_dist_nonneut_null)
 
         assert (len(linkage_col) == len(genicity_col) == len(nullness_col) ==
                 len(delta_Nt_col) == len(delta_fit_col))
 
 
 # gather delta Nt and delta fit data into a DataFrame
-df_Nt_fit = pd.DataFrame({'linkage': linkage_col,
-                          'genicity': genicity_col,
-                          'nullness': nullness_col,
-                          'delta_Nt': delta_Nt_col,
-                          'delta_fit': delta_fit_col})
+df = pd.DataFrame({'linkage': linkage_col,
+                   'genicity': genicity_col,
+                   'nullness': nullness_col,
+                   'delta_Nt': delta_Nt_col,
+                   'delta_fit': delta_fit_col,
+                   'mu_dir_neut': mu_dir_neut_col,
+                   'mu_dir_nonneut': mu_dir_nonneut_col,
+                   'kappa_dir_neut': kappa_dir_neut_col,
+                   'kappa_dir_nonneut': kappa_dir_nonneut_col,
+                   'std_dir_neut': std_dir_neut_col,
+                   'std_dir_nonneut': std_dir_nonneut_col,
+                   'dir_pval': dir_pval_col,
+                   'mean_dist_neut': mean_dist_neut_col,
+                   'mean_dist_nonneut': mean_dist_nonneut_col,
+                   'dist_pval': dir_pval_col,
+                  })
 
 
 # gather gene flow data into DataFrames
@@ -602,8 +754,8 @@ fig_hist.show()
 #\/\/\/\/\/\/\/\/\/
 
 # save dfs to disk
-df_Nt_fit.to_csv(os.path.join(csvpath, 'Nt_fit_output.csv'), index=False)
-df_dir.to_csv(os.path.join(csvpath, 'dir_output.csv'), index=False)
-df_dist.to_csv(os.path.join(csvpath, 'dist_output.csv'), index=False)
+df.to_csv(os.path.join(csvpath, 'ch2_output.csv'), index=False)
+#df_dir.to_csv(os.path.join(csvpath, 'dir_output.csv'), index=False)
+#df_dist.to_csv(os.path.join(csvpath, 'dist_output.csv'), index=False)
 
 
