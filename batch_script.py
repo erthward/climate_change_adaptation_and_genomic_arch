@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#run_all_sims.py
+#batch_script.py
 
 # flake8: noqa
 
@@ -77,12 +77,12 @@ deltaT_env_change = T - change_T
 # reset the K_factor (if desired)
 K_factor = 1
 # print out debugging info?
-debug_verbose = False
+debug_verbose = True
 
 #--------------------------
 # params for stdout control
 #--------------------------
-mod_verbose = False
+mod_verbose = True
 script_println_header = '=====>'
 
 #----------------------------------
@@ -110,18 +110,25 @@ collab_size = 16
 #--------------------------
 # filepaths and file-saving
 #--------------------------
-# create ParamsDict objects
-filepath=('/home/drew/Desktop/stuff/berk/research/projects/sim/'
-          'ch2_adapt_clim_chng_genarch/template_params.py')
-
-# path to dir for output CSVs
-csvpath = ('/home/drew/Desktop/stuff/berk/research/projects/sim/'
-          'ch2_adapt_clim_chng_genarch')
+# get filepaths on my laptop
+if os.getcwd().split('/')[1] == 'home':
+    params_filepath=('/home/drew/Desktop/stuff/berk/research/projects/sim/'
+              'ch2_adapt_clim_chng_genarch/template_params.py')
+    # path to dir for output CSVs
+    csvpath = ('/home/drew/Desktop/stuff/berk/research/projects/sim/'
+               'ch2_adapt_clim_chng_genarch')
+# or else get filepaths on Savio
+else:
+    params_filepath=(('/global/home/users/drewhart/genarch_and_envchange/'
+              'climate_change_adaptation_and_genomic_arch/template_params.py'))
+    # path to dir for output CSVs
+    csvpath = '/global/home/users/drewhart/genarch_and_envchange/output/batch'
 
 #---------------------------------
 # read, tweak, and copy the params
 #---------------------------------
-params = gnx.read_parameters_file(filepath=filepath)
+# create ParamsDict object
+params = gnx.read_parameters_file(filepath=params_filepath)
 # tweak the carrying capacity, if requested
 if K_factor is not None:
     params['comm']['species']['spp_0']['init']['K_factor'] = K_factor
