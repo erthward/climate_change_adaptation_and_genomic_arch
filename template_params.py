@@ -246,7 +246,7 @@ params = {
                     #carrying-capacity Layer name
                     'K_layer':          'K',
                     #multiplicative factor for carrying-capacity layer
-                    'K_factor':         2,
+                    'K_factor':         50,
                     }, # <END> 'init'
 
             #-------------------------------------#
@@ -272,6 +272,8 @@ params = {
                     'n_births_fixed':           True,
                     #radius of mate-search area
                     'mating_radius':            5,
+                    'choose_nearest_mate':      False,
+                    'inverse_dist_mating':      False,
                     }, # <END> 'mating'
 
             #----------------------------------------#
