@@ -103,8 +103,10 @@ colors = {'null': {'nonneut': '#237ade',  # dark blue
                    'neut': '#94b3d6'},    # light blue
           'non-null': {'nonneut': '#d60957',  # dark rose
                    'neut': '#d98daa'}}    # light rose
-rowlab_size = 16
-collab_size = 16
+suptitle_size = 7
+rowlab_size = 6
+collab_size = 6
+ticklabel_size = 6
 
 
 #--------------------------
@@ -195,8 +197,10 @@ def get_fig_time_row_col_idxs(linkage, genicity, plot_type):
 #------------
 fig_hist = plt.figure('hist')
 fig_hist.suptitle(('histograms of gene-flow direction, distance,'
-                  ' and speed, across linkage-genicity combinations'))
-gs_hist = mpl.gridspec.GridSpec(len(linkages), 3*len(genicities))
+                  ' and speed, across linkage-genicity combinations'),
+                  fontsize=suptitle_size)
+# NOTE: extra column gives space for legend to live in; hacky, but works
+gs_hist = mpl.gridspec.GridSpec(len(linkages), 3*len(genicities)+1)
 
 
 #/\/\/\/\/\/\/\/\/
@@ -768,7 +772,7 @@ for genicity_n, genicity in enumerate(genicities):
             if col_idx == 0:
                 ax.set_ylabel('linkage: %s' % str(linkage), size=rowlab_size)
             if row_idx == 0 and col_idx in [0, 3, 6]:
-                ax.set_title('genicity: %i' % genicity, size=collab_size)
+                ax.set_title('|| genicity: %i' % genicity, size=collab_size)
             # plot a histogram of the unlinked and then linked data
             for nullness in ['non-null', 'null']:
                 for neut_idx, neutrality in enumerate(['neut', 'nonneut']):
@@ -776,23 +780,45 @@ for genicity_n, genicity in enumerate(genicities):
                     data = [v[neutrality] for v in data_dict.values()]
                     data = [val for sublist in data for val in sublist]
                     data = [np.nan if val is None else val for val in data]
-                    ax.hist(data, bins = 50, alpha=0.5,
-                            label= '%s: %s' % (nullness, neutrality),
-                            color=colors[nullness][neutrality])
+                    if neutrality == 'neut':
+                        kde = scipy.stats.gaussian_kde(data)
+                        xx = np.linspace(min(data), max(data), 1000)
+                        kde_vals = kde(xx)
+                        # NOTE: make a completely transparent hist, to steal the bar
+                        # heights from it and use them to scale the kde!
+                        vals, breaks, bars = ax.hist(data, bins=50, alpha=0)
+                        kde_plot_factor = max(vals)/max(kde_vals)
+                        kde_plot_vals = [val * kde_plot_factor for val in kde_vals]
+                        ax.plot(xx, kde_plot_vals, alpha=0.5,
+                                label='%s: %s' % (nullness, neutrality),
+                                color=colors[nullness][neutrality])
+                    else:
+                        ax.hist(data, bins = 50, alpha=0.5,
+                                label= '%s: %s' % (nullness, neutrality),
+                                color=colors[nullness][neutrality])
                     ax.set_xlabel(stat, size=8)
                     if row_idx==2 and col_idx==8:
-                        ax.legend(prop={'size': 10})
+                        ax.legend(prop={'size': 10},
+                                  fontsize=5,
+                                  bbox_to_anchor=(1.5, 0.2))
                     if col_idx in [0, 3, 6]:
                         ax.set_xticks(dir_tick_locs)
                         ax.set_xticklabels(dir_tick_labs)
+                    ax.tick_params(labelsize=ticklabel_size)
+                    ax.tick_params(axis='y', rotation=60)
                     # TODO standardize axes
 
 # show all the figures
 [fig.show() for fig in fig_time.values()]
 fig_hist.show()
 
-# save all the figures
-plt.tight_layout()
+# set the subplot spacing
+plt.subplots_adjust(left=0.1,
+                    bottom=0.1,
+                    right=0.9,
+                    top=0.9,
+                    wspace=1.0,
+                    hspace=0.9)
 try:
     rcParams['figure.figsize'] = 40, 12
 except Exception as e:
@@ -801,6 +827,7 @@ for name, fig in fig_time.items():
     fig.savefig(('fig_time_' + name + '_PID-%s' % pid +
                  '.png'), format='png', dpi=1000)
 fig_hist.savefig('fig_hist' + '_PID-%s' % pid + '.png', format='png', dpi=1000)
+
 
 
 #/\/\/\/\/\/\/\/\/\
