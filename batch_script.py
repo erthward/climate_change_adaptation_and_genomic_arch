@@ -259,7 +259,19 @@ def store_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
     # grab random neutral loci eqaul in amt to the num of non-neutral loci
     neut_loci = np.random.choice(mod.comm[0].gen_arch.neut_loci, genicity,
                                  replace=False)
+
     # calculate gene-flow stats for both the non-neutral and neutral loci
+    # NOTE: each one is structured as:
+    # {'dir': {loc_0: [dir_ind0_chrom0, dir_ind0_chrom1,
+    #                  dir_ind1_chrom0, ..., dir_indN_chrom1],
+    #          loc_1:
+    #          ...
+    #          loc_n},
+    #  'dist': ...
+    #  'speed': ...
+    # }
+    # in other words, for each stat, for each locus, gene flow stats for all
+    # chromosomes in current pop
     nonneut_stats = mod.comm[0]._calc_lineage_stats(stats=['dir', 'dist',
                                                            'speed'],
                                     use_individs_curr_pos=use_individs_curr_pos,
@@ -834,5 +846,11 @@ fig_hist.savefig('fig_hist' + '_PID-%s' % pid + '.png', format='png', dpi=1000)
 # output dataframes
 #\/\/\/\/\/\/\/\/\/
 
-# save dfs to disk
+# save dfs to disk, including:
+
+# high-level stats output
 df.to_csv(os.path.join(csvpath, 'output_PID-%s.csv' % pid), index=False)
+
+# dfs containing raw dir and dist data from individual locus-chrom combos
+df_dir.to_csv(os.path.join(csvpath, 'output_PID-%s_DIR.csv' % pid), index=False)
+df_dist.to_csv(os.path.join(csvpath, 'output_PID-%s_DIST.csv' % pid), index=False)
