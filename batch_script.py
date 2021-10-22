@@ -334,7 +334,7 @@ def set_params(params, linkage, genicity, nullness):
     if debug_verbose:
         print('\n%sNOW RUNNING MODEL %s...\n' % (script_println_header,
                                                model_name))
-    copy_params.model['name'] = model_name
+    copy_params['model']['name'] = model_name
 
     # set the linkage params correctly
     r_distr_params = linkages_dict[linkage]
@@ -794,18 +794,22 @@ for genicity_n, genicity in enumerate(genicities):
                     data = [val for sublist in data for val in sublist]
                     data = [np.nan if val is None else val for val in data]
                     if neutrality == 'neut':
-                        kde = scipy.stats.gaussian_kde(data)
-                        xx = np.linspace(min(data), max(data), 1000)
-                        kde_vals = kde(xx)
-                        # NOTE: make a completely transparent hist, to steal the bar
-                        # heights from it and use them to scale the kde!
-                        vals, breaks, bars = ax.hist(data, bins=50, alpha=0)
-                        kde_plot_factor = max(vals)/max(kde_vals)
-                        kde_plot_vals = [val * kde_plot_factor for val in kde_vals]
-                        ax.plot(xx, kde_plot_vals, alpha=0.5,
-                                label='%s: %s' % (nullness, neutrality),
-                                color=colors[nullness][neutrality])
-                    else:
+                        try:
+                            kde = scipy.stats.gaussian_kde(data)
+                            xx = np.linspace(min(data), max(data), 1000)
+                            kde_vals = kde(xx)
+                            # NOTE: make a completely transparent hist, to steal the bar
+                            # heights from it and use them to scale the kde!
+                            vals, breaks, bars = ax.hist(data, bins=50, alpha=0)
+                            kde_plot_factor = max(vals)/max(kde_vals)
+                            kde_plot_vals = [val * kde_plot_factor for val in kde_vals]
+                            ax.plot(xx, kde_plot_vals, alpha=0.5,
+                                    label='%s: %s' % (nullness, neutrality),
+                                    color=colors[nullness][neutrality])
+                        except Exception as e:
+                            print(('\n\nCOULD NOT PLOT KDE\n\nERROR '
+                                  'THROWN:\n\t%s') % e)
+                    else    :
                         ax.hist(data, bins = 50, alpha=0.5,
                                 label= '%s: %s' % (nullness, neutrality),
                                 color=colors[nullness][neutrality])
