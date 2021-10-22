@@ -12,6 +12,7 @@ if __name__ == '__main__':
     mp.set_start_method('spawn')
 
     # make the pool
+    #pool = mp.Pool(int(ncpu/2))
     pool = mp.Pool(ncpu)
 
     # map a serial list of batch numbers into the pool
