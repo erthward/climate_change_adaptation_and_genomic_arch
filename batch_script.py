@@ -31,7 +31,7 @@ import os
 # main params
 #------------
 # set number of iterations for each sim
-n_its = 3
+n_its = 2
 # set the different numbers of loci to use
 genicities = [4, 20, 100]
 # set the different linkage levels to use
@@ -82,7 +82,7 @@ debug_verbose = True
 #--------------------------
 # params for stdout control
 #--------------------------
-mod_verbose = True
+mod_verbose = False
 script_println_header = '=====>'
 
 #----------------------------------
@@ -117,14 +117,15 @@ if os.getcwd().split('/')[1] == 'home':
     params_filepath=('/home/drew/Desktop/stuff/berk/research/projects/sim/'
               'ch2_adapt_clim_chng_genarch/template_params.py')
     # path to dir for output CSVs
-    csvpath = ('/home/drew/Desktop/stuff/berk/research/projects/sim/'
+    output_path = ('/home/drew/Desktop/stuff/berk/research/projects/sim/'
                'ch2_adapt_clim_chng_genarch')
 # or else get filepaths on Savio
 else:
     params_filepath=(('/global/home/users/drewhart/genarch_and_envchange/'
-              'climate_change_adaptation_and_genomic_arch/template_params.py'))
+                      'climate_change_adaptation_and_genomic_arch/template_params.py'))
     # path to dir for output CSVs
-    csvpath = '/global/home/users/drewhart/genarch_and_envchange/output/batch'
+    #output_path = '/global/home/users/drewhart/genarch_and_envchange/output/batch'
+    output_path = '/global/scratch/users/drewhart/ch2/output/10-21-21/'
 
 #---------------------------------
 # read, tweak, and copy the params
@@ -329,8 +330,8 @@ def set_params(params, linkage, genicity, nullness):
     # set the model name (so that it saves data correctly in separate dirs)
     model_name = ('_%s'.join([nullness, linkage, str(genicity), str(n_it)]) +
                    "PID-%s" % pid)
-    model_name = model_name % ('L', 'G', 'I')
-    if mod_verbose:
+    model_name = model_name % ('L', 'G', 'its')
+    if debug_verbose:
         print('\n%sNOW RUNNING MODEL %s...\n' % (script_println_header,
                                                model_name))
     copy_params.model['name'] = model_name
@@ -432,7 +433,7 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
             print('\n\n')
 
         #print iteration number
-        if mod_verbose:
+        if debug_verbose:
             print('\n%sITERATION NUMBER %i\n' % (script_println_header, n_it))
 
         # burn the model in
@@ -444,7 +445,7 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
             # keep printing the number of loci,
             # to help me track things while it's running
             n_loci = len(mod.comm[0].gen_arch.traits[0].loci)
-            if mod_verbose:
+            if debug_verbose:
                 print('\n%s[%s, %i loci, it %i]' % (script_println_header,
                                                     linkage, genicity, n_it))
             # walk 1 step
@@ -488,7 +489,7 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
             # keep printing the number of loci,
             # to help me track things while it's running
             n_loci = len(mod.comm[0].gen_arch.traits[0].loci)
-            if mod_verbose:
+            if debug_verbose:
                 print('\n%s[%s, %i loci, it %i]' % (script_println_header,
                                                     linkage, genicity, n_it))
             # walk 1 step
@@ -836,9 +837,10 @@ try:
 except Exception as e:
     pass
 for name, fig in fig_time.items():
-    fig.savefig(('fig_time_' + name + '_PID-%s' % pid +
+    fig.savefig((output_path + '/fig_time_' + name + '_PID-%s' % pid +
                  '.png'), format='png', dpi=1000)
-fig_hist.savefig('fig_hist' + '_PID-%s' % pid + '.png', format='png', dpi=1000)
+fig_hist.savefig(output_path + '/fig_hist' + '_PID-%s' % pid + '.png',
+	         format='png', dpi=1000)
 
 
 
@@ -849,8 +851,8 @@ fig_hist.savefig('fig_hist' + '_PID-%s' % pid + '.png', format='png', dpi=1000)
 # save dfs to disk, including:
 
 # high-level stats output
-df.to_csv(os.path.join(csvpath, 'output_PID-%s.csv' % pid), index=False)
+df.to_csv(os.path.join(output_path, 'output_PID-%s.csv' % pid), index=False)
 
 # dfs containing raw dir and dist data from individual locus-chrom combos
-df_dir.to_csv(os.path.join(csvpath, 'output_PID-%s_DIR.csv' % pid), index=False)
-df_dist.to_csv(os.path.join(csvpath, 'output_PID-%s_DIST.csv' % pid), index=False)
+df_dir.to_csv(os.path.join(output_path, 'output_PID-%s_DIR.csv' % pid), index=False)
+df_dist.to_csv(os.path.join(output_path, 'output_PID-%s_DIST.csv' % pid), index=False)

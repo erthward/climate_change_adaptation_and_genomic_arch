@@ -362,6 +362,9 @@ params = {
                     'allow_ad_hoc_recomb':       False,
                     #whether to save mutation logs
                     'mut_log':                  False,
+		    'jitter_breakpoints': False,
+		    'use_tskit': True,
+		    'tskit_simp_interval': 100,
 
                     'traits': {
 
@@ -445,12 +448,11 @@ params = {
 ###############
     'model': {
         #total Model runtime (in timesteps)
-        'T':            500,
+        'T':            750,
         #min burn-in runtime (in timesteps)
         'burn_T':       30,
         #seed number
         'num':          None,
-        'tskit_simp_interval': 100,
 
         ###############################
         #### iterations parameters ####
@@ -462,6 +464,7 @@ params = {
             'rand_landscape':   False,
             #whether to randomize Community each iteration
             'rand_comm':        False,
+	    'rand_genarch':     True,
             #whether to burn in each iteration
             'repeat_burn':      False,
             }, # <END> 'iterations'
@@ -470,36 +473,36 @@ params = {
         ####################################
         #### data-collection parameters ####
         ####################################
-        #'data': {
-        #    'sampling': {
-        #        #sampling scheme {'all', 'random', 'point', 'transect'}
-        #        'scheme':               'random',
-        #        #sample size at each point, for point & transect sampling
-        #        'n':                    1000,
-        #        #coords of collection points, for point sampling
-        #        'points':               None,
-        #        #coords of transect endpoints, for transect sampling
-        #        'transect_endpoints':   None,
-        #        #num points along transect, for transect sampling
-        #        'n_transect_points':    None,
-        #        #collection radius around points, for point & transect sampling
-        #        'radius':               None,
-        #        #when to collect data
-        #        'when':                 0,
-        #        #whether to save current Layers when data is collected
-        #        'include_landscape':    False,
-        #        #whether to include fixed loci in VCF files
-        #        'include_fixed_sites':  False,
-        #        },
-        #    'format': {
-        #        #format for genetic data {'vcf', 'fasta'}
-        #        'gen_format':           ['vcf', 'fasta'],
-        #        #format for vector geodata {'csv', 'shapefile', 'geojson'}
-        #        'geo_vect_format':      'csv',
-        #        #format for raster geodata {'geotiff', 'txt'}
-        #        'geo_rast_format':      'geotiff',
-        #        },
-        #    }, #<END> 'data'
+        'data': {
+            'sampling': {
+                #sampling scheme {'all', 'random', 'point', 'transect'}
+                'scheme':               'all',
+                #sample size at each point, for point & transect sampling
+                'n':                    1000,
+                #coords of collection points, for point sampling
+                'points':               None,
+                #coords of transect endpoints, for transect sampling
+                'transect_endpoints':   None,
+                #num points along transect, for transect sampling
+                'n_transect_points':    None,
+                #collection radius around points, for point & transect sampling
+                'radius':               None,
+                #when to collect data
+                'when':                 [499, 624, 749],
+                #whether to save current Layers when data is collected
+                'include_landscape':    False,
+                #whether to include fixed loci in VCF files
+                'include_fixed_sites':  True,
+                },
+            'format': {
+                #format for genetic data {'vcf', 'fasta'}
+                'gen_format':           ['vcf'],
+                #format for vector geodata {'csv', 'shapefile', 'geojson'}
+                'geo_vect_format':      'csv',
+                #format for raster geodata {'geotiff', 'txt'}
+                'geo_rast_format':      'geotiff',
+                },
+            }, #<END> 'data'
 
 
         ######################################
