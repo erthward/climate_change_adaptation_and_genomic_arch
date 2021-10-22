@@ -121,11 +121,11 @@ if os.getcwd().split('/')[1] == 'home':
                'ch2_adapt_clim_chng_genarch')
 # or else get filepaths on Savio
 else:
-    params_filepath=(('/global/home/users/drewhart/genarch_and_envchange/'
+    params_filepath=(('/global/scratch/users/drewhart/ch2/'
                       'climate_change_adaptation_and_genomic_arch/template_params.py'))
     # path to dir for output CSVs
-    #output_path = '/global/home/users/drewhart/genarch_and_envchange/output/batch'
-    output_path = '/global/scratch/users/drewhart/ch2/output/10-21-21/'
+    #output_path = '/global/scratch/users/drewhart/ch2/output/test_full_batch'
+    output_path = '/global/scratch/users/drewhart/ch2/output/test_full_batch/'
 
 #---------------------------------
 # read, tweak, and copy the params
@@ -403,7 +403,10 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         fit_data = []
 
         # create the model
-        mod = gnx.make_model(gnx.make_params_dict(copy_params))
+        mod = gnx.make_model(gnx.make_params_dict(copy_params), name=copy_params['model']['name'])
+
+        # coerce the iteration number to n_it (since we're using mod.walk instead of mod.run)
+        mod.it = n_it
 
         # save the original carrying capacity raster (to use in plotting later)
         orig_K = np.copy(mod.comm[0].K)
@@ -450,6 +453,7 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
                                                     linkage, genicity, n_it))
             # walk 1 step
             mod.walk(1, mode='main', verbose=mod_verbose)
+            print(mod.comm[0].Nt[-1], ' INDIVIDS')
 
             # store the fitness data for this timestep
             fit_data.append(np.mean(mod.comm[0]._get_fit()))
