@@ -2,3 +2,5 @@
 ./figs
 *.png
 __pycache__/*
+slurm*.out
+GNX_mod*/
