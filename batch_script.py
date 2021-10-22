@@ -33,7 +33,7 @@ import os
 # set number of iterations for each sim
 n_its = 3
 # set the different numbers of loci to use
-genicities = [5, 20, 100]
+genicities = [4, 20, 100]
 # set the different linkage levels to use
 linkages = ['independent', 'weak', 'strong']
 linkages_dict = {'independent': {'r_distr_alpha': 0.5,
