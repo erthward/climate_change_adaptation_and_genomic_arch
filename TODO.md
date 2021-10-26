@@ -1,8 +1,10 @@
 # NEXT STEPS
 
-- come up with and run statistical tests on directional distributions from
-  null vs non-null sims
-- come up with metrics and tests of response time and demographic effect size
+- debug KDE plot
+- debug so that each iteration gets saved (rather than only 1 iteration from each scenario,PID combo!)
+- finish writing up first pass analysis, then run and check out results, iterate back to setup
+
+# OTHER
 - calculate 2D phenotypic area occupied by the species b4 and after the shift event
 - need to standardize y axes on histograms, pop-size plots, fitness plots?
 - figure out why shift and null don't seem to be plotting together correctly
