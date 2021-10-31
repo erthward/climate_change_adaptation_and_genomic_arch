@@ -11,6 +11,7 @@ TODO:
     - code up more/better statistical tests
 '''
 
+from collections import Counter as C
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import geonomics as gnx
@@ -150,7 +151,7 @@ def check_recomb_rates(mod):
     observed_rates = {k:v/ga.recombinations._n for k,
                       v in C(np.concatenate(breakpoints)).items()}
     rates_arr = np.array([
-        rates[loc-0.5] if loc-0.5 in rates else 0 for loc in range(ga.L)])
+        observed_rates[loc-0.5] if loc-0.5 in observed_rates else 0 for loc in range(ga.L)])
     print("\n\n%s\n\nEXPECTED VS OBSERVED RATES\n\n%s\n\n" % (mod.name,
         '\n'.join([str(n) for n in [*zip(ga.recombinations._rates, rates_arr,
                                         ga.recombinations._rates-rates_arr)]])))
@@ -472,6 +473,7 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
 
         # run the model up to the env change event
         for t in range(change_T):
+        #for t in range(2):
 
             # keep printing the number of loci,
             # to help me track things while it's running
@@ -517,6 +519,7 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
 
         # run the model through the env change event
         for t in range(change_T, T):
+        #for t in range(2, 4):
 
             # keep printing the number of loci,
             # to help me track things while it's running
