@@ -137,6 +137,26 @@ if K_factor is not None:
     params['comm']['species']['spp_0']['init']['K_factor'] = K_factor
 
 
+#/\/\/\/\/\/\/\
+# debugging fns
+#\/\/\/\/\/\/\/
+
+def check_recomb_rates(mod):
+    spp = mod.comm[0]
+    ga = spp.gen_arch
+    breakpoints = [np.array([*ga.recombinations._get_seg_info(
+        0, event_key, np.array([0,1]))])[:,1] for event_key in range(
+            ga.recombinations._n)]
+    observed_rates = {k:v/ga.recombinations._n for k,
+                      v in C(np.concatenate(breakpoints)).items()}
+    rates_arr = np.array([
+        rates[loc-0.5] if loc-0.5 in rates else 0 for loc in range(ga.L)])
+    print("\n\n%s\n\nEXPECTED VS OBSERVED RATES\n\n%s\n\n" % (mod.name,
+        '\n'.join([str(n) for n in [*zip(ga.recombinations._rates, rates_arr,
+                                        ga.recombinations._rates-rates_arr)]])))
+
+
+
 #/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 # create output data structure
 #\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
@@ -404,6 +424,9 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
 
         # create the model
         mod = gnx.make_model(gnx.make_params_dict(copy_params), name=copy_params['model']['name'])
+
+        # check the recombination rates
+        check_recomb_rates(mod)
 
         # coerce the iteration number to n_it (since we're using mod.walk instead of mod.run)
         mod.it = n_it
