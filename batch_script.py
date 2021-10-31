@@ -142,7 +142,7 @@ if K_factor is not None:
 # debugging fns
 #\/\/\/\/\/\/\/
 
-def check_recomb_rates(mod):
+def check_recomb_rates(mod, print_it=False):
     spp = mod.comm[0]
     ga = spp.gen_arch
     breakpoints = [np.array([*ga.recombinations._get_seg_info(
@@ -152,7 +152,10 @@ def check_recomb_rates(mod):
                       v in C(np.concatenate(breakpoints)).items()}
     rates_arr = np.array([
         observed_rates[loc-0.5] if loc-0.5 in observed_rates else 0 for loc in range(ga.L)])
-    print("\n\n%s\n\nEXPECTED VS OBSERVED RATES\n\n%s\n\n" % (mod.name,
+    assert np.allclose(ga.recombinations._rates-rates_arr, rtol=0.01), ("Not "
+        "all observed recomb rates are within 1% of expected!")
+    if print_it:
+        print("\n\n%s\n\nEXPECTED VS OBSERVED RATES\n\n%s\n\n" % (mod.name,
         '\n'.join([str(n) for n in [*zip(ga.recombinations._rates, rates_arr,
                                         ga.recombinations._rates-rates_arr)]])))
 
