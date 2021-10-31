@@ -31,7 +31,7 @@ import os
 # main params
 #------------
 # set number of iterations for each sim
-n_its = 2
+n_its = 1
 # set the different numbers of loci to use
 genicities = [4, 20, 100]
 # set the different linkage levels to use
@@ -347,10 +347,13 @@ def store_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
 
 def set_params(params, linkage, genicity, nullness):
     copy_params = copy.deepcopy(params)
+    #create random number ID, so that directories don't get overwritten
+    rand_id = int(np.random.uniform()*1e7)
+
     # set the model name (so that it saves data correctly in separate dirs)
-    model_name = ('_%s'.join([nullness, linkage, str(genicity), str(n_it)]) +
+    model_name = ('_%s'.join([nullness, linkage, str(genicity), str(n_it), str(rand_id)]) +
                    "PID-%s" % pid)
-    model_name = model_name % ('L', 'G', 'its')
+    model_name = model_name % ('L', 'G', 'its', 'randID')
     if debug_verbose:
         print('\n%sNOW RUNNING MODEL %s...\n' % (script_println_header,
                                                model_name))
@@ -401,6 +404,7 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
     '''
     # get the correct params for this sim
     copy_params = set_params(params, linkage, genicity, nullness)
+    assert str(pid) in copy_params['model']['name'], ('PID MISSING')
 
     # set up stats lists to be returned
     delta_Nt = []
@@ -424,12 +428,13 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
 
         # create the model
         mod = gnx.make_model(gnx.make_params_dict(copy_params), name=copy_params['model']['name'])
+        assert 'unnamed' not in mod.name, 'STILL UNNAMED!'
 
         # check the recombination rates
         check_recomb_rates(mod)
 
         # coerce the iteration number to n_it (since we're using mod.walk instead of mod.run)
-        mod.it = n_it
+        #mod.it = n_it
 
         # save the original carrying capacity raster (to use in plotting later)
         orig_K = np.copy(mod.comm[0].K)

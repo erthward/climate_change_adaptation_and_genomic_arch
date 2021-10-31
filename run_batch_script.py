@@ -1,5 +1,5 @@
 def run_batch_script(i):
-    print('STARTING BATCH NUMBER %i...\n' % i)
+    #print('STARTING BATCH NUMBER %i...\n' % i)
     import os
     #os.system("python batch_script.py")
     os.system(("python /global/scratch/users/drewhart/ch2/"
