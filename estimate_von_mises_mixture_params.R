@@ -1,5 +1,9 @@
 library(movMF) # von Mises mix dists
 library(rotations) # has von Mises CDF fn
+library(circular) # has fns for working with circular data
+
+# params to control behavior
+plot.circ = F
 
 # TODO:
 
@@ -14,20 +18,23 @@ par(mfrow=c(3,2))
 
 # read data from some of my simulation output
 data <- read.csv('../output/output/output_PID-182509_DIR_short.csv')
-non <- data[data$genicity == 100 &
-           data$linkage == 'independent' &
-           data$neutrality == 'nonneut' &
-           data$nullness == 'non-null' &
-           data$it == 0, ]$dir
-null <- data[data$genicity == 100 &
-           data$linkage == 'independent' &
-           data$neutrality == 'nonneut' &
-           data$nullness == 'null' &
-           data$it == 0, ]$dir
 
-# drop NAs
-non <- non[!is.na(non)]
-null <- null[!is.na(null)]
+# fn to read the data for a given set of values of the columns
+get.subdf.data <- function(df, genicity, linkage, neutrality, nullness, it){
+    subdf.data <- data[data$genicity == genicity &
+                 data$linkage == linkage &
+                 data$neutrality == neutrality &
+                 data$nullness == nullness &
+                 data$it == it, ]$dir
+    # drop NAs
+    subdf.data <- subdf.data[!is.na(subdf.data)]
+    return(subdf.data)
+}
+
+
+
+non <- get.subdf.data(df, 100, 'independent', 'nonneut', 'non-null', 0)
+null <- get.subdf.data(df, 100, 'independent', 'nonneut', 'null', 0)
 
 hist(null, breaks=200, main='null')
 hist(non, breaks=200, main='non')
@@ -100,10 +107,8 @@ theta <- d$theta
 alpha <- d$alpha
 
 # draw random variates from the fitted dist and convert back to angs in degrees
-rand <- rmovMF(10000, theta, alpha)
-hist(unit.circ.coords.2.angs(rand), breaks=200, main='null, fitted')
-# plot circular KDE of the random variates
-plot.circular.kde(rand)
+null.rand <- rmovMF(10000, theta, alpha)
+hist(unit.circ.coords.2.angs(null.rand), breaks=200, main='null, fitted')
 
 # and for non-null
 d <- movMF(non.coords, 4)
@@ -113,11 +118,110 @@ theta <- d$theta
 alpha <- d$alpha
 
 # draw random variates from the fitted dist and convert back to angs in degrees
-rand <- rmovMF(10000, theta, alpha)
-hist(unit.circ.coords.2.angs(rand), breaks=200, main='non, fitted')
-# plot circular KDE of the random variates
-plot.circular.kde(rand)
+non.rand <- rmovMF(10000, theta, alpha)
+hist(unit.circ.coords.2.angs(non.rand), breaks=200, main='non, fitted')
 
+
+# plot circular KDEs of the random variates
+if (plot.circ){
+    plot.circular.kde(null.rand)
+    plot.circular.kde(non.rand)
+}
+
+
+
+##############################
+##############################
+
+# a main function, to be called from Python, return params of 4-dist vM mixture dist
+
+fit.vM.mix.dist <- function(angs, nullness, n.mix=4, plot.it=F, plot.circ=F){
+    # drop NAs
+    angs <- angs[!is.na(angs)]
+
+     # convert to rads, if necessary
+    if (any(ceiling(log10(abs(range(angs)))) > 1)){
+        print("CONVERTING FROM DEGREES TO RADIANS.")
+        angs <- angs/360*2*pi
+    }
+   
+    # convert to unit-circle coords
+    coords <- angs.2.unit.circ.coords(angs)
+
+    # fit n.mix-part von Mises mixture dists
+    d <- movMF(coords, n.mix)
+    mu <- atan2(d$theta[,2], d$theta[,1])
+    kappa <- sqrt(rowSums(d$theta^2))
+    theta <- d$theta
+    alpha <- d$alpha
+
+    # plot fitted dist, if requested
+    if (plot.it){ 
+        if (nullness=='null'){
+            color = '#79c2d9' # blue
+        } else {
+            color = '#c4626e' # red
+        }
+        # draw random variates from the fitted dist and convert back to angs in degrees
+        rand <- rmovMF(10000, theta, alpha)
+        hist(unit.circ.coords.2.angs(rand), breaks=200, main='null, fitted')
+        if (plot.circ){
+            # plot circular KDE of the random variates
+            plot.circular.kde(rand)
+        }
+    }
+
+    # return params
+    params = list(mu=mu, kappa=kappa, alpha=alpha)
+    return(params)
+}
+
+
+
+# get list of unique values for each of the non-data columns in the df
+uniques <- apply(data[,!(colnames(data) %in% c("dir"))], 2, unique)
+
+# set up an output list to store results
+output = list('genicity'=c(), 'linkage'=c(), 'nullness'=c(), 'neutrality'=c(), 'it'=c(),
+              'mu.1'=c(), 'mu.2'=c(), 'mu.3'=c(), 'mu.4'=c(),
+              'kappa.1'=c(), 'kappa.2'=c(), 'kappa.3'=c(), 'kappa.4'=c(),
+              'alpha.1'=c(), 'alpha.2'=c(), 'alpha.3'=c(), 'alpha.4'=c())
+
+# loop over all scenarios
+for (genicity in uniques[['genicity']]){
+    for (linkage in uniques[['linkage']]){
+        for (nullness in uniques[['nullness']]){
+            for (neutrality in uniques[['neutrality']]){
+                for (it in uniques[['it']]){
+                    angs <- get.subdf.data(data, genicity, linkage, neutrality, nullness, it)
+                    # only analyze if there are multiple rows' worth of data
+                    if (length(angs) > 1){
+                        params <- fit.vM.mix.dist(angs, nullness, n.mix=4)
+                        # save all the data
+                        for (param in names(params)){
+                            for (num in seq(1,4)){
+                                item.name = paste(param, num, sep='.')
+                                output[[item.name]] <- c(output[[item.name]], params[[param]][num])
+                            }
+                        }
+                        output[['genicity']] <- c(output[['genicity']], genicity) 
+                        output[['linkage']] <- c(output[['linkage']], linkage) 
+                        output[['nullness']] <- c(output[['nullness']], nullness) 
+                        output[['neutrality']] <- c(output[['neutrality']], neutrality) 
+                        output[['it']] <- c(output[['it']], it) 
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+# convert output to df
+output.df = data.frame(output)
+
+# write output.df to disk
+write.csv(output.df, 'TEST_output.csv', row.names=F)
 
 
 ##############################
