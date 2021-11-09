@@ -1,6 +1,6 @@
 library(movMF) # von Mises mix dists
-library(rotations) # has von Mises CDF fn
-library(circular) # has fns for working with circular data
+#library(rotations) # has von Mises CDF fn
+#library(circular) # has fns for working with circular data
 
 # params to control behavior
 plot.circ = F
@@ -139,13 +139,7 @@ fit.vM.mix.dist <- function(angs, nullness, n.mix=4, plot.it=F, plot.circ=F){
     # drop NAs
     angs <- angs[!is.na(angs)]
 
-     # convert to rads, if necessary
-    if (any(ceiling(log10(abs(range(angs)))) > 1)){
-        print("CONVERTING FROM DEGREES TO RADIANS.")
-        angs <- angs/360*2*pi
-    }
-   
-    # convert to unit-circle coords
+    # convert angs (in degrees) to unit-circle coords
     coords <- angs.2.unit.circ.coords(angs)
 
     # fit n.mix-part von Mises mixture dists
