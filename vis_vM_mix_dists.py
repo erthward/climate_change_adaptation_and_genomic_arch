@@ -7,9 +7,10 @@ from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 
 # TODO:
-    # now wrap the making of a single null/non-null comparison in a fn
-    # then make a 3x3 plot matrix, loop over the scenarios, and plot comparison
-    # example of each (for non-neutral loci only)
+    # debug the grid plots:
+        # just bc little data???
+        # something fundamentally screwy???
+        # do I need to keep my sort_multicol_groups fn?
 
     # then get R script running across whole dir output files (~3.4 GB) on
     # savio
@@ -26,13 +27,36 @@ from matplotlib.collections import PatchCollection
     # then produce a single, 3x3 plot matrix depicting the null and non-null
     # characteristic dists across all scenarios!
 
-# load data
-dat = pd.read_csv('./TEST_output.csv', na_filter=False)
+
+def sort_multicol_groups(arr, sortcols, n_groups):
+    """
+    sort rows of an array in column-groups across, based on the order that
+    sorts the numbers in the sortcols
+
+    NOTE: n_groups indicates the TOTAL number of col groups, including the
+          sortcols' group!
+
+    NOTE: THE SECOND LINE OF CODE MAKES THE HARD ASSUMPTION THAT THE SORTCOLS
+          ARE THE LEFTMOST COL GROUP IN THE ARRAY!
+    """
+    # get list of the indices needed to sort the sortcols' vals in each row
+    sortcols_idxs = np.stack([np.argsort(arr[i,
+                                    sortcols]) for i in range(arr.shape[0])])
+    # get the list of the indices needed to sort all cols' vals in each row,
+    # based on the sortcols
+    sort_idxs = np.hstack([sortcols_idxs] + [
+                        sortcols_idxs+len(sortcols) for _ in range(n_groups-1)])
+
+    # sort the array using the sort_idxs
+    sorted = np.array([arr[np.repeat(i, len(sortcols)*n_groups),
+                           sort_idxs[i, :]] for i in range(arr.shape[0])])
+
+    return sorted
 
 
 def vis_vM_mix_dist(row=None, mu=None, kappa=None, alpha=None, nullness=None,
-                    plot_type='circ', to_deg=True,
-                    on_curr_ax=False, n_rand=10000):
+                    plot_type='circ', to_deg=True, plot_dirlabels=False,
+                    on_curr_ax=False, return_axlims=True, n_rand=10000):
     """
     Visualize a von Mises mixture distribution
 
@@ -52,7 +76,10 @@ def vis_vM_mix_dist(row=None, mu=None, kappa=None, alpha=None, nullness=None,
         mu = [*row[-12:-8]]
         kappa = [*row[-8:-4]]
         alpha = [*row[-4:]]
-        nullness = row['nullness']
+        if nullness is None:
+            nullness = row['nullness']
+        else:
+            pass
 
     # get the current axes, for plotting, if requested
     if on_curr_ax:
@@ -104,9 +131,9 @@ def vis_vM_mix_dist(row=None, mu=None, kappa=None, alpha=None, nullness=None,
     # plot it
     if plot_type == 'hist':
         if to_deg:
-            plt.hist(plot_vals_deg, bins=200, color=col)
+            plt.hist(plot_vals_deg, bins=200, color=col, alpha=0.6)
         else:
-            plt.hist(plot_vals, bins=200, color=col)
+            plt.hist(plot_vals, bins=200, color=col, alpha=0.6)
 
     elif plot_type == 'circ':
         # NOTE: need to rotate the angles artificially in order to line up
@@ -141,9 +168,9 @@ def vis_vM_mix_dist(row=None, mu=None, kappa=None, alpha=None, nullness=None,
             ax.add_collection(pc)
             #ax.plot(xs, ys, color=col)
         lim_val = 1.1*np.max(np.abs(np.concatenate((xs, ys, ref_xs, ref_ys))))
-        minmax_xy = [-1*lim_val, lim_val]
-        plt.xlim(minmax_xy)
-        plt.ylim(minmax_xy)
+        axlims = [-1*lim_val, lim_val]
+        plt.xlim(axlims)
+        plt.ylim(axlims)
         # get rid of the ticks and label cardinal directions instead
         ax.set_xticks([])
         ax.set_xticklabels([])
@@ -151,18 +178,117 @@ def vis_vM_mix_dist(row=None, mu=None, kappa=None, alpha=None, nullness=None,
         ax.set_yticklabels([])
         xlims = ax.get_xlim()
         ylims = ax.get_ylim()
-        if not on_curr_ax:
-            plt.text(0+0.03*xlims[0], 1.05*ylims[1], 'N', size=18)
-            plt.text(1.05*xlims[1], 0+0.05*ylims[0], 'E', size=18)
-            plt.text(0+0.03*xlims[0], 1.13*ylims[0], 'S', size=18)
-            plt.text(1.15*xlims[0], 0+0.05*ylims[0], 'W', size=18)
+        if not on_curr_ax or plot_dirlabels:
+            plt.text(0+0.03*xlims[0], 1.05*ylims[1], 'N', size=18, color='gray')
+            plt.text(1.05*xlims[1], 0+0.05*ylims[0], 'E', size=18, color='gray')
+            plt.text(0+0.03*xlims[0], 1.13*ylims[0], 'S', size=18, color='gray')
+            plt.text(1.15*xlims[0], 0+0.05*ylims[0], 'W', size=18, color='gray')
 
-    return ax
+    if return_axlims:
+        return axlims
+    else:
+        return
 
+
+def make_vM_mix_dist_comparison_grid(df, neutrality='nonneut', it=None,
+                                     labelsize=16, plot_type='circ'):
+    """
+    Visualize the null/non-null overlain von Mises mixture distributions
+    across all 9 simulation scenarios
+
+    NOTE: just defaults to only non-neutral loci for now
+    """
+    # list to store axlims
+    axlims = []
+    # make the gridded fig
+    fig = plt.figure()
+    # counter to keep track of plot number
+    plt_num = 1
+    for linkage in df.linkage.unique():
+        for genicity in df.genicity.unique():
+            # make the next axis instance
+            ax = fig.add_subplot(3, 3, plt_num)
+
+            # manage row and column labels
+            ax.set_xlabel('')
+            ax.set_ylabel('')
+            ax.set_title('')
+            col_labs = dict(zip([1,2,3],
+                                ['genicity: %i' % g for g in [4, 20, 100]]))
+            row_labs = dict(zip([1, 4, 7],
+                                 ['linkage: %s' % l for l in ['independent',
+                                                             'weak',
+                                                             'strong']]))
+            if plt_num in [1, 2, 3]:
+                ax.set_title(col_labs[plt_num], size=labelsize)
+            if plt_num in [1, 4, 7]:
+                ax.set_ylabel(row_labs[plt_num], fontsize=labelsize)
+
+            # subset the df
+            subdf = df[(df.linkage == linkage) &
+                       (df.genicity == genicity) &
+                       (df.neutrality == neutrality)]
+            # subset further, by nullness
+            for nullness in ['null', 'non-null']:
+                nullness_subdf = subdf[subdf.nullness == nullness]
+                # subset for only a certain it, if requested
+                if it is not None:
+                    plotdf = nullness_subdf[nullness_subdf.it == it]
+                # otherwise, get means across all its
+                else:
+                    # TODO!
+                    plotdf = pd.DataFrame(nullness_subdf.mean(axis=0)).T
+                # plot this df's data
+                assert len(plotdf) == 1, (">1 row found for this plot!\n%s" %(
+                                                                   str(plotdf)))
+                print(linkage, genicity, nullness)
+                print(nullness_subdf)
+                print(plotdf)
+                print('\n' + '='*80 + '\n')
+                curr_axlims = vis_vM_mix_dist(plotdf.iloc[0,:],
+                                              nullness=nullness,
+                                              on_curr_ax=True,
+                                              plot_type=plot_type)
+                axlims.append(curr_axlims)
+
+
+            # after overplotting null & non-null, increment to next plot number
+            plt_num += 1
+
+    # get max axlims and set for all axes, and add direction labels
+    abs_axlim_vals = np.array([lims[1] for lims in axlims])
+    max_axlims_idx = np.where(abs_axlim_vals == np.max(abs_axlim_vals))[0][0]
+    univ_axlims = axlims[max_axlims_idx]
+    for ax in fig.get_axes():
+        ax.set_xlim(univ_axlims)
+        ax.set_ylim(univ_axlims)
+        # dir labels 
+        ax.text(0, 1, 'N', size=18, color='gray')
+        ax.text(1, 0, 'E', size=18, color='gray')
+        ax.text(0, -1, 'S', size=18, color='gray')
+        ax.text(-1, 0, 'W', size=18, color='gray')
+
+    # show and return fig
+    plt.show()
+    return fig
+
+
+# load data
+df = pd.read_csv('./TEST_output.csv', na_filter=False)
+
+# resort the params' columns so that vM mix dists' params are listed across
+# the rows in order of increasing mu/loc param, so that 
+# the params' values can then be averaged down the cols
+# NOTE: sortcols are [0,1,2,3] because they're expressed with reference to the
+#       input array, not the DataFrame
+#df.iloc[:,5:] = sort_multicol_groups(df.iloc[:, 5:].values, [0,1,2,3], 3)
+
+# plot the full grid
+grid_fig = make_vM_mix_dist_comparison_grid(df, plot_type='circ', it=None)
+#grid_fig = make_vM_mix_dist_comparison_grid(df, plot_type='hist', it=1)
 
 # plot an example!
-row = dat.iloc[50,:] # null
-vis_vM_mix_dist(row)
-row = dat.iloc[49,:] # non-null
-vis_vM_mix_dist(row, on_curr_ax=True)
-plt.show()
+#row = df.iloc[50,:] # null
+#vis_vM_mix_dist(row)
+#row = df.iloc[49,:] # non-null
+

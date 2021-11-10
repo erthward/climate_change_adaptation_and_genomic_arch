@@ -1,9 +1,9 @@
-library(movMF) # von Mises mix dists
-#library(rotations) # has von Mises CDF fn
 #library(circular) # has fns for working with circular data
 
 # params to control behavior
-plot.circ = F
+plot.circ = F # include circular plots? (BROKEN FOR NOW, SO FALSE!)
+plot.examp = F # whether or not to plot the random example hists
+
 
 # TODO:
 
@@ -21,23 +21,29 @@ data <- read.csv('../output/output/output_PID-182509_DIR_short.csv')
 
 # fn to read the data for a given set of values of the columns
 get.subdf.data <- function(df, genicity, linkage, neutrality, nullness, it){
+    # make sure genicity is a numeric, not a string
+    genicity <- as.numeric(genicity)
     subdf.data <- data[data$genicity == genicity &
                  data$linkage == linkage &
                  data$neutrality == neutrality &
                  data$nullness == nullness &
                  data$it == it, ]$dir
     # drop NAs
+    print(paste(genicity, linkage, neutrality, nullness, it))
+    print(length(subdf.data))
     subdf.data <- subdf.data[!is.na(subdf.data)]
+    print(length(subdf.data))
     return(subdf.data)
 }
 
 
+if (plot.examp){
+    non <- get.subdf.data(df, 100, 'independent', 'nonneut', 'non-null', 0)
+    null <- get.subdf.data(df, 100, 'independent', 'nonneut', 'null', 0)
 
-non <- get.subdf.data(df, 100, 'independent', 'nonneut', 'non-null', 0)
-null <- get.subdf.data(df, 100, 'independent', 'nonneut', 'null', 0)
-
-hist(null, breaks=200, main='null')
-hist(non, breaks=200, main='non')
+    hist(null, breaks=200, main='null')
+    hist(non, breaks=200, main='non')
+}
 
 # express angs (in degs) as x,y coords on the unit circle (for movMF)
 ang.2.unit.circ.coord <- function(ang){
@@ -49,8 +55,11 @@ angs.2.unit.circ.coords <- function(angs){
     coords <- t(apply(as.matrix(angs), MARGIN=1, FUN=ang.2.unit.circ.coord))
     return(coords)
 }
+
+if (plot.examp){
 non.coords <- angs.2.unit.circ.coords(non)
 null.coords <- angs.2.unit.circ.coords(null)
+}
 
 
 # fn to rotate [-180,180] data to [0,360] or vice versa
@@ -98,36 +107,38 @@ plot.circular.kde <- function(angs){
     text(0.8,0,"E",cex=2); text(-0.8,0,"W",cex=2)
 }
 
-# fit 4-part von Mises mixture dists
-# for null
-d <- movMF(null.coords, 4)
-mu <- atan2(d$theta[,2], d$theta[,1])
-kappa <- sqrt(rowSums(d$theta^2))
-theta <- d$theta
-alpha <- d$alpha
 
-# draw random variates from the fitted dist and convert back to angs in degrees
-null.rand <- rmovMF(10000, theta, alpha)
-hist(unit.circ.coords.2.angs(null.rand), breaks=200, main='null, fitted')
-
-# and for non-null
-d <- movMF(non.coords, 4)
-mu <- atan2(d$theta[,2], d$theta[,1])
-kappa <- sqrt(rowSums(d$theta^2))
-theta <- d$theta
-alpha <- d$alpha
-
-# draw random variates from the fitted dist and convert back to angs in degrees
-non.rand <- rmovMF(10000, theta, alpha)
-hist(unit.circ.coords.2.angs(non.rand), breaks=200, main='non, fitted')
-
-
-# plot circular KDEs of the random variates
-if (plot.circ){
-    plot.circular.kde(null.rand)
-    plot.circular.kde(non.rand)
+if (plot.examp){
+    # fit 4-part von Mises mixture dists
+    # for null
+    d <- movMF(null.coords, 4)
+    mu <- atan2(d$theta[,2], d$theta[,1])
+    kappa <- sqrt(rowSums(d$theta^2))
+    theta <- d$theta
+    alpha <- d$alpha
+    
+    # draw random variates from the fitted dist and convert back to angs in degrees
+    null.rand <- rmovMF(10000, theta, alpha)
+    hist(unit.circ.coords.2.angs(null.rand), breaks=200, main='null, fitted')
+    
+    # and for non-null
+    d <- movMF(non.coords, 4)
+    mu <- atan2(d$theta[,2], d$theta[,1])
+    kappa <- sqrt(rowSums(d$theta^2))
+    theta <- d$theta
+    alpha <- d$alpha
+    
+    # draw random variates from the fitted dist and convert back to angs in degrees
+    non.rand <- rmovMF(10000, theta, alpha)
+    hist(unit.circ.coords.2.angs(non.rand), breaks=200, main='non, fitted')
+    
+    
+    # plot circular KDEs of the random variates
+    if (plot.circ){
+        plot.circular.kde(null.rand)
+        plot.circular.kde(non.rand)
+    }
 }
-
 
 
 ##############################
@@ -187,6 +198,7 @@ for (genicity in uniques[['genicity']]){
         for (nullness in uniques[['nullness']]){
             for (neutrality in uniques[['neutrality']]){
                 for (it in uniques[['it']]){
+                    print(paste(genicity, linkage, neutrality, nullness, it))
                     angs <- get.subdf.data(data, genicity, linkage, neutrality, nullness, it)
                     # only analyze if there are multiple rows' worth of data
                     if (length(angs) > 1){
