@@ -152,7 +152,7 @@ def check_recomb_rates(mod, print_it=False):
                       v in C(np.concatenate(breakpoints)).items()}
     rates_arr = np.array([
         observed_rates[loc-0.5] if loc-0.5 in observed_rates else 0 for loc in range(ga.L)])
-    assert np.allclose(ga.recombinations._rates-rates_arr, rtol=0.01), ("Not "
+    assert np.allclose(ga.recombinations._rates, rates_arr, rtol=0.01), ("Not "
         "all observed recomb rates are within 1% of expected!")
     if print_it:
         print("\n\n%s\n\nEXPECTED VS OBSERVED RATES\n\n%s\n\n" % (mod.name,
@@ -507,7 +507,7 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         # calculate the min and max x and y coords of the population again
         b4_xs = mod.comm[0]._get_x()
         b4_ys = mod.comm[0]._get_y()
-        min_x_b4, max_x_b4, min_y_b4, max_y_b4 = [min(b4_xs), max(b4_xs),
+        min_x_b4_val, max_x_b4_val, min_y_b4_val, max_y_b4_val = [min(b4_xs), max(b4_xs),
                                                   min(b4_ys), max(b4_ys)]
 
         # add the pre-change population to the fig,
@@ -553,7 +553,7 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         # calculate the min and max x and y coords of the population again
         af_xs = mod.comm[0]._get_x()
         af_ys = mod.comm[0]._get_y()
-        min_x_af, max_x_af, min_y_af, max_y_af = [min(af_xs), max(af_xs),
+        min_x_af_val, max_x_af_val, min_y_af_val, max_y_af_val = [min(af_xs), max(af_xs),
                                                   min(af_ys), max(af_ys)]
 
 
@@ -577,14 +577,14 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         std_dir_neut.append(dir_stats['std_neut'])
         std_dir_nonneut.append(dir_stats['std_nonneut'])
 
-        min_x_b4.append(min_x_b4)
-        max_x_b4.append(max_x_b4)
-        min_y_b4.append(min_y_b4)
-        max_y_b4.append(max_y_b4)
-        min_x_af.append(min_x_af)
-        max_x_af.append(max_x_af)
-        min_y_af.append(min_y_af)
-        max_y_af.append(max_y_af)
+        min_x_b4.append(min_x_b4_val)
+        max_x_b4.append(max_x_b4_val)
+        min_y_b4.append(min_y_b4_val)
+        max_y_b4.append(max_y_b4_val)
+        min_x_af.append(min_x_af_val)
+        max_x_af.append(max_x_af_val)
+        min_y_af.append(min_y_af_val)
+        max_y_af.append(max_y_af_val)
 
         dist_stats = stats_output['dist']
         neut_nonneut_disttest_pval.append(dist_stats['pval'])
