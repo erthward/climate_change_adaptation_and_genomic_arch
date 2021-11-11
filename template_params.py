@@ -116,9 +116,9 @@ params = {
                         #of files for each stepwise change in event
                         'change_rast':              af,
                         #starting timestep of event
-                        'start_t':          500,
+                        'start_t':          2500,
                         #ending timestep of event
-                        'end_t':            749,
+                        'end_t':            2749,
                         #number of stepwise changes in event
                         'n_steps':          50,
                         }, # <END> event 0

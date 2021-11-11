@@ -70,9 +70,9 @@ cts_table_list = [0] * (2 * len(linkages) * len(genicities))
 # params to reduce runtime for debugging/development
 #---------------------------------------------------
 # set time when environmental change begins
-change_T = 500
+change_T = 2500
 # set total time over which environmental change takes place
-T = 750
+T = 2750
 # calc length of environmental change period
 deltaT_env_change = T - change_T
 # reset the K_factor (if desired)
@@ -423,6 +423,15 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
     kappa_dir_nonneut = []
     std_dir_neut = []
     std_dir_nonneut = []
+    min_x_b4 = []
+    max_x_b4 = []
+    min_y_b4 = []
+    max_y_b4 = []
+    min_x_af = []
+    max_x_af = []
+    min_y_af = []
+    max_y_af = []
+
 
     # loop through the iterations
     for n_it in range(n_its):
@@ -495,6 +504,12 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         mean_Nt_b4 = np.mean(mod.comm[0].Nt[-deltaT_env_change:])
         mean_fit_b4 = np.mean(fit_data[-deltaT_env_change:])
 
+        # calculate the min and max x and y coords of the population again
+        b4_xs = mod.comm[0]._get_x()
+        b4_ys = mod.comm[0]._get_y()
+        min_x_b4, max_x_b4, min_y_b4, max_y_b4 = [min(b4_xs), max(b4_xs),
+                                                  min(b4_ys), max(b4_ys)]
+
         # add the pre-change population to the fig,
         # if this is the first iteration
         if n_it == 0:
@@ -522,7 +537,6 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
 
         # run the model through the env change event
         for t in range(change_T, T):
-        #for t in range(2, 4):
 
             # keep printing the number of loci,
             # to help me track things while it's running
@@ -535,6 +549,12 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
 
             # store the fitness value
             fit_data.append(np.mean(mod.comm[0]._get_fit()))
+
+        # calculate the min and max x and y coords of the population again
+        af_xs = mod.comm[0]._get_x()
+        af_ys = mod.comm[0]._get_y()
+        min_x_af, max_x_af, min_y_af, max_y_af = [min(af_xs), max(af_xs),
+                                                  min(af_ys), max(af_ys)]
 
 
         # calculate the mean vars after the shift, then the diffs
@@ -556,6 +576,15 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         kappa_dir_nonneut.append(dir_stats['kappa_nonneut'])
         std_dir_neut.append(dir_stats['std_neut'])
         std_dir_nonneut.append(dir_stats['std_nonneut'])
+
+        min_x_b4.append(min_x_b4)
+        max_x_b4.append(max_x_b4)
+        min_y_b4.append(min_y_b4)
+        max_y_b4.append(max_y_b4)
+        min_x_af.append(min_x_af)
+        max_x_af.append(max_x_af)
+        min_y_af.append(min_y_af)
+        max_y_af.append(max_y_af)
 
         dist_stats = stats_output['dist']
         neut_nonneut_disttest_pval.append(dist_stats['pval'])
@@ -648,7 +677,9 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
     return (delta_Nt, delta_fit, neut_nonneut_dirtest_pval,
             neut_nonneut_disttest_pval, mean_dist_neut, mean_dist_nonneut,
             mu_dir_neut, mu_dir_nonneut, kappa_dir_neut, kappa_dir_nonneut,
-            std_dir_neut, std_dir_nonneut)
+            std_dir_neut, std_dir_nonneut,
+            min_x_b4, max_x_b4, min_y_b4, max_y_b4,
+            min_x_af, max_x_af, min_y_af, max_y_af)
 
 
 # gather gene flow data into DataFrames
@@ -707,6 +738,14 @@ std_dir_neut_col = []
 std_dir_nonneut_col = []
 mean_dist_neut_col = []
 mean_dist_nonneut_col = []
+min_x_b4_col = []
+max_x_b4_col = []
+min_y_b4_col = []
+max_y_b4_col = []
+min_x_af_col = []
+max_x_af_col = []
+min_y_af_col = []
+max_y_af_col = []
 
 
 cts_table_list_idx = 0
@@ -720,7 +759,10 @@ for genicity in genicities:
         (delta_Nt, delta_fit, dirtest_pval,
          disttest_pval, mean_dist_neut, mean_dist_nonneut,
          mu_dir_neut, mu_dir_nonneut, kappa_dir_neut, kappa_dir_nonneut,
-         std_dir_neut, std_dir_nonneut) = run_sim('non-null', linkage,
+         std_dir_neut, std_dir_nonneut,
+         min_x_b4, max_x_b4, min_y_b4, max_y_b4,
+         min_x_af, max_x_af, min_y_af, max_y_af) = run_sim(
+                                                  'non-null', linkage,
                                                   genicity, n_its,
                                                   params, output,
                                                   cts_table_list,
@@ -734,7 +776,10 @@ for genicity in genicities:
          disttest_pval_null, mean_dist_neut_null,
          mean_dist_nonneut_null, mu_dir_neut_null,
          mu_dir_nonneut_null, kappa_dir_neut_null, kappa_dir_nonneut_null,
-         std_dir_neut_null, std_dir_nonneut_null) = run_sim('null', linkage,
+         std_dir_neut_null, std_dir_nonneut_null,
+         min_x_b4_null, max_x_b4_null, min_y_b4_null, max_y_b4_null,
+         min_x_af_null, max_x_af_null, min_y_af_null, max_y_af_null) = run_sim(
+                                                  'null', linkage,
                                                   genicity, n_its,
                                                   params, output,
                                                   cts_table_list,
@@ -776,6 +821,25 @@ for genicity in genicities:
         mean_dist_neut_col.extend(mean_dist_neut_null)
         mean_dist_nonneut_col.extend(mean_dist_nonneut)
         mean_dist_nonneut_col.extend(mean_dist_nonneut_null)
+        min_x_b4_col.extend(min_x_b4)
+        min_x_b4_col.extend(min_x_b4_null)
+        min_y_b4_col.extend(min_y_b4)
+        min_y_b4_col.extend(min_y_b4_null)
+        max_x_b4_col.extend(max_x_b4)
+        max_x_b4_col.extend(max_x_b4_null)
+        max_y_b4_col.extend(max_y_b4)
+        max_y_b4_col.extend(max_y_b4_null)
+        min_x_af_col.extend(min_x_af)
+        min_x_af_col.extend(min_x_af_null)
+        min_y_af_col.extend(min_y_af)
+        min_y_af_col.extend(min_y_af_null)
+        max_x_af_col.extend(max_x_af)
+        max_x_af_col.extend(max_x_af_null)
+        max_y_af_col.extend(max_y_af)
+        max_y_af_col.extend(max_y_af_null)
+
+
+
 
         assert (len(linkage_col) == len(genicity_col) == len(nullness_col) ==
                 len(delta_Nt_col) == len(delta_fit_col))
@@ -797,6 +861,14 @@ df = pd.DataFrame({'linkage': linkage_col,
                    'mean_dist_neut': mean_dist_neut_col,
                    'mean_dist_nonneut': mean_dist_nonneut_col,
                    'dist_pval': dir_pval_col,
+                   'min_x_b4': min_x_b4_col,
+                   'min_y_b4': min_y_b4_col,
+                   'max_x_b4': max_x_b4_col,
+                   'max_y_b4': max_y_b4_col,
+                   'min_x_af': min_x_af_col,
+                   'min_y_af': min_y_af_col,
+                   'max_x_af': max_x_af_col,
+                   'max_y_af': max_y_af_col,
                   })
 
 df_dir = make_stat_df('dir', output)
@@ -882,7 +954,7 @@ for name, fig in fig_time.items():
     fig.savefig((output_path + '/fig_time_' + name + '_PID-%s' % pid +
                  '.png'), format='png', dpi=1000)
 fig_hist.savefig(output_path + '/fig_hist' + '_PID-%s' % pid + '.png',
-	         format='png', dpi=1000)
+                 format='png', dpi=1000)
 
 
 
