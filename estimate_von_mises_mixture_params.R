@@ -1,3 +1,4 @@
+library(movMF) # for fitting mixtures of von Mises dists
 #library(circular) # has fns for working with circular data
 
 # params to control behavior
@@ -7,17 +8,15 @@ plot.examp = F # whether or not to plot the random example hists
 
 # TODO:
 
-        # figure out circ KDE plot
-
         # decide if/how to do KS testing...
 
-        # figure out how to call R function from py script on savio, get params back
-        # or if to just do after all sims are done instead
-
-par(mfrow=c(3,2))
+if (plot.examp){
+    par(mfrow=c(3,2))
+}
 
 # read data from some of my simulation output
-data <- read.csv('../output/output/output_PID-182509_DIR_short.csv')
+#data <- read.csv('../output/output/output_PID-182509_DIR_short.csv')
+data <- read.csv('../output/output/output_PID-182815_DIR_somewhat_short.csv')
 
 # fn to read the data for a given set of values of the columns
 get.subdf.data <- function(df, genicity, linkage, neutrality, nullness, it){
@@ -29,10 +28,7 @@ get.subdf.data <- function(df, genicity, linkage, neutrality, nullness, it){
                  data$nullness == nullness &
                  data$it == it, ]$dir
     # drop NAs
-    print(paste(genicity, linkage, neutrality, nullness, it))
-    print(length(subdf.data))
     subdf.data <- subdf.data[!is.na(subdf.data)]
-    print(length(subdf.data))
     return(subdf.data)
 }
 
@@ -182,10 +178,11 @@ fit.vM.mix.dist <- function(angs, nullness, n.mix=4, plot.it=F, plot.circ=F){
 }
 
 
-
+print('getting uniques')
 # get list of unique values for each of the non-data columns in the df
 uniques <- apply(data[,!(colnames(data) %in% c("dir"))], 2, unique)
 
+print('making output lists')
 # set up an output list to store results
 output = list('genicity'=c(), 'linkage'=c(), 'nullness'=c(), 'neutrality'=c(), 'it'=c(),
               'mu.1'=c(), 'mu.2'=c(), 'mu.3'=c(), 'mu.4'=c(),
@@ -198,7 +195,7 @@ for (genicity in uniques[['genicity']]){
         for (nullness in uniques[['nullness']]){
             for (neutrality in uniques[['neutrality']]){
                 for (it in uniques[['it']]){
-                    print(paste(genicity, linkage, neutrality, nullness, it))
+                    print(paste('PROCESSING:', genicity, linkage, neutrality, nullness, it))
                     angs <- get.subdf.data(data, genicity, linkage, neutrality, nullness, it)
                     # only analyze if there are multiple rows' worth of data
                     if (length(angs) > 1){
@@ -253,14 +250,6 @@ calc.CDF.movMF <- function(kappa, alpha){
     #TODO: RETURN SUM
 }
 
+# TODO: FUNCTION TO CALC KS TEST STAT FOR A GIVEN RESULT?
 
-# TODO: FUNCTION TO CALC KS TEST STAT FOR A GIVEN RESULT
-
-# TODO: FN TO RUN KS TESTS FOR 1-4 MIX DISTS, RETURN RESULTS OF BEST FITTING
-
-# TODO: RUN FOR BOTH
-
-
-
-
-
+# TODO: FN TO RUN KS TESTS FOR 1-4 MIX DISTS, RETURN RESULTS OF BEST FITTING?
