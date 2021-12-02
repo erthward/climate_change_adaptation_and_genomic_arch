@@ -755,8 +755,8 @@ for genicity in genicities:
         #-----------------------------------------
         # run simulation with environmental change
         #-----------------------------------------
-        (delta_Nt, delta_fit, dirtest_pval,
-         disttest_pval,
+        (delta_Nt, delta_fit, #dirtest_pval,
+         #disttest_pval,
          #mean_dist_neut,
          mean_dist_nonneut,
          #mu_dir_neut,
@@ -777,8 +777,8 @@ for genicity in genicities:
         #--------------------
         # run null simulation
         #--------------------
-        (delta_Nt_null, delta_fit_null, dirtest_pval_null,
-         disttest_pval_null,
+        (delta_Nt_null, delta_fit_null, #dirtest_pval_null,
+         #disttest_pval_null,
          #mean_dist_neut_null,
          mean_dist_nonneut_null,
          #mu_dir_neut_null,
