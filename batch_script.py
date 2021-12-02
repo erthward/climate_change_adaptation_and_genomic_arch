@@ -26,7 +26,8 @@ import os
 # set number of iterations for each sim
 n_its = 1
 # set the different numbers of loci to use
-genicities = [4, 20, 100]
+#genicities = [4, 20, 100]
+genicities = [2, 10, 50]
 # set the different linkage levels to use
 linkages = ['independent', 'weak', 'strong']
 linkages_dict = {'independent': {'r_distr_alpha': 0.5,
@@ -144,8 +145,8 @@ def check_recomb_rates(mod, print_it=False):
                       v in C(np.concatenate(breakpoints)).items()}
     rates_arr = np.array([
         observed_rates[loc-0.5] if loc-0.5 in observed_rates else 0 for loc in range(ga.L)])
-    assert np.allclose(ga.recombinations._rates, rates_arr, rtol=0.01), ("Not "
-        "all observed recomb rates are within 1% of expected!")
+    assert np.allclose(ga.recombinations._rates, rates_arr, rtol=0.25), ("Not "
+        "all observed recomb rates are within 25pct of expected!\n\n%s\n\n%s") % (str(ga.recombinations._rates), str(rates_arr))
     if print_it:
         print("\n\n%s\n\nEXPECTED VS OBSERVED RATES\n\n%s\n\n" % (mod.name,
         '\n'.join([str(n) for n in [*zip(ga.recombinations._rates, rates_arr,
