@@ -3,14 +3,6 @@
 
 # flake8: noqa
 
-'''
-TODO:
-    - clean up all the now extremely gross data-structure code I've cobbled
-    together
-    - run on Savio
-    - code up more/better statistical tests
-'''
-
 from collections import Counter as C
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -282,8 +274,8 @@ def store_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
     # grab the non-neutral loci
     nonneut_loci = mod.comm[0].gen_arch.traits[0].loci
     # grab random neutral loci eqaul in amt to the num of non-neutral loci
-    neut_loci = np.random.choice(mod.comm[0].gen_arch.neut_loci, genicity,
-                                 replace=False)
+    #neut_loci = np.random.choice(mod.comm[0].gen_arch.neut_loci, genicity,
+    #                             replace=False)
 
     # calculate gene-flow stats for both the non-neutral and neutral loci
     # NOTE: each one is structured as:
@@ -302,13 +294,13 @@ def store_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
                                     use_individs_curr_pos=use_individs_curr_pos,
                                                     max_time_ago=max_time_ago,
                                                     loci=nonneut_loci)
-    neut_stats = mod.comm[0]._calc_lineage_stats(stats=['dir', 'dist', 'speed'],
-                                    use_individs_curr_pos=use_individs_curr_pos,
-                                                 max_time_ago=max_time_ago,
-                                                 loci=neut_loci)
+    #neut_stats = mod.comm[0]._calc_lineage_stats(stats=['dir', 'dist', 'speed'],
+    #                                use_individs_curr_pos=use_individs_curr_pos,
+    #                                             max_time_ago=max_time_ago,
+    #                                             loci=neut_loci)
     # store the gene-flow data in the right places
     for stat, dataset in nonneut_stats.items():
-        neut_data = []
+        #neut_data = []
         nonneut_data = []
         # add the non-neutral stats to their lists
         for data in dataset.values():
@@ -316,27 +308,27 @@ def store_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
             stat_list.extend(data)
             nonneut_data.extend(data)
         # add the neutral data too
-        for data in neut_stats[stat].values():
-            stat_list = output[nullness][linkage][genicity][stat][n_it]['neut']
-            stat_list.extend(data)
-            neut_data.extend(data)
+        #for data in neut_stats[stat].values():
+        #    stat_list = output[nullness][linkage][genicity][stat][n_it]['neut']
+        #    stat_list.extend(data)
+        #    neut_data.extend(data)
         #run the F-test, store its results and the mean neut and nonneut vals
-        neut_data = [val if val is not None else np.nan for val in neut_data]
+        #neut_data = [val if val is not None else np.nan for val in neut_data]
         nonneut_data = [val if val is not None else np.nan for val in nonneut_data]
-        if stat in ['dir', 'dist']:
-            f_test = scipy.stats.f_oneway(np.array(neut_data)[~np.isnan(
-                                                                    neut_data)],
-                                        np.array(nonneut_data)[~np.isnan(
-                                                                nonneut_data)])
-            stats_output[stat]['pval'] = f_test.pvalue
+        #if stat in ['dir', 'dist']:
+        #    f_test = scipy.stats.f_oneway(np.array(neut_data)[~np.isnan(
+        #                                                            neut_data)],
+        #                                np.array(nonneut_data)[~np.isnan(
+        #                                                        nonneut_data)])
+        #    stats_output[stat]['pval'] = f_test.pvalue
         if stat == 'dist':
-            stats_output[stat]['mean_neut'] = np.nanmean(neut_data)
+            #stats_output[stat]['mean_neut'] = np.nanmean(neut_data)
             stats_output[stat]['mean_nonneut'] = np.nanmean(nonneut_data)
         elif stat == 'dir':
-            neut_ests = estimate_vonmises_params(neut_data)
-            stats_output[stat]['mu_neut'] = neut_ests[0]
-            stats_output[stat]['kappa_neut'] = neut_ests[1]
-            stats_output[stat]['std_neut'] = neut_ests[2]
+            #neut_ests = estimate_vonmises_params(neut_data)
+            #stats_output[stat]['mu_neut'] = neut_ests[0]
+            #stats_output[stat]['kappa_neut'] = neut_ests[1]
+            #stats_output[stat]['std_neut'] = neut_ests[2]
             nonneut_ests = estimate_vonmises_params(nonneut_data)
             stats_output[stat]['mu_nonneut'] = nonneut_ests[0]
             stats_output[stat]['kappa_nonneut'] = nonneut_ests[1]
@@ -414,14 +406,14 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
     delta_Nt = []
     delta_fit = []
     neut_nonneut_dirtest_pval = []
-    neut_nonneut_disttest_pval = []
+    #neut_nonneut_disttest_pval = []
     mean_dist_neut = []
     mean_dist_nonneut = []
-    mu_dir_neut = []
+    #mu_dir_neut = []
     mu_dir_nonneut = []
-    kappa_dir_neut = []
+    #kappa_dir_neut = []
     kappa_dir_nonneut = []
-    std_dir_neut = []
+    #std_dir_neut = []
     std_dir_nonneut = []
     min_x_b4 = []
     max_x_b4 = []
@@ -569,12 +561,12 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
 
         # store the summary-stats output
         dir_stats = stats_output['dir']
-        neut_nonneut_dirtest_pval.append(dir_stats['pval'])
-        mu_dir_neut.append(dir_stats['mu_neut'])
+        #neut_nonneut_dirtest_pval.append(dir_stats['pval'])
+        #mu_dir_neut.append(dir_stats['mu_neut'])
         mu_dir_nonneut.append(dir_stats['mu_nonneut'])
-        kappa_dir_neut.append(dir_stats['kappa_neut'])
+        #kappa_dir_neut.append(dir_stats['kappa_neut'])
         kappa_dir_nonneut.append(dir_stats['kappa_nonneut'])
-        std_dir_neut.append(dir_stats['std_neut'])
+        #std_dir_neut.append(dir_stats['std_neut'])
         std_dir_nonneut.append(dir_stats['std_nonneut'])
 
         min_x_b4.append(min_x_b4_val)
@@ -587,8 +579,8 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         max_y_af.append(max_y_af_val)
 
         dist_stats = stats_output['dist']
-        neut_nonneut_disttest_pval.append(dist_stats['pval'])
-        mean_dist_neut.append(dist_stats['mean_neut'])
+        #neut_nonneut_disttest_pval.append(dist_stats['pval'])
+        #mean_dist_neut.append(dist_stats['mean_neut'])
         mean_dist_nonneut.append(dist_stats['mean_nonneut'])
 
         # add the post-change population and other plots to the fig,
@@ -674,10 +666,16 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         print(cts_table % tuple([str(n) + " " * (max_len_it_str -
                                         len(str(n))) for n in cts_table_list]))
 
-    return (delta_Nt, delta_fit, neut_nonneut_dirtest_pval,
-            neut_nonneut_disttest_pval, mean_dist_neut, mean_dist_nonneut,
-            mu_dir_neut, mu_dir_nonneut, kappa_dir_neut, kappa_dir_nonneut,
-            std_dir_neut, std_dir_nonneut,
+    return (delta_Nt, delta_fit,
+            #neut_nonneut_dirtest_pval,neut_nonneut_disttest_pval,
+            #mean_dist_neut,
+            mean_dist_nonneut,
+            #mu_dir_neut,
+            mu_dir_nonneut,
+            #kappa_dir_neut,
+            kappa_dir_nonneut,
+            #std_dir_neut,
+            std_dir_nonneut,
             min_x_b4, max_x_b4, min_y_b4, max_y_b4,
             min_x_af, max_x_af, min_y_af, max_y_af)
 
@@ -730,13 +728,13 @@ delta_Nt_col = []
 delta_fit_col = []
 dir_pval_col = []
 dist_pval_col = []
-mu_dir_neut_col = []
+#mu_dir_neut_col = []
 mu_dir_nonneut_col = []
-kappa_dir_neut_col = []
+#kappa_dir_neut_col = []
 kappa_dir_nonneut_col = []
-std_dir_neut_col = []
+#std_dir_neut_col = []
 std_dir_nonneut_col = []
-mean_dist_neut_col = []
+#mean_dist_neut_col = []
 mean_dist_nonneut_col = []
 min_x_b4_col = []
 max_x_b4_col = []
@@ -757,9 +755,15 @@ for genicity in genicities:
         # run simulation with environmental change
         #-----------------------------------------
         (delta_Nt, delta_fit, dirtest_pval,
-         disttest_pval, mean_dist_neut, mean_dist_nonneut,
-         mu_dir_neut, mu_dir_nonneut, kappa_dir_neut, kappa_dir_nonneut,
-         std_dir_neut, std_dir_nonneut,
+         disttest_pval,
+         #mean_dist_neut,
+         mean_dist_nonneut,
+         #mu_dir_neut,
+         mu_dir_nonneut,
+         #kappa_dir_neut,
+         kappa_dir_nonneut,
+         #std_dir_neut,
+         std_dir_nonneut,
          min_x_b4, max_x_b4, min_y_b4, max_y_b4,
          min_x_af, max_x_af, min_y_af, max_y_af) = run_sim(
                                                   'non-null', linkage,
@@ -773,10 +777,15 @@ for genicity in genicities:
         # run null simulation
         #--------------------
         (delta_Nt_null, delta_fit_null, dirtest_pval_null,
-         disttest_pval_null, mean_dist_neut_null,
-         mean_dist_nonneut_null, mu_dir_neut_null,
-         mu_dir_nonneut_null, kappa_dir_neut_null, kappa_dir_nonneut_null,
-         std_dir_neut_null, std_dir_nonneut_null,
+         disttest_pval_null,
+         #mean_dist_neut_null,
+         mean_dist_nonneut_null,
+         #mu_dir_neut_null,
+         mu_dir_nonneut_null,
+         #kappa_dir_neut_null,
+         kappa_dir_nonneut_null,
+         #std_dir_neut_null,
+         std_dir_nonneut_null,
          min_x_b4_null, max_x_b4_null, min_y_b4_null, max_y_b4_null,
          min_x_af_null, max_x_af_null, min_y_af_null, max_y_af_null) = run_sim(
                                                   'null', linkage,
@@ -805,20 +814,20 @@ for genicity in genicities:
         dir_pval_col.extend(dirtest_pval_null)
         dist_pval_col.extend(disttest_pval)
         dist_pval_col.extend(disttest_pval_null)
-        mu_dir_neut_col.extend(mu_dir_neut)
-        mu_dir_neut_col.extend(mu_dir_neut_null)
+        #mu_dir_neut_col.extend(mu_dir_neut)
+        #mu_dir_neut_col.extend(mu_dir_neut_null)
         mu_dir_nonneut_col.extend(mu_dir_nonneut)
         mu_dir_nonneut_col.extend(mu_dir_nonneut_null)
-        kappa_dir_neut_col.extend(kappa_dir_neut)
-        kappa_dir_neut_col.extend(kappa_dir_neut_null)
+        #kappa_dir_neut_col.extend(kappa_dir_neut)
+        #kappa_dir_neut_col.extend(kappa_dir_neut_null)
         kappa_dir_nonneut_col.extend(kappa_dir_nonneut)
         kappa_dir_nonneut_col.extend(kappa_dir_nonneut_null)
-        std_dir_neut_col.extend(std_dir_neut)
-        std_dir_neut_col.extend(std_dir_neut_null)
+        #std_dir_neut_col.extend(std_dir_neut)
+        #std_dir_neut_col.extend(std_dir_neut_null)
         std_dir_nonneut_col.extend(std_dir_nonneut)
         std_dir_nonneut_col.extend(std_dir_nonneut_null)
-        mean_dist_neut_col.extend(mean_dist_neut)
-        mean_dist_neut_col.extend(mean_dist_neut_null)
+        #mean_dist_neut_col.extend(mean_dist_neut)
+        #mean_dist_neut_col.extend(mean_dist_neut_null)
         mean_dist_nonneut_col.extend(mean_dist_nonneut)
         mean_dist_nonneut_col.extend(mean_dist_nonneut_null)
         min_x_b4_col.extend(min_x_b4)
@@ -851,14 +860,14 @@ df = pd.DataFrame({'linkage': linkage_col,
                    'nullness': nullness_col,
                    'delta_Nt': delta_Nt_col,
                    'delta_fit': delta_fit_col,
-                   'mu_dir_neut': mu_dir_neut_col,
+                   #'mu_dir_neut': mu_dir_neut_col,
                    'mu_dir_nonneut': mu_dir_nonneut_col,
-                   'kappa_dir_neut': kappa_dir_neut_col,
+                   #'kappa_dir_neut': kappa_dir_neut_col,
                    'kappa_dir_nonneut': kappa_dir_nonneut_col,
-                   'std_dir_neut': std_dir_neut_col,
+                   #'std_dir_neut': std_dir_neut_col,
                    'std_dir_nonneut': std_dir_nonneut_col,
                    'dir_pval': dir_pval_col,
-                   'mean_dist_neut': mean_dist_neut_col,
+                   #'mean_dist_neut': mean_dist_neut_col,
                    'mean_dist_nonneut': mean_dist_nonneut_col,
                    'dist_pval': dir_pval_col,
                    'min_x_b4': min_x_b4_col,
@@ -899,41 +908,45 @@ for genicity_n, genicity in enumerate(genicities):
             # plot a histogram of the unlinked and then linked data
             for nullness in ['non-null', 'null']:
                 for neut_idx, neutrality in enumerate(['neut', 'nonneut']):
-                    data_dict = output[nullness][linkage][genicity][stat]
-                    data = [v[neutrality] for v in data_dict.values()]
-                    data = [val for sublist in data for val in sublist]
-                    data = [np.nan if val is None else val for val in data]
-                    if neutrality == 'neut':
-                        try:
-                            kde = scipy.stats.gaussian_kde(data)
-                            xx = np.linspace(min(data), max(data), 1000)
-                            kde_vals = kde(xx)
-                            # NOTE: make a completely transparent hist, to steal the bar
-                            # heights from it and use them to scale the kde!
-                            vals, breaks, bars = ax.hist(data, bins=50, alpha=0)
-                            kde_plot_factor = max(vals)/max(kde_vals)
-                            kde_plot_vals = [val * kde_plot_factor for val in kde_vals]
-                            ax.plot(xx, kde_plot_vals, alpha=0.5,
-                                    label='%s: %s' % (nullness, neutrality),
+                    if neut == 'nonneut':
+                        data_dict = output[nullness][linkage][genicity][stat]
+                        data = [v[neutrality] for v in data_dict.values()]
+                        data = [val for sublist in data for val in sublist]
+                        data = [np.nan if val is None else val for val in data]
+                        if neutrality == 'neut':
+                            try:
+                                kde = scipy.stats.gaussian_kde(data)
+                                xx = np.linspace(min(data), max(data), 1000)
+                                kde_vals = kde(xx)
+                                # NOTE: make a completely transparent hist,
+                                #       to steal the bar heights
+                                #       from it and use them to scale the kde!
+                                vals, breaks, bars = ax.hist(data, bins=50,
+                                                             alpha=0)
+                                kde_plot_factor = max(vals)/max(kde_vals)
+                                kde_plot_vals = [val * kde_plot_factor for val
+                                                                in kde_vals]
+                                ax.plot(xx, kde_plot_vals, alpha=0.5,
+                                        label='%s: %s' % (nullness, neutrality),
+                                        color=colors[nullness][neutrality])
+                            except Exception as e:
+                                print(('\n\nCOULD NOT PLOT KDE\n\nERROR '
+                                      'THROWN:\n\t%s') % e)
+                        else    :
+                            ax.hist(data, bins = 50, alpha=0.5,
+                                    label= '%s: %s' % (nullness, neutrality),
                                     color=colors[nullness][neutrality])
-                        except Exception as e:
-                            print(('\n\nCOULD NOT PLOT KDE\n\nERROR '
-                                  'THROWN:\n\t%s') % e)
-                    else    :
-                        ax.hist(data, bins = 50, alpha=0.5,
-                                label= '%s: %s' % (nullness, neutrality),
-                                color=colors[nullness][neutrality])
-                    ax.set_xlabel(stat, size=8)
-                    if row_idx==2 and col_idx==8:
-                        ax.legend(prop={'size': 10},
-                                  fontsize=5,
-                                  bbox_to_anchor=(1.5, 0.2))
-                    if col_idx in [0, 3, 6]:
-                        ax.set_xticks(dir_tick_locs)
-                        ax.set_xticklabels(dir_tick_labs)
-                    ax.tick_params(labelsize=ticklabel_size)
-                    ax.tick_params(axis='y', rotation=60)
-                    # TODO standardize axes
+                        ax.set_xlabel(stat, size=8)
+                        if row_idx==2 and col_idx==8:
+                            ax.legend(prop={'size': 10},
+                                      fontsize=5,
+                                      bbox_to_anchor=(1.5, 0.2))
+                        if col_idx in [0, 3, 6]:
+                            ax.set_xticks(dir_tick_locs)
+                            ax.set_xticklabels(dir_tick_labs)
+                        ax.tick_params(labelsize=ticklabel_size)
+                        ax.tick_params(axis='y', rotation=60)
+                        # TODO standardize axes
 
 # show all the figures
 [fig.show() for fig in fig_time.values()]

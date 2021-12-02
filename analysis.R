@@ -6,10 +6,21 @@ library(cowplot)
 
 # NEXT STEPS:
 
-# - linear model for Nt and fitness
-# - output Nt and fitness raw data?
+# - rerun data on savio using longer pre-climate change period
 # - multivar linear model for vM mix params
+# - tie up box plots and analysis for Nt and fit
+# - tie up plot grid for dir data
+# - decide whether or not to do something with the min/max x/y b4/af data
+# - write scripts to combine, preprocess, and prep all data on savio, get
+#   down to single output tables for each of the above analyses
+# - test run full analysis pipeline, check out results
+# - then run remaining sims, rerun whole pipeline
 
+
+
+######################
+# ANALYSIS FOR Nt, fit
+######################
 
 # gather all summary-output files into one
 summary.csvs = list.files()[grep("\\d\\.csv$", list.files())] 
@@ -96,6 +107,41 @@ boxnonull = ggplot(df.nonull) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=n
     scale_fill_manual(values = plot_cols[3:1])
 cowplot::plot_grid(boxnull, boxnonull)
 
+
+
+
+#######################
+# ANALYSIS FOR dir DATA
+#######################
+
+# NOTE: THIS NEEDS TO HAVE BEEN RUN THROUGH THE COLUMN-SORTING PYTHON SCRIPT
+df = read.csv('./TEST_output_SORTED.csv')
+
+# will run separate null and non-null tests
+df.null = df[df$nullness == 'null',]
+df.nonull = df[df$nullness == 'non-null',]
+
+
+mod.man.null = manova(cbind(mu.1, mu.2, mu.3, mu.4,
+                       kappa.1, kappa.2, kappa.3, kappa.4,
+                       alpha.1, alpha.2, alpha.3, alpha.4) ~ linkage * genicity,
+                data = df.null) 
+mod.man = manova(cbind(mu.1, mu.2, mu.3, mu.4,
+                       kappa.1, kappa.2, kappa.3, kappa.4,
+                       alpha.1, alpha.2, alpha.3, alpha.4) ~ linkage * genicity,
+                data = df.nonull) 
+
+summary.aov(mod.man.null)
+summary.aov(mod.man)
+
+
+
+
+
+
+#######
+# CRUFT
+#######
 
 #ggplot.delta_fit = ggplot() + 
 #    geom_point(aes(genicity, delta_fit, shape=linkage), data=df.nonull, col='red') +
