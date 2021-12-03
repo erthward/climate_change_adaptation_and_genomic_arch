@@ -909,7 +909,7 @@ for genicity_n, genicity in enumerate(genicities):
             # plot a histogram of the unlinked and then linked data
             for nullness in ['non-null', 'null']:
                 for neut_idx, neutrality in enumerate(['neut', 'nonneut']):
-                    if neut == 'nonneut':
+                    if neutrality == 'nonneut':
                         data_dict = output[nullness][linkage][genicity][stat]
                         data = [v[neutrality] for v in data_dict.values()]
                         data = [val for sublist in data for val in sublist]
