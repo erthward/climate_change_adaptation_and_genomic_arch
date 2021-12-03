@@ -811,10 +811,10 @@ for genicity in genicities:
         delta_Nt_col.extend(delta_Nt_null)
         delta_fit_col.extend(delta_fit)
         delta_fit_col.extend(delta_fit_null)
-        dir_pval_col.extend(dirtest_pval)
-        dir_pval_col.extend(dirtest_pval_null)
-        dist_pval_col.extend(disttest_pval)
-        dist_pval_col.extend(disttest_pval_null)
+        #dir_pval_col.extend(dirtest_pval)
+        #dir_pval_col.extend(dirtest_pval_null)
+        #dist_pval_col.extend(disttest_pval)
+        #dist_pval_col.extend(disttest_pval_null)
         #mu_dir_neut_col.extend(mu_dir_neut)
         #mu_dir_neut_col.extend(mu_dir_neut_null)
         mu_dir_nonneut_col.extend(mu_dir_nonneut)
@@ -867,10 +867,10 @@ df = pd.DataFrame({'linkage': linkage_col,
                    'kappa_dir_nonneut': kappa_dir_nonneut_col,
                    #'std_dir_neut': std_dir_neut_col,
                    'std_dir_nonneut': std_dir_nonneut_col,
-                   'dir_pval': dir_pval_col,
+                   #'dir_pval': dir_pval_col,
                    #'mean_dist_neut': mean_dist_neut_col,
                    'mean_dist_nonneut': mean_dist_nonneut_col,
-                   'dist_pval': dir_pval_col,
+                   #'dist_pval': dir_pval_col,
                    'min_x_b4': min_x_b4_col,
                    'min_y_b4': min_y_b4_col,
                    'max_x_b4': max_x_b4_col,
