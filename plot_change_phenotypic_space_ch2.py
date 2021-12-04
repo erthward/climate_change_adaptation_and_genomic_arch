@@ -63,14 +63,21 @@ def plot_phenotypic_shift(linkage, genicity):
                                                              fn)]
             candidate_filenames = [os.path.join(dirname, 'it--1', 'spp-spp_0',
                                             fn) for fn in candidate_filenames]
-            # make sure I got all 3 timesteps
-            assert len(candidate_filenames) == 3
-            assert len([fn for fn in candidate_filenames if '-2499_' in fn])== 1
-            assert len([fn for fn in candidate_filenames if '-2624_' in fn])== 1
-            assert len([fn for fn in candidate_filenames if '-2749_' in fn])== 1
+            # only add this directory and its files to the analysis if I got all 3 timeteps,
+	    # otherwise print warning
+            print(dirname)
+            print(candidate_filenames)
+            print('++++++++++++')
+            if len(candidate_filenames) == 3:
+            	assert len([fn for fn in candidate_filenames if '-2499_' in fn])== 1
+            	assert len([fn for fn in candidate_filenames if '-2624_' in fn])== 1
+           	assert len([fn for fn in candidate_filenames if '-2749_' in fn])== 1 
+		filenames[dirname] = candidate_filenames
 
-            filenames[dirname] = candidate_filenames
-
+            else:
+            	print(('\n\nWARNING: following directory did not contain'
+		       '3 files, 1 for each of the right timesteps:\n\n\t'
+		       '%s\n\n') % dirname)
 
     # create the figure
     fig = plt.figure(dpi=dpi,
