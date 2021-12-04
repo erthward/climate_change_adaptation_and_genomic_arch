@@ -65,9 +65,6 @@ def plot_phenotypic_shift(linkage, genicity):
                                             fn) for fn in candidate_filenames]
             # only add this directory and its files to the analysis if I got all 3 timeteps,
             # otherwise print warning
-            print(dirname)
-            print(candidate_filenames)
-            print('++++++++++++')
             if len(candidate_filenames) == 3:
                 assert len([fn for fn in candidate_filenames if '-2499_' in fn])== 1
                 assert len([fn for fn in candidate_filenames if '-2624_' in fn])== 1
