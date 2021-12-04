@@ -105,6 +105,7 @@ def plot_phenotypic_shift(linkage, genicity):
         brk = get_min_pw_diff(zs.ravel())
 
         # make the heatmap array
+        print('BRK: ', brk)
         brks = np.arange(0, 1+brk, brk)
         arr = np.zeros([len(brks)]*2)
 
@@ -186,6 +187,9 @@ def plot_phenotypic_shift(linkage, genicity):
 # produce plots for all scenarios
 for linkage in ['independent', 'weak', 'strong']:
     for genicity in [2, 4, 10, 20, 50, 100]:
+        print('\n\n======================\n\n')
+        print('\tLINKAGE: %s' % linkage)
+        print('\tGENICITY: %i' % genicity)
         dirname_patt = 'mod-non-null_L%s_G%i_its0_' % (linkage, genicity)
         dirs = os.listdir('.')
         candidate_dirs = [d for d in dirs if re.search(dirname_patt, d)]
