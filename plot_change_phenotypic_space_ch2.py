@@ -16,20 +16,32 @@ Script will plot for time steps 2499, 2624, and 2749.
 """
 
 # plot params
-title_fontsize = 24
-axislab_fontsize = 16
-ticklab_fontsize = 11
+title_fontsize = 22
+axislab_fontsize = 12
+ticklab_fontsize = 8
 annot_fontsize = 8
-cbar_fontsize = 11
-fig_width = 14
-fig_height = 5
+cbar_fontsize = 9
+fig_width = 13.8
+fig_height = 4.6
 dpi = 400
+n_ticklabels = 5
 
 # way to hard-code the vmax values for the scenarios, given that it would
 # be kind of a pain to write code to do just this
 linkages = ['independent', 'weak', 'strong']
 genicities =  [2, 4, 10, 20, 50, 100]
 vmaxes = {l: {g: 0.3 for g in genicities} for l in linkages}
+
+# dictionary of minimum effect-size breaks, to be used for setting up phenotyp
+# arrays
+breaks = {g: 1/g/2 for g in genicities}
+#breaks = {2: 0.25,
+#          4: 0.125,
+#          10: 0.05,
+#          20: 0.025,
+#          50: 0.025,
+#          100: 0.025
+#          }
 
 
 def get_min_pw_diff(vals):
@@ -65,9 +77,6 @@ def plot_phenotypic_shift(linkage, genicity):
                                             fn) for fn in candidate_filenames]
             # only add this directory and its files to the analysis if I got all 3 timeteps,
             # otherwise print warning
-            print(dirname)
-            print(candidate_filenames)
-            print('++++++++++++')
             if len(candidate_filenames) == 3:
                 assert len([fn for fn in candidate_filenames if '-2499_' in fn])== 1
                 assert len([fn for fn in candidate_filenames if '-2624_' in fn])== 1
@@ -95,19 +104,17 @@ def plot_phenotypic_shift(linkage, genicity):
         #ax.axis('off')
         ax.set_title(title, fontdict={'fontsize': title_fontsize})
 
-        # read in a sample dataset and use that to get the
-        # characteristic break for this dataset
-        samp_df = pd.read_csv(filenames[[*filenames.keys()][0]][0])
-        # get phenotype data
-        zs = np.stack([np.array([float(n) for n in val.lstrip(
-            '[').rstrip(']').split(', ')]) for val in samp_df['z']])
-        # (i.e., min diff between phenotypes)
-        brk = get_min_pw_diff(zs.ravel())
+        # get the minimum difference between neighboring phenotypes,
+        # to use as the break between bins in our 2d histogram (i.e., heatmap)
+        brk = breaks[genicity]
 
         # make the heatmap array
         print('BRK: ', brk)
         brks = np.arange(0, 1+brk, brk)
-        arr = np.zeros([len(brks)]*2)
+        # increase the last break (1.0) slightly, so that < captures phenotypes
+        # of 1.0
+        brks[-1] *= 1.000001
+        arr = np.zeros([len(brks)-1]*2)
 
         # loop through all the sims' directories
         for sim_dirname, sim_filenames in filenames.items():
@@ -120,13 +127,20 @@ def plot_phenotypic_shift(linkage, genicity):
             z_trt0 = zs[:, 0]
             z_trt1 = zs[:, 1]
 
-           # fill the heatmap array (i.e., 2d histogram)
-            for i, brk_trt0 in enumerate(brks):
-                for j, brk_trt1 in enumerate(brks):
-                    ct = sum((zs[:, 0] == brk_trt0) * (zs[:, 1] == brk_trt1))
-                    arr[i, j] += ct
+            # fill the heatmap array (i.e., 2d histogram)
+            # NOTE: to make shift appear L-->R (matching spatial shift across
+            # landscape), i-->rows-->trait1-->stable trait,
+            # whereas j-->cols-->trait0-->shifting trait
+            for i, brk_trt1 in enumerate(brks[:-1]):
+                for j, brk_trt0 in enumerate(brks[:-1]):
+                   ct = np.sum((zs[:,0]>=brk_trt0) *
+                                (zs[:,0]<brks[j+1]) *
+                                (zs[:,1]>=brk_trt1) *
+                                (zs[:,1]<brks[i+1]))
+                   arr[i, j] += ct
 
         arr = arr/np.sum(arr)
+        print(arr)
         assert np.allclose(np.sum(arr), 1)
 
         # create labels array
@@ -135,7 +149,7 @@ def plot_phenotypic_shift(linkage, genicity):
         # plot the heatmap
         sns.heatmap(arr,
                     #vmin=0,
-                    vmax=vmaxes[linkage][genicity],
+                    #vmax=vmaxes[linkage][genicity],
                     #annot=annot,
                     #annot_kws = {'fontsize': annot_fontsize},
                     fmt="",
@@ -147,18 +161,30 @@ def plot_phenotypic_shift(linkage, genicity):
                     linewidths=0.3,
                     ax=ax)
 
+        # add diagonal 1:1 line, for comparison
+        # NOTE: invert ylims to match inverted y axis
+        ax.plot(ax.get_xlim(),
+                ax.get_ylim()[::-1],
+                '-k',
+                alpha=0.4,
+                linewidth=0.5)
+
         # set ticks and ticklabels and axis labels
-        ticks = np.linspace(0, len(brks)- 1, len(brks), dtype=np.int)
-        ticks = ticks + 0.5 # shift ticks to centers of heatmap cells
+        ticks = np.linspace(0, len(brks)- 1, n_ticklabels, dtype=np.int)
+        ticklabels = np.linspace(0, np.round(brks[-1],2), n_ticklabels)
         ax.set_xticks(ticks)
-        ax.set_xticklabels([str(brk) for brk in brks],
-                           fontdict={'fontsize':ticklab_fontsize})
+        ax.set_xticklabels(ticklabels, fontdict={'fontsize':ticklab_fontsize})
+        for tick in ax.get_xticklabels():
+            tick.set_rotation(0)
         ax.set_xlabel('shifting trait',
                       fontdict={'fontsize': axislab_fontsize})
         if time_step_n == 0:
             ax.set_yticks(ticks)
-            ax.set_yticklabels([str(brk) for brk in brks],
+            ax.set_yticklabels([tl if (n > 0) else '' for n,
+                                        tl in enumerate(ticklabels)],
                                fontdict={'fontsize':ticklab_fontsize})
+            for tick in ax.get_yticklabels():
+                    tick.set_rotation(90)
             ax.set_ylabel('stable trait',
                           fontdict={'fontsize': axislab_fontsize})
         else:
@@ -177,7 +203,7 @@ def plot_phenotypic_shift(linkage, genicity):
                         bottom=0.11,
                         right=0.99,
                         top=0.90,
-                        wspace=0.05,
+                        wspace=0.08,
                         hspace=None)
 
     # return fig
