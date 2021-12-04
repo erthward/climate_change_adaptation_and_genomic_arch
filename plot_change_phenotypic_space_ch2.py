@@ -109,7 +109,6 @@ def plot_phenotypic_shift(linkage, genicity):
         brk = breaks[genicity]
 
         # make the heatmap array
-        print('BRK: ', brk)
         brks = np.arange(0, 1+brk, brk)
         # increase the last break (1.0) slightly, so that < captures phenotypes
         # of 1.0
@@ -140,7 +139,6 @@ def plot_phenotypic_shift(linkage, genicity):
                    arr[i, j] += ct
 
         arr = arr/np.sum(arr)
-        print(arr)
         assert np.allclose(np.sum(arr), 1)
 
         # create labels array
