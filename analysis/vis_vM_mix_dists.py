@@ -7,7 +7,7 @@ from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 
 # TODO:
-    # then get R script running across whole dir output files (~3.4 GB) on
+    # get R script running across whole dir output files (~3.4 GB) on
     # savio
 
     # then loop that over all dir files as a job
@@ -267,7 +267,7 @@ def make_vM_mix_dist_comparison_grid(df, neutrality='nonneut', it=None,
 
 
 # load data
-df = pd.read_csv('./TEST_output.csv', na_filter=False)
+df = pd.read_csv('./ch2_fitted_vM_params.csv', na_filter=False)
 
 # plot the full grid
 grid_fig = make_vM_mix_dist_comparison_grid(df, plot_type='circ', it=None)

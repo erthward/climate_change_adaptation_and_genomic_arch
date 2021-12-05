@@ -8,11 +8,12 @@ plot.examp = F # whether or not to plot the random example hists
 
 # TODO:
 
-        # decide if/how to do KS testing...
-
 if (plot.examp){
     par(mfrow=c(3,2))
 }
+
+# TODO: get args, to determine which csv file to analyze
+
 
 # read data from some of my simulation output
 #data <- read.csv('../output/output/output_PID-182509_DIR_short.csv')
@@ -224,7 +225,7 @@ for (genicity in uniques[['genicity']]){
 output.df = data.frame(output)
 
 # write output.df to disk
-write.csv(output.df, 'TEST_output.csv', row.names=F)
+write.csv(output.df, 'ch2_fitted_vM_params.csv', row.names=F)
 
 
 ##############################
