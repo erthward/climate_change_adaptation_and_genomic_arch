@@ -908,46 +908,46 @@ for genicity_n, genicity in enumerate(genicities):
                 ax.set_title('|| genicity: %i' % genicity, size=collab_size)
             # plot a histogram of the unlinked and then linked data
             for nullness in ['non-null', 'null']:
-                for neut_idx, neutrality in enumerate(['neut', 'nonneut']):
-                    if neutrality == 'nonneut':
-                        data_dict = output[nullness][linkage][genicity][stat]
-                        data = [v[neutrality] for v in data_dict.values()]
-                        data = [val for sublist in data for val in sublist]
-                        data = [np.nan if val is None else val for val in data]
-                        if neutrality == 'neut':
-                            try:
-                                kde = scipy.stats.gaussian_kde(data)
-                                xx = np.linspace(min(data), max(data), 1000)
-                                kde_vals = kde(xx)
-                                # NOTE: make a completely transparent hist,
-                                #       to steal the bar heights
-                                #       from it and use them to scale the kde!
-                                vals, breaks, bars = ax.hist(data, bins=50,
-                                                             alpha=0)
-                                kde_plot_factor = max(vals)/max(kde_vals)
-                                kde_plot_vals = [val * kde_plot_factor for val
-                                                                in kde_vals]
-                                ax.plot(xx, kde_plot_vals, alpha=0.5,
-                                        label='%s: %s' % (nullness, neutrality),
-                                        color=colors[nullness][neutrality])
-                            except Exception as e:
-                                print(('\n\nCOULD NOT PLOT KDE\n\nERROR '
-                                      'THROWN:\n\t%s') % e)
-                        else    :
-                            ax.hist(data, bins = 50, alpha=0.5,
-                                    label= '%s: %s' % (nullness, neutrality),
+                #for neut_idx, neutrality in enumerate(['neut', 'nonneut']):
+                for neutrality in ['nonneut']:
+                    data_dict = output[nullness][linkage][genicity][stat]
+                    data = [v[neutrality] for v in data_dict.values()]
+                    data = [val for sublist in data for val in sublist]
+                    data = [np.nan if val is None else val for val in data]
+                    if neutrality == 'neut':
+                        try:
+                            kde = scipy.stats.gaussian_kde(data)
+                            xx = np.linspace(min(data), max(data), 1000)
+                            kde_vals = kde(xx)
+                            # NOTE: make a completely transparent hist,
+                            #       to steal the bar heights
+                            #       from it and use them to scale the kde!
+                            vals, breaks, bars = ax.hist(data, bins=50,
+                                                         alpha=0)
+                            kde_plot_factor = max(vals)/max(kde_vals)
+                            kde_plot_vals = [val * kde_plot_factor for val
+                                                            in kde_vals]
+                            ax.plot(xx, kde_plot_vals, alpha=0.5,
+                                    label='%s: %s' % (nullness, neutrality),
                                     color=colors[nullness][neutrality])
-                        ax.set_xlabel(stat, size=8)
-                        if row_idx==2 and col_idx==8:
-                            ax.legend(prop={'size': 10},
-                                      fontsize=5,
-                                      bbox_to_anchor=(1.5, 0.2))
-                        if col_idx in [0, 3, 6]:
-                            ax.set_xticks(dir_tick_locs)
-                            ax.set_xticklabels(dir_tick_labs)
-                        ax.tick_params(labelsize=ticklabel_size)
-                        ax.tick_params(axis='y', rotation=60)
-                        # TODO standardize axes
+                        except Exception as e:
+                            print(('\n\nCOULD NOT PLOT KDE\n\nERROR '
+                                  'THROWN:\n\t%s') % e)
+                    else    :
+                        ax.hist(data, bins = 50, alpha=0.5,
+                                label= '%s: %s' % (nullness, neutrality),
+                                color=colors[nullness][neutrality])
+                    ax.set_xlabel(stat, size=8)
+                    if row_idx==2 and col_idx==8:
+                        ax.legend(prop={'size': 10},
+                                  fontsize=5,
+                                  bbox_to_anchor=(1.5, 0.2))
+                    if col_idx in [0, 3, 6]:
+                        ax.set_xticks(dir_tick_locs)
+                        ax.set_xticklabels(dir_tick_labs)
+                    ax.tick_params(labelsize=ticklabel_size)
+                    ax.tick_params(axis='y', rotation=60)
+                    # TODO standardize axes
 
 # show all the figures
 [fig.show() for fig in fig_time.values()]
