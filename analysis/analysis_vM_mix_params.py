@@ -21,6 +21,16 @@ import statsmodels.formula.api as smf
 data = pd.read_csv('./TEST_output.csv')
 
 
+
+
+#############################################################################
+# NOTE: EVERYTHING BELOW IS FROM MY OLD EPIPHYTE WORK AND NEEDS TO BE TWEAKED
+#       TO WORK FOR THIS ANALYSIS
+#############################################################################
+
+
+
+
 #create standardized dataframe
 stand = (morph - morph.mean())/morph.std()
 #df of each sample average distance from means of its vars (i.e. its 'characteristic deviation')
@@ -157,7 +167,7 @@ def PCA(A, numpc = 0):
     idx = argsort(latent)[::-1] #get correctly descending order of eigenvalues 
     coeff = coeff[:,idx] #sort coefficients (i.e. loadings) accordingly
     latent = latent[idx] #sort eigenvalues accordingly
-    if numpc <p and numpc >= 0: 
+    if numpc <p and numpc >= 0:
         coeff = coeff[:, range(numpc)] #take only desired num of PCs
     score = dot(coeff.T, M) #calculate scores
     return(coeff, score, latent)
