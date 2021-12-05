@@ -81,6 +81,8 @@ def plot_phenotypic_shift(linkage, genicity):
                 assert len([fn for fn in candidate_filenames if '-2499_' in fn])== 1
                 assert len([fn for fn in candidate_filenames if '-2624_' in fn])== 1
                 assert len([fn for fn in candidate_filenames if '-2749_' in fn])== 1
+                # sort files by timestep
+                candidate_filenames = [*np.sort(candidate_filenames)]
                 filenames[dirname] = candidate_filenames
             else:
                 print(('\n\nWARNING: following directory did not contain'
@@ -108,11 +110,17 @@ def plot_phenotypic_shift(linkage, genicity):
         # to use as the break between bins in our 2d histogram (i.e., heatmap)
         brk = breaks[genicity]
 
-        # make the heatmap array
-        brks = np.arange(0, 1+brk, brk)
+        # set up breaks for the 2D histogram (i.e., heatmap)
+        # NOTE: ADDING 2 TO 1/brk GENERATES A NUMBER OF BINS EQUAL TO
+        #       NUMBER OF BREAKS + 1, THUS FIXING THE PROBLEM THAT OTHERWISE
+        #       ARISES THAT SOME BINS SYSTEMATICALLY COLLECT MORE 
+        #       INDIVIDS THAN OTHERS BECAUSE OF THE DISCRETE BREAKS BTWN 
+        #       POSSIBLE PHENOTYPES (which made striped-pattern heatmaps
+        brks = np.linspace(0, 1, int((1/brk) + 2))
         # increase the last break (1.0) slightly, so that < captures phenotypes
         # of 1.0
         brks[-1] *= 1.000001
+        # make the heatmap array
         arr = np.zeros([len(brks)-1]*2)
 
         # loop through all the sims' directories
@@ -221,7 +229,8 @@ for linkage in ['independent', 'weak', 'strong']:
             # make the fig
             fig = plot_phenotypic_shift(linkage, genicity)
             # save the fig
-            fig.savefig('phenotypic_shift_L%s_G%i.png' % (linkage, genicity),
+            fig.savefig('phenotypic_shift_L%s_G%s.png' % (linkage,
+                                                        str(genicity).zfill(2)),
                         dpi=dpi,
                         orientation='landscape',
                        )
