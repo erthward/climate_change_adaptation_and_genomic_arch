@@ -6,26 +6,25 @@ plot.circ = F # include circular plots? (BROKEN FOR NOW, SO FALSE!)
 plot.examp = F # whether or not to plot the random example hists
 
 
-# TODO:
-
 if (plot.examp){
     par(mfrow=c(3,2))
 }
 
-# TODO: get args, to determine which csv file to analyze
-
+args = commandArgs(trailingOnly=T)
+stopifnot(length(args)==1)
+datafile = args[1]
+print(gsub('DIR_', 'DIR_FITTED_PARAMS_', datafile))
 
 # read data from some of my simulation output
 #data <- read.csv('../output/output/output_PID-182509_DIR_short.csv')
-data <- read.csv('../output/output/output_PID-182815_DIR_somewhat_short.csv')
+data <- read.csv(datafile)
 
 # fn to read the data for a given set of values of the columns
-get.subdf.data <- function(df, genicity, linkage, neutrality, nullness, it){
+get.subdf.data <- function(df, genicity, linkage, nullness, it){
     # make sure genicity is a numeric, not a string
     genicity <- as.numeric(genicity)
     subdf.data <- data[data$genicity == genicity &
                  data$linkage == linkage &
-                 data$neutrality == neutrality &
                  data$nullness == nullness &
                  data$it == it, ]$dir
     # drop NAs
@@ -185,7 +184,7 @@ uniques <- apply(data[,!(colnames(data) %in% c("dir"))], 2, unique)
 
 print('making output lists')
 # set up an output list to store results
-output = list('genicity'=c(), 'linkage'=c(), 'nullness'=c(), 'neutrality'=c(), 'it'=c(),
+output = list('genicity'=c(), 'linkage'=c(), 'nullness'=c(), 'it'=c(),
               'mu.1'=c(), 'mu.2'=c(), 'mu.3'=c(), 'mu.4'=c(),
               'kappa.1'=c(), 'kappa.2'=c(), 'kappa.3'=c(), 'kappa.4'=c(),
               'alpha.1'=c(), 'alpha.2'=c(), 'alpha.3'=c(), 'alpha.4'=c())
@@ -194,26 +193,24 @@ output = list('genicity'=c(), 'linkage'=c(), 'nullness'=c(), 'neutrality'=c(), '
 for (genicity in uniques[['genicity']]){
     for (linkage in uniques[['linkage']]){
         for (nullness in uniques[['nullness']]){
-            for (neutrality in uniques[['neutrality']]){
-                for (it in uniques[['it']]){
-                    print(paste('PROCESSING:', genicity, linkage, neutrality, nullness, it))
-                    angs <- get.subdf.data(data, genicity, linkage, neutrality, nullness, it)
-                    # only analyze if there are multiple rows' worth of data
-                    if (length(angs) > 1){
-                        params <- fit.vM.mix.dist(angs, nullness, n.mix=4)
-                        # save all the data
-                        for (param in names(params)){
-                            for (num in seq(1,4)){
-                                item.name = paste(param, num, sep='.')
-                                output[[item.name]] <- c(output[[item.name]], params[[param]][num])
-                            }
+            for (it in uniques[['it']]){
+                print(paste('PROCESSING:', genicity, linkage, nullness, it))
+                angs <- get.subdf.data(data, genicity, linkage, nullness, it)
+                # only analyze if there are multiple rows' worth of data
+                if (length(angs) > 1){
+                    params <- fit.vM.mix.dist(angs, nullness, n.mix=4)
+                    # save all the data
+                    for (param in names(params)){
+                        for (num in seq(1,4)){
+                            item.name = paste(param, num, sep='.')
+                            output[[item.name]] <- c(output[[item.name]], params[[param]][num])
                         }
-                        output[['genicity']] <- c(output[['genicity']], genicity) 
-                        output[['linkage']] <- c(output[['linkage']], linkage) 
-                        output[['nullness']] <- c(output[['nullness']], nullness) 
-                        output[['neutrality']] <- c(output[['neutrality']], neutrality) 
-                        output[['it']] <- c(output[['it']], it) 
                     }
+                    output[['genicity']] <- c(output[['genicity']], genicity) 
+                    output[['linkage']] <- c(output[['linkage']], linkage) 
+                    output[['nullness']] <- c(output[['nullness']], nullness) 
+                    output[['it']] <- c(output[['it']], it) 
+                }
                 }
             }
         }
@@ -225,10 +222,12 @@ for (genicity in uniques[['genicity']]){
 output.df = data.frame(output)
 
 # write output.df to disk
-write.csv(output.df, 'ch2_fitted_vM_params.csv', row.names=F)
+out.filename = gsub('DIR_', 'DIR_FITTED_PARAMS_', datafile)
+write.csv(output.df, out.filename, row.names=F)
 
 
 ##############################
+# DELETE ME ##################
 ##############################
 
 

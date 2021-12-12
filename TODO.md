@@ -9,9 +9,6 @@
 
 ## ANALYSIS
 1.)
-- get R vM param-fitting script to accept and use command-line arg for data file
-- write py script to run that R script for all valid files (probably parallelize that actually)
-- have py viz script read in and concat all R-script output dfs
 - decide if/how to run stats tests!
 - wrap all of that into the ch2_analys_job.sh script
 

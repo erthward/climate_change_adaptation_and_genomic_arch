@@ -6,13 +6,16 @@ from scipy.stats import vonmises
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 
+# plot params
+col_label_fontsize = 15
+row_label_fontsize = 13
+cbar_fontsize = 9
+fig_width = 13.8
+fig_height = 4.6
+dpi = 400
+n_ticklabels = 5
+
 # TODO:
-    # get R script running across whole dir output files (~3.4 GB) on
-    # savio
-
-    # then loop that over all dir files as a job
-
-    # then combine all results into a master df
 
     # then write linear model to look at multivariate response of dists to the
     # scenarios
@@ -184,7 +187,9 @@ def vis_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None, nullness
 
 
 def make_vM_mix_dist_comparison_grid(df, neutrality='nonneut', it=None,
-                                     labelsize=16, plot_type='circ'):
+                                     col_labelsize=col_label_fontsize,
+                                     row_labelsize=row_label_fontsize,
+                                     plot_type='circ'):
     """
     Visualize the null/non-null overlain von Mises mixture distributions
     across all 9 simulation scenarios
@@ -207,15 +212,16 @@ def make_vM_mix_dist_comparison_grid(df, neutrality='nonneut', it=None,
             ax.set_ylabel('')
             ax.set_title('')
             col_labs = dict(zip([1,2,3],
-                                ['genicity: %i' % g for g in [4, 20, 100]]))
+                                #['genicity: %i' % g for g in [4, 20, 100]]))
+                                [g for g in [4, 20, 100]]))
             row_labs = dict(zip([1, 4, 7],
-                                 ['linkage: %s' % l for l in ['independent',
-                                                             'weak',
-                                                             'strong']]))
+                                 #['linkage: %s' % l for l in ['independent',
+                                 [l for l in ['independent',
+                                                            'weak', 'strong']]))
             if plt_num in [1, 2, 3]:
-                ax.set_title(col_labs[plt_num], size=labelsize)
+                ax.set_title(col_labs[plt_num], size=col_labelsize)
             if plt_num in [1, 4, 7]:
-                ax.set_ylabel(row_labs[plt_num], fontsize=labelsize)
+                ax.set_ylabel(row_labs[plt_num], fontsize=row_labelsize)
 
             # subset the df
             subdf = df[(df.linkage == linkage) &
@@ -261,13 +267,22 @@ def make_vM_mix_dist_comparison_grid(df, neutrality='nonneut', it=None,
             # 1/1 aspect ratio
             ax.set_aspect('equal')
 
+    # adjust spacing of subplots
+    plt.subplots_adjust(left=0.01,
+                        bottom=0.04,
+                        right=0.99,
+                        top=0.93,
+                        wspace=0.02,
+                        hspace=None
+                       )
     # show and return fig
     plt.show()
     return fig
 
 
 # load data
-df = pd.read_csv('./ch2_fitted_vM_params.csv', na_filter=False)
+df = pd.read_csv('./ch2_all_fitted_vM_params.csv', na_filter=False)
 
 # plot the full grid
 grid_fig = make_vM_mix_dist_comparison_grid(df, plot_type='circ', it=None)
+grid_fig.savefig('ch2_gene_flow_dir_analysis.png', dpi=400)

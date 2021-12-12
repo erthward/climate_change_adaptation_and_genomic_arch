@@ -18,11 +18,20 @@
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=drew.hart@berkeley.edu
 #
-## Command(s) to run (example):
+## Command(s) to run:
 
-module load python gsl gcc
+# load needed modules
+module load python gsl gcc rclone
 
-python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/plot_change_phenotypic_space_ch2.py > pheno_plot.pyout
-module load rclone
+# plot phenotypic shift results, then push results to BDrive
+python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/plot_change_phenotypic_space_ch2.py > pheno_plotting.pyout
 for f in `ls ./phenotypic_shift_L*_G*.png`; do rclone $f bdrive:ch2_outputs; done
 
+# plot directional gene flow results
+python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/estimate_von_mises_mixture_params_all_files.py > gene_flow_param_fitting.pyout
+python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/vis_vM_mix_dists.py > gene_flow_plotting.pyout
+rclone 
+
+# make plots for population size and average fitness
+
+# run stats tests and output results
