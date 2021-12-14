@@ -26,8 +26,8 @@ import os
 # set number of iterations for each sim
 n_its = 1
 # set the different numbers of loci to use
-#genicities = [4, 20, 100]
-genicities = [4, 20, 50]
+genicities = [4, 20, 100]
+#genicities = [4, 20, 50]
 # set the different linkage levels to use
 linkages = ['independent', 'weak', 'strong']
 linkages_dict = {'independent': {'r_distr_alpha': 0.5,
@@ -341,6 +341,27 @@ def store_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
     return(stats_output)
 
 
+def make_genarch_file(genicity, linkage, pid, write=True):
+    assert(isinstance(genicity, int))
+    L = int(genicity*2)
+    assert(L%4==0)
+    cols = ['locus', 'p', 'dom', 'r', 'trait', 'alpha']
+    locus = [*range(L)]
+    p = [0.5]*L # all loci start at MAF==0.5
+    dom = [0]*L # all codominant
+    r = [0]+[linkage]*(L-1) # first locus must be 0
+    trait = ['trait_0', 'trait_1']*int((L/2)) # alternate traits
+    alpha = [1/genicity,
+             1/genicity,
+             -1/genicity,
+             -1/genicity]*int(L/4) # alpha of 1/genicity --> can reach all phenotypes [0,1]
+    df = pd.DataFrame.from_dict(dict(zip(cols, [locus, p, dom, r, trait, alpha])))
+    if write:
+        tmp_filename = 'tmp_genarch_%i.csv' % pid
+        df.to_csv(tmp_filename, index=False)
+    return tmp_filename
+
+
 def set_params(params, linkage, genicity, nullness):
     copy_params = copy.deepcopy(params)
     #create random number ID, so that directories don't get overwritten
@@ -355,6 +376,11 @@ def set_params(params, linkage, genicity, nullness):
                                                model_name))
     copy_params['model']['name'] = model_name
 
+    # create the custom genomic architecture file and connect it to the params
+    genarch_filename = make_genarch_file(genicity, linkage, pid)
+    copy_params['comm']['species']['spp_0']['gen_arch'][
+                                        'gen_arch_file'] = genarch_filename
+
     # set the linkage params correctly
     r_distr_params = linkages_dict[linkage]
     for k,v in r_distr_params.items():
@@ -362,7 +388,7 @@ def set_params(params, linkage, genicity, nullness):
 
     # set the num of loci, and set the effect-size distribution
     # and the total genome length to match the num of loci
-    copy_params['comm']['species']['spp_0']['gen_arch']['L'] = 3 * genicity
+    copy_params['comm']['species']['spp_0']['gen_arch']['L'] = 2 * genicity
     for trt in copy_params['comm']['species']['spp_0']['gen_arch']['traits'].values():
         trt['n_loci'] = genicity
         trt['alpha_distr_mu'] = 1/genicity
@@ -376,7 +402,7 @@ def set_params(params, linkage, genicity, nullness):
         copy_params['landscape']['layers']['stable']['init'][
             'defined']['rast'] = np.ones((50, 50))*0.5
 
-    return copy_params
+    return copy_params, genarch_filename
 
 
 def calc_actual_recomb_rates(spp):
@@ -399,7 +425,8 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
     '''Run the simulations for a given set of parameters and hyperparameters
     '''
     # get the correct params for this sim
-    copy_params = set_params(params, linkage, genicity, nullness)
+    copy_params, genarch_filename = set_params(params, linkage,
+                                               genicity, nullness)
     assert str(pid) in copy_params['model']['name'], ('PID MISSING')
 
     # set up stats lists to be returned
@@ -432,11 +459,22 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         fit_data = []
 
         # create the model
-        mod = gnx.make_model(gnx.make_params_dict(copy_params), name=copy_params['model']['name'])
+        mod = gnx.make_model(gnx.make_params_dict(copy_params),
+                             name=copy_params['model']['name'])
         assert 'unnamed' not in mod.name, 'STILL UNNAMED!'
+
+        # delete the temporary genarch file
+        os.remote(genarch_filename)
 
         # check the recombination rates
         check_recomb_rates(mod)
+
+        # check that loci alternate between traits 0 and 1
+        assert np.all(mod.comm[0].gen_arch.traits[1].loci ==
+                      mod.comm[0].gen_arch.traits[0].loci+1), ('Traits\' loci '
+                                                               'do not '
+                                                               'appear to be '
+                                                               'intercalated!')
 
         # coerce the iteration number to n_it (since we're using mod.walk instead of mod.run)
         #mod.it = n_it
@@ -983,3 +1021,4 @@ df.to_csv(os.path.join(output_path, 'output_PID-%s.csv' % pid), index=False)
 # dfs containing raw dir and dist data from individual locus-chrom combos
 df_dir.to_csv(os.path.join(output_path, 'output_PID-%s_DIR.csv' % pid), index=False)
 df_dist.to_csv(os.path.join(output_path, 'output_PID-%s_DIST.csv' % pid), index=False)
+
