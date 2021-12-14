@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import vonmises
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
+import os
 
 # plot params
 col_label_fontsize = 15
@@ -14,6 +15,9 @@ fig_width = 13.8
 fig_height = 4.6
 dpi = 400
 n_ticklabels = 5
+
+# data directory
+datadir = '/global/scratch/users/drewhart/ch2/output/analysis_dir'
 
 # TODO:
 
@@ -281,8 +285,8 @@ def make_vM_mix_dist_comparison_grid(df, neutrality='nonneut', it=None,
 
 
 # load data
-df = pd.read_csv('./ch2_all_fitted_vM_params.csv', na_filter=False)
+df = pd.read_csv(os.path.join(datadir, 'ch2_all_fitted_vM_params.csv'), na_filter=False)
 
 # plot the full grid
 grid_fig = make_vM_mix_dist_comparison_grid(df, plot_type='circ', it=None)
-grid_fig.savefig('ch2_gene_flow_dir_analysis.png', dpi=400)
+grid_fig.savefig(os.path.join(datadir, 'ch2_gene_flow_dir_analysis.png'), dpi=400)

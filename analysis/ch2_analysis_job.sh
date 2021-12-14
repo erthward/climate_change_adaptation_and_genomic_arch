@@ -25,12 +25,12 @@ module load python gsl gcc rclone
 
 # plot phenotypic shift results, then push results to BDrive
 python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/plot_change_phenotypic_space_ch2.py > pheno_plotting.pyout
-for f in `ls ./phenotypic_shift_L*_G*.png`; do rclone $f bdrive:ch2_outputs; done
+for f in `ls ./phenotypic_shift_L*_G*.png`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
 
 # plot directional gene flow results
 python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/estimate_von_mises_mixture_params_all_files.py > gene_flow_param_fitting.pyout
 python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/vis_vM_mix_dists.py > gene_flow_plotting.pyout
-rclone 
+rclone copy ch2_gene_flow_dir_analysis.png bdrive:ch2_outputs/analysis/
 
 # make plots for population size and average fitness
 

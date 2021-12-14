@@ -27,7 +27,7 @@ import os
 n_its = 1
 # set the different numbers of loci to use
 #genicities = [4, 20, 100]
-genicities = [2, 10, 50]
+genicities = [4, 20, 50]
 # set the different linkage levels to use
 linkages = ['independent', 'weak', 'strong']
 linkages_dict = {'independent': {'r_distr_alpha': 0.5,
@@ -116,10 +116,9 @@ if os.getcwd().split('/')[1] == 'home':
 # or else get filepaths on Savio
 else:
     params_filepath=(('/global/scratch/users/drewhart/ch2/'
-                      'climate_change_adaptation_and_genomic_arch/template_params.py'))
+                      'climate_change_adaptation_and_genomic_arch/sim/template_params.py'))
     # path to dir for output CSVs
-    #output_path = '/global/scratch/users/drewhart/ch2/output/test_full_batch'
-    output_path = '/global/scratch/users/drewhart/ch2/output/test_full_batch/'
+    output_path = '/global/scratch/users/drewhart/ch2/output/test_batch/'
 
 #---------------------------------
 # read, tweak, and copy the params

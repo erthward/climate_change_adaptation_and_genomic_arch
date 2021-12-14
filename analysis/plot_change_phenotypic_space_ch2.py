@@ -26,6 +26,9 @@ fig_height = 4.6
 dpi = 400
 n_ticklabels = 5
 
+# data directory
+datadir = '/global/scratch/users/drewhart/ch2/output/analysis_dir'
+
 # way to hard-code the vmax values for the scenarios, given that it would
 # be kind of a pain to write code to do just this
 linkages = ['independent', 'weak', 'strong']
@@ -67,13 +70,13 @@ def plot_phenotypic_shift(linkage, genicity):
                      '\d{5,6}_it--1_t-2\d{3}_spp-spp_0.csv') % (linkage, genicity)
 
     filenames = {}
-    for dirname in os.listdir('.'):
+    for dirname in os.listdir(datadir):
         if (dirname.startswith('GNX_') and
             re.search(dirname_patt, dirname)):
             candidate_filenames = [fn for fn in os.listdir(os.path.join(
-                dirname, 'it--1', 'spp-spp_0')) if re.search(filename_patt,
+                datadir, dirname, 'it--1', 'spp-spp_0')) if re.search(filename_patt,
                                                              fn)]
-            candidate_filenames = [os.path.join(dirname, 'it--1', 'spp-spp_0',
+            candidate_filenames = [os.path.join(datadir, dirname, 'it--1', 'spp-spp_0',
                                             fn) for fn in candidate_filenames]
             # only add this directory and its files to the analysis if I got all 3 timeteps,
             # otherwise print warning
@@ -229,8 +232,8 @@ for linkage in ['independent', 'weak', 'strong']:
             # make the fig
             fig = plot_phenotypic_shift(linkage, genicity)
             # save the fig
-            fig.savefig('phenotypic_shift_L%s_G%s.png' % (linkage,
-                                                        str(genicity).zfill(2)),
+            fig.savefig(os.path.join(datadir, 'phenotypic_shift_L%s_G%s.png' % (linkage,
+                                                        str(genicity).zfill(2))),
                         dpi=dpi,
                         orientation='landscape',
                        )

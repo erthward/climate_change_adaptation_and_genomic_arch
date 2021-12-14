@@ -22,5 +22,5 @@
 
 module load python gsl gcc
 
-python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/parallelize_batches.py > ch2_job.pyout
+python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/sim/parallelize_batches.py > ch2_job.pyout
 

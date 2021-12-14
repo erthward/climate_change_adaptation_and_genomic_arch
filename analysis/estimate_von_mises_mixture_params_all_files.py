@@ -3,13 +3,14 @@ import pandas as pd
 import multiprocessing as mp
 from estimate_von_mises_mixture_params import estimate_von_mises_mixture_params
 
-datadir = '../../output/output/'
+#datadir = '../../output/output/'
+datadir = '/global/scratch/users/drewhart/ch2/output/analysis_dir'
 file_patt = 'DIR_short\.csv'
 
 if __name__ == '__main__':
     # get all valid files to be processed
     files = [os.path.join(datadir, f) for f in os.listdir(datadir) if re.search(
-                                                        'DIR_short\.csv', f)]
+                                                        'DIR\.csv', f)]
     # how many CPUs?
     ncpu = mp.cpu_count()
     print("\n\nUSING %i CPUs\n" % ncpu)
