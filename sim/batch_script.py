@@ -32,9 +32,9 @@ genicities = [4, 20, 100]
 linkages = ['independent', 'weak', 'strong']
 linkages_dict = {'independent': {'r_distr_alpha': 0.5,
                                  'r_distr_beta': None},
-                 'weak': {'r_distr_alpha': 0.05,
+                 'weak': {'r_distr_alpha': 0.5,
                           'r_distr_beta': None},
-                 'strong': {'r_distr_alpha': 0.005,
+                 'strong': {'r_distr_alpha': 0.5,
                             'r_distr_beta': None}
            }
 
@@ -118,7 +118,7 @@ else:
     params_filepath=(('/global/scratch/users/drewhart/ch2/'
                       'climate_change_adaptation_and_genomic_arch/sim/template_params.py'))
     # path to dir for output CSVs
-    output_path = '/global/scratch/users/drewhart/ch2/output/test_batch/'
+    output_path = '/global/scratch/users/drewhart/ch2/output/test_check_linkage_on_plots/'
 
 #---------------------------------
 # read, tweak, and copy the params
@@ -341,7 +341,7 @@ def store_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
     return(stats_output)
 
 
-def make_genarch_file(genicity, linkage, pid, write=True):
+def make_custom_genarch_file(genicity, recomb_rate, pid, write=True):
     assert(isinstance(genicity, int))
     L = int(genicity*2)
     assert(L%4==0)
@@ -349,7 +349,7 @@ def make_genarch_file(genicity, linkage, pid, write=True):
     locus = [*range(L)]
     p = [0.5]*L # all loci start at MAF==0.5
     dom = [0]*L # all codominant
-    r = [0]+[linkage]*(L-1) # first locus must be 0
+    r = [0]+[recomb_rate]*(L-1) # first locus must be 0
     trait = ['trait_0', 'trait_1']*int((L/2)) # alternate traits
     alpha = [1/genicity,
              1/genicity,
@@ -357,7 +357,7 @@ def make_genarch_file(genicity, linkage, pid, write=True):
              -1/genicity]*int(L/4) # alpha of 1/genicity --> can reach all phenotypes [0,1]
     df = pd.DataFrame.from_dict(dict(zip(cols, [locus, p, dom, r, trait, alpha])))
     if write:
-        tmp_filename = 'tmp_genarch_%i.csv' % pid
+        tmp_filename = 'tmp_genarch_%s.csv' % pid
         df.to_csv(tmp_filename, index=False)
     return tmp_filename
 
@@ -377,7 +377,8 @@ def set_params(params, linkage, genicity, nullness):
     copy_params['model']['name'] = model_name
 
     # create the custom genomic architecture file and connect it to the params
-    genarch_filename = make_genarch_file(genicity, linkage, pid)
+    recomb_rate = linkages_dict[linkage]['r_distr_alpha']
+    genarch_filename = make_custom_genarch_file(genicity, recomb_rate, pid)
     copy_params['comm']['species']['spp_0']['gen_arch'][
                                         'gen_arch_file'] = genarch_filename
 
@@ -464,7 +465,7 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         assert 'unnamed' not in mod.name, 'STILL UNNAMED!'
 
         # delete the temporary genarch file
-        os.remote(genarch_filename)
+        os.remove(genarch_filename)
 
         # check the recombination rates
         check_recomb_rates(mod)
