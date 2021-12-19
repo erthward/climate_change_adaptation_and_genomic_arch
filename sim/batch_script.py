@@ -32,9 +32,9 @@ genicities = [4, 20, 100]
 linkages = ['independent', 'weak', 'strong']
 linkages_dict = {'independent': {'r_distr_alpha': 0.5,
                                  'r_distr_beta': None},
-                 'weak': {'r_distr_alpha': 0.5,
+                 'weak': {'r_distr_alpha': 0.05,
                           'r_distr_beta': None},
-                 'strong': {'r_distr_alpha': 0.5,
+                 'strong': {'r_distr_alpha': 0.005,
                             'r_distr_beta': None}
            }
 
@@ -118,7 +118,7 @@ else:
     params_filepath=(('/global/scratch/users/drewhart/ch2/'
                       'climate_change_adaptation_and_genomic_arch/sim/template_params.py'))
     # path to dir for output CSVs
-    output_path = '/global/scratch/users/drewhart/ch2/output/test_check_linkage_on_plots/'
+    output_path = '/global/scratch/users/drewhart/ch2/output/test_check_linkage_labels_on_plots/'
 
 #---------------------------------
 # read, tweak, and copy the params
@@ -562,7 +562,8 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
 
             #set the row and/or col labels, if needed
             if col_idx == 0 and row_idx in [0, 2, 4]:
-                ax.set_ylabel('linkage: %s' % str(linkage), size=rowlab_size)
+                ax.set_ylabel('linkage: %s' % (str(linkage) + ': ' + str(mod.comm[0].gen_arch.recombinations._rates[3])), size=rowlab_size)
+                #ax.set_ylabel('linkage: %s' % str(linkage), size=rowlab_size)
             if row_idx == 0 and col_idx in [0, 2, 4]:
                 ax.set_title('genicity: %s' % str(genicity), size=collab_size)
 
