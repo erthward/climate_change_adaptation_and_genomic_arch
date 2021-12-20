@@ -277,6 +277,16 @@ def store_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
 
     # grab the non-neutral loci
     nonneut_loci = mod.comm[0].gen_arch.traits[0].loci
+    # and reduce them down to a number of loci equal to half of the minimum
+    # genicity (to ensure equal sample sizes in my ultimate fitted von Mises
+    # distributions),
+    # using only positive-effect loci (since the typical expectation is that
+    # they would flow upslope (i.e., east)
+    sample_loci = mod.comm[0].gen_arch.traits[0].loci[
+        np.random.choice(np.where(mod.comm[0].gen_arch.traits[0].alpha>0)[0],
+                         size=2, replace=False)]
+    print('SAMPLE LOCI THIS TIME: ', str(sample_loci))
+
     # grab random neutral loci eqaul in amt to the num of non-neutral loci
     #neut_loci = np.random.choice(mod.comm[0].gen_arch.neut_loci, genicity,
     #                             replace=False)
@@ -297,7 +307,8 @@ def store_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
                                                            'speed'],
                                     use_individs_curr_pos=use_individs_curr_pos,
                                                     max_time_ago=max_time_ago,
-                                                    loci=nonneut_loci)
+                                                    loci=sample_loci)
+                                                    #loci=nonneut_loci)
     #neut_stats = mod.comm[0]._calc_lineage_stats(stats=['dir', 'dist', 'speed'],
     #                                use_individs_curr_pos=use_individs_curr_pos,
     #                                             max_time_ago=max_time_ago,
