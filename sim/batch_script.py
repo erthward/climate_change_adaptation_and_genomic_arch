@@ -69,7 +69,7 @@ T = 2750
 # calc length of environmental change period
 deltaT_env_change = T - change_T
 # reset the K_factor (if desired)
-K_factor = 1
+K_factor = 4
 # print out debugging info?
 debug_verbose = True
 
@@ -118,7 +118,11 @@ else:
     params_filepath=(('/global/scratch/users/drewhart/ch2/'
                       'climate_change_adaptation_and_genomic_arch/sim/template_params.py'))
     # path to dir for output CSVs
-    output_path = '/global/scratch/users/drewhart/ch2/output/test_check_linkage_labels_on_plots/'
+    output_path = '/global/scratch/users/drewhart/ch2/output/output_dir'
+
+# make sure job is running in the right directory
+#os.chdir(output_path)
+#print("NOW IN THIS DIR! ", os.getcwd())
 
 #---------------------------------
 # read, tweak, and copy the params
@@ -463,6 +467,8 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         mod = gnx.make_model(gnx.make_params_dict(copy_params),
                              name=copy_params['model']['name'])
         assert 'unnamed' not in mod.name, 'STILL UNNAMED!'
+
+        print("AFTER MAKING MODEL WD IS ", os.getcwd())
 
         # delete the temporary genarch file
         os.remove(genarch_filename)
