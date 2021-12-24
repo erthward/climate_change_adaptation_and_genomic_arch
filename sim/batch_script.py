@@ -831,11 +831,13 @@ min_y_af_col = []
 max_y_af_col = []
 
 # dict to become dataframe for mean phenotype data
-mean_z_dict = {k:[] for k in ['time_step',
-                            'nullness',
-                            'genicity',
-                            'linkage',
-                            'val']}
+ts_data_dict = {k:[] for k in ['time_step',
+                               'nullness',
+                               'genicity',
+                               'linkage',
+                               'Nt',
+                               'mean_fit',
+                               'mean_z']}
 
 cts_table_list_idx = 0
 cts_table_list = [0] * (2 * len(linkages) * len(genicities))
