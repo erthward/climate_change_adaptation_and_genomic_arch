@@ -362,9 +362,9 @@ params = {
                     'allow_ad_hoc_recomb':       False,
                     #whether to save mutation logs
                     'mut_log':                  False,
-		    'jitter_breakpoints': False,
-		    'use_tskit': True,
-		    'tskit_simp_interval': 100,
+                    'jitter_breakpoints': False,
+                    'use_tskit': True,
+                    'tskit_simp_interval': 100,
 
                     'traits': {
 
@@ -464,7 +464,7 @@ params = {
             'rand_landscape':   False,
             #whether to randomize Community each iteration
             'rand_comm':        False,
-	    'rand_genarch':     True,
+            'rand_genarch':     True,
             #whether to burn in each iteration
             'repeat_burn':      False,
             }, # <END> 'iterations'

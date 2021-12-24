@@ -45,7 +45,7 @@ pid = str(os.getpid())
 border_patt = ">~~<"
 max_len_gen_str = max([len(str(gen)) for gen in genicities])
 gen_row_headers = ["%s ||" % (str(gen) + (" " * (max_len_gen_str -
-                                        len(str(gen))))) for gen in genicities] 
+                                        len(str(gen))))) for gen in genicities]
 gen_rows = [head + (" nul: %s  non: %s |" * len(
                                         linkages)) for head in gen_row_headers]
 max_len_it_str = len(str(n_its))
@@ -68,6 +68,9 @@ change_T = 2500
 T = 2750
 # calc length of environmental change period
 deltaT_env_change = T - change_T
+# calc time prior to climate change to start storing Nt, mean fitness, and mean
+# phenotype
+t_record_data_b4_env_change = change_T - deltaT_env_change
 # reset the K_factor (if desired)
 K_factor = 4
 # print out debugging info?
@@ -467,6 +470,12 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
     min_y_af = []
     max_y_af = []
 
+    # Nt, mean fitness, and mean phenotype
+    # (to be recorded for each time step during climate change, and for an 
+    # equal-length petiod beforehand, for viz and stats analysis)
+    Nt_list = []
+    mean_fit_list = []
+    mean_z_list = []
 
     # loop through the iterations
     for n_it in range(n_its):
@@ -533,7 +542,14 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
 
         # run the model up to the env change event
         for t in range(change_T):
-        #for t in range(2):
+
+            # record the Nt, mean fit, and mean z, if <= deltaT_env_change
+            # prior to climate change
+            if t >= t_record_data_b4_env_change:
+                Nt_list.append(mod.comm[0].Nt[-1])
+                mean_fit_list.append(np.mean(mod.comm[0]._get_fit()))
+                mean_z_list.append(np.mean(mod.comm[0]._get_z()[:,0]))
+
 
             # keep printing the number of loci,
             # to help me track things while it's running
@@ -587,6 +603,11 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         # run the model through the env change event
         for t in range(change_T, T):
 
+            # record the Nt, mean fit, and mean z
+            Nt_list.append(mod.comm[0].Nt[-1])
+            mean_fit_list.append(np.mean(mod.comm[0]._get_fit()))
+            mean_z_list.append(np.mean(mod.comm[0]._get_z()[:,0]))
+
             # keep printing the number of loci,
             # to help me track things while it's running
             n_loci = len(mod.comm[0].gen_arch.traits[0].loci)
@@ -604,6 +625,12 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         af_ys = mod.comm[0]._get_y()
         min_x_af_val, max_x_af_val, min_y_af_val, max_y_af_val = [min(af_xs), max(af_xs),
                                                   min(af_ys), max(af_ys)]
+
+        # record the Nt, mean fit, and mean z
+        Nt_list.append(mod.comm[0].Nt[-1])
+        mean_fit_list.append(np.mean(mod.comm[0]._get_fit()))
+        mean_z_list.append(np.mean(mod.comm[0]._get_z()[:,0]))
+
 
 
         # calculate the mean vars after the shift, then the diffs
@@ -734,7 +761,8 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
             #std_dir_neut,
             std_dir_nonneut,
             min_x_b4, max_x_b4, min_y_b4, max_y_b4,
-            min_x_af, max_x_af, min_y_af, max_y_af)
+            min_x_af, max_x_af, min_y_af, max_y_af,
+            Nt_list, mean_fit_list, mean_z_list)
 
 
 # gather gene flow data into DataFrames
@@ -802,6 +830,12 @@ max_x_af_col = []
 min_y_af_col = []
 max_y_af_col = []
 
+# dict to become dataframe for mean phenotype data
+mean_z_dict = {k:[] for k in ['time_step',
+                            'nullness',
+                            'genicity',
+                            'linkage',
+                            'val']}
 
 cts_table_list_idx = 0
 cts_table_list = [0] * (2 * len(linkages) * len(genicities))
@@ -822,12 +856,15 @@ for genicity in genicities:
          #std_dir_neut,
          std_dir_nonneut,
          min_x_b4, max_x_b4, min_y_b4, max_y_b4,
-         min_x_af, max_x_af, min_y_af, max_y_af) = run_sim(
-                                                  'non-null', linkage,
-                                                  genicity, n_its,
-                                                  params, output,
-                                                  cts_table_list,
-                                                  cts_table_list_idx)
+         min_x_af, max_x_af, min_y_af, max_y_af,
+         Nt_list, mean_fit_list, mean_z_list) = run_sim( 'non-null',
+                                                        linkage,
+                                                        genicity,
+                                                        n_its,
+                                                        params,
+                                                        output,
+                                                        cts_table_list,
+                                                        cts_table_list_idx)
         cts_table_list_idx += 1
 
         #--------------------
@@ -844,12 +881,16 @@ for genicity in genicities:
          #std_dir_neut_null,
          std_dir_nonneut_null,
          min_x_b4_null, max_x_b4_null, min_y_b4_null, max_y_b4_null,
-         min_x_af_null, max_x_af_null, min_y_af_null, max_y_af_null) = run_sim(
-                                                  'null', linkage,
-                                                  genicity, n_its,
-                                                  params, output,
-                                                  cts_table_list,
-                                                  cts_table_list_idx)
+         min_x_af_null, max_x_af_null, min_y_af_null, max_y_af_null,
+         Nt_list_null, mean_fit_list_null, mean_z_list_null) = run_sim(
+                                                        'null',
+                                                         linkage,
+                                                         genicity,
+                                                         n_its,
+                                                         params,
+                                                         output,
+                                                         cts_table_list,
+                                                         cts_table_list_idx)
         cts_table_list_idx += 1
 
         #-------------------------
@@ -904,8 +945,20 @@ for genicity in genicities:
         max_y_af_col.extend(max_y_af)
         max_y_af_col.extend(max_y_af_null)
 
-
-
+        # store mean phenotype data
+        ts_data_dict['time_step'].extend([*range(len(mean_z_list))]*2)
+        ts_data_dict['nullness'].extend((['non-null']*len(mean_z_list)) + (
+                                        ['null']*len(mean_z_list_null)))
+        ts_data_dict['genicity'].extend([genicity]*len(mean_z_list)*2)
+        ts_data_dict['linkage'].extend([linkage]*len(mean_z_list)*2)
+        ts_data_dict['Nt'].extend(Nt_list)
+        ts_data_dict['Nt'].extend(Nt_list_null)
+        ts_data_dict['mean_fit'].extend(mean_fit_list)
+        ts_data_dict['mean_fit'].extend(mean_fit_list_null)
+        ts_data_dict['mean_z'].extend(mean_z_list)
+        ts_data_dict['mean_z'].extend(mean_z_list_null)
+        assert len(np.unique([len(v) for v in ts_data_dict.values()])) == 1, (
+            'all columns in ts_data_dict are not equal length!')
 
         assert (len(linkage_col) == len(genicity_col) == len(nullness_col) ==
                 len(delta_Nt_col) == len(delta_fit_col))
@@ -939,6 +992,7 @@ df = pd.DataFrame({'linkage': linkage_col,
 
 df_dir = make_stat_df('dir', output)
 df_dist = make_stat_df('dist', output)
+df_ts_data = pd.DataFrame(ts_data_dict)
 print("\n\ndir and dist dfs' lengths' equal?:   ",
       df_dir.shape[0] == df_dist.shape[0],
       '\n\n')
@@ -1038,6 +1092,9 @@ fig_hist.savefig(output_path + '/fig_hist' + '_PID-%s' % pid + '.png',
 df.to_csv(os.path.join(output_path, 'output_PID-%s.csv' % pid), index=False)
 
 # dfs containing raw dir and dist data from individual locus-chrom combos
-df_dir.to_csv(os.path.join(output_path, 'output_PID-%s_DIR.csv' % pid), index=False)
-df_dist.to_csv(os.path.join(output_path, 'output_PID-%s_DIST.csv' % pid), index=False)
-
+df_dir.to_csv(os.path.join(output_path, 'output_PID-%s_DIR.csv' % pid),
+              index=False)
+df_dist.to_csv(os.path.join(output_path, 'output_PID-%s_DIST.csv' % pid),
+               index=False)
+df_ts_data.to_csv(os.path.join(output_path, 'output_PID-%s_TS_DATA.csv' % pid),
+                 index=False)
