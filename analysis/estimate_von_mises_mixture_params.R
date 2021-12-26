@@ -13,10 +13,8 @@ if (plot.examp){
 args = commandArgs(trailingOnly=T)
 stopifnot(length(args)==1)
 datafile = args[1]
-print(gsub('DIR_', 'DIR_FITTED_PARAMS_', datafile))
 
 # read data from some of my simulation output
-#data <- read.csv('../output/output/output_PID-182509_DIR_short.csv')
 data <- read.csv(datafile)
 
 # fn to read the data for a given set of values of the columns
@@ -211,7 +209,6 @@ for (genicity in uniques[['genicity']]){
                     output[['nullness']] <- c(output[['nullness']], nullness) 
                     output[['it']] <- c(output[['it']], it) 
                 }
-                }
             }
         }
     }
@@ -222,34 +219,5 @@ for (genicity in uniques[['genicity']]){
 output.df = data.frame(output)
 
 # write output.df to disk
-out.filename = gsub('DIR_', 'DIR_FITTED_PARAMS_', datafile)
+out.filename = gsub('_DIR', '_DIR_FITTED_PARAMS', datafile)
 write.csv(output.df, out.filename, row.names=F)
-
-
-##############################
-# DELETE ME ##################
-##############################
-
-
-
-# function to calculate the CDF of a von Mises mixture dist
-calc.CDF.movMF <- function(kappa, alpha){
-    # vector of quantiles
-    qs = seq(0, 100, 0.01)
-    cdfs = list()
-    for (i in seq(length(mu))){
-        cdf = c()
-        for (q in qs){
-            # TODO: WTF TO DO ABOUT FACT THAT THERE'S NO MU?
-            p = pvmises(q, kappa = kappa[i], lower.tail = TRUE)
-            cdf = c(cdf, p)
-        }
-        cdfs[[i]] = cdf
-    }
-    #TODO: HOW TO SUM ARBITRARY-LENGTH LIST OF EQUAL-LENGTH VECTORS? (just loop it)
-    #TODO: RETURN SUM
-}
-
-# TODO: FUNCTION TO CALC KS TEST STAT FOR A GIVEN RESULT?
-
-# TODO: FN TO RUN KS TESTS FOR 1-4 MIX DISTS, RETURN RESULTS OF BEST FITTING?
