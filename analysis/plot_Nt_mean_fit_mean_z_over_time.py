@@ -23,15 +23,14 @@ fig_height = 6
 dpi = 400
 n_ticklabels = 5
 
-# time step when env change event starts
-env_change_start = 50
-#env_change_start = 2500
 
 # data directory
-datadir = '/home/deth/Desktop/CAL/research/projects/sim/geonomics'
-#datadir = '/global/scratch/users/drewhart/ch2/output/analysis_dir'
-filename_patt = 'PRACTICE_TS_DATA.*csv'
-#filename_patt = 'output_PID-.*_TS_DATA.csv'
+if os.getcwd().split('/')[1] == 'home':
+    datadir = ('/home/deth/Desktop/CAL/research/projects/sim/ch2/'
+               'climate_change_adaptation_and_genomic_arch/analysis')
+else:
+    datadir = '/global/scratch/users/drewhart/ch2/output/analysis_dir'
+filename_patt = 'output_PID-.*_TS_DATA.csv'
 
 # list of files to plot
 files = [os.path.join(datadir, f) for f in os.listdir(datadir) if re.search(
@@ -48,7 +47,10 @@ genicities =  [4, 20, 100]
 df = pd.concat([pd.read_csv(f, na_filter=False) for f in files])
 
 # get list of the ordered time steps
-time_steps = np.sort(np.unique(df.time_step))
+env_change_start = 2500
+len_env_change_event = int(np.max(df.time_step)/2)
+time_steps = [*range(env_change_start-len_env_change_event,
+                     env_change_start+len_env_change_event)]
 
 
 def plot_ts_for_all_scenarios(df, var, show_plots=False):
@@ -61,17 +63,9 @@ def plot_ts_for_all_scenarios(df, var, show_plots=False):
     ymax = np.max(df[var])
 
     # create a fig for non-null sims and another for null
-    fig_nonnull = plt.figure(dpi=dpi, figsize=(fig_width, fig_height))
-    fig_null = plt.figure(dpi=dpi, figsize=(fig_width, fig_height))
-    gs_nonnull = fig_nonnull.add_gridspec(nrows=3, ncols=3,
-                                          width_ratios=[1]*3)
-    gs_null = fig_null.add_gridspec(nrows=3, ncols=3,
+    fig = plt.figure(dpi=dpi, figsize=(fig_width, fig_height))
+    gs = fig.add_gridspec(nrows=3, ncols=3,
                                     width_ratios=[1]*3)
-
-    # package fig objects to be looped over
-    fig_objs = {'non-null': [fig_nonnull, gs_nonnull],
-                'null': [fig_null, gs_null]
-               }
 
     uncertainty_colors = {'non-null':'#c4626e77', # red
                           'null': '#79c2d977', # blue
@@ -81,9 +75,10 @@ def plot_ts_for_all_scenarios(df, var, show_plots=False):
     for linkage_i, linkage in enumerate(linkages):
         for genicity_j, genicity in enumerate(genicities):
 
+            ax = fig.add_subplot(gs[linkage_i, genicity_j])
+
             # loop over nullnesses
-            for nullness, objs in fig_objs.items():
-                fig, gs = objs
+            for nullness in ['null', 'non-null']:
 
                 # subset the df
                 subdf = df[(df.nullness == nullness) &
@@ -94,15 +89,14 @@ def plot_ts_for_all_scenarios(df, var, show_plots=False):
                 means = []
                 pctiles_5 = []
                 pctiles_95 = []
-                for ts in time_steps:
-                    vals = subdf[subdf.time_step == ts][var]
+                for ts_i, ts in enumerate(time_steps):
+                    vals = subdf[subdf.time_step == ts_i][var]
                     means.append(np.mean(vals))
                     pctiles = np.percentile(vals, [5, 95])
                     pctiles_5.append(pctiles[0])
                     pctiles_95.append(pctiles[1])
 
                 # plot this scenario
-                ax = fig.add_subplot(gs[linkage_i, genicity_j])
                 uncertainty = plt.Polygon([*zip(time_steps, pctiles_5)] +
                                 [*zip(time_steps[::-1], pctiles_95[::-1])] +
                                 [[time_steps[0], pctiles_5[0]]])
@@ -137,22 +131,15 @@ def plot_ts_for_all_scenarios(df, var, show_plots=False):
         plt.show()
     else:
         # adjust suplot spacing, and add suptitle
-        for nullness, fig in zip(['non-null', 'null'],
-                                 [fig_nonnull, fig_null]):
-            fig.subplots_adjust(left=0.08,
-                                bottom=0.1,
-                                right=0.99,
-                                top=0.88,
-                                wspace=0.1,
-                                hspace=0.1)
-            fig.suptitle('%s: %s' % (var, nullness))
-        fig_nonnull.savefig(os.path.join(datadir,
-                                         'ch2_%s_over_time.jpg' % var),
+        fig.subplots_adjust(left=0.08,
+                            bottom=0.1,
+                            right=0.99,
+                            top=0.88,
+                            wspace=0.1,
+                            hspace=0.1)
+        fig.suptitle('%s' % var)
+        fig.savefig(os.path.join(datadir, 'ch2_%s_over_time.jpg' % var),
                             dpi=dpi, orientation='landscape')
-        fig_null.savefig(os.path.join(datadir,
-                                      'ch2_%s_over_time_NULL.jpg' % var),
-                            dpi=dpi, orientation='landscape')
-
 
 plot_ts_for_all_scenarios(df, 'Nt')
 plot_ts_for_all_scenarios(df, 'mean_fit')

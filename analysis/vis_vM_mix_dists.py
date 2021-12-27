@@ -17,7 +17,11 @@ dpi = 400
 n_ticklabels = 5
 
 # data directory
-datadir = '/global/scratch/users/drewhart/ch2/output/analysis_dir'
+if os.getcwd().split('/')[1] == 'home':
+    datadir = ('/home/deth/Desktop/CAL/research/projects/sim/'
+               'ch2/climate_change_adaptation_and_genomic_arch/analysis')
+else:
+    datadir = '/global/scratch/users/drewhart/ch2/output/analysis_dir'
 
 # TODO:
 
@@ -190,7 +194,7 @@ def vis_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None, nullness
         return
 
 
-def make_vM_mix_dist_comparison_grid(df, neutrality='nonneut', it=None,
+def make_vM_mix_dist_comparison_grid(df, it=None,
                                      col_labelsize=col_label_fontsize,
                                      row_labelsize=row_label_fontsize,
                                      plot_type='circ'):
@@ -229,8 +233,7 @@ def make_vM_mix_dist_comparison_grid(df, neutrality='nonneut', it=None,
 
             # subset the df
             subdf = df[(df.linkage == linkage) &
-                       (df.genicity == genicity) &
-                       (df.neutrality == neutrality)]
+                       (df.genicity == genicity)]
             # subset further, by nullness
             for nullness in ['null', 'non-null']:
                 nullness_subdf = subdf[subdf.nullness == nullness]
