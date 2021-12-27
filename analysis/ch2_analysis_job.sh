@@ -44,6 +44,6 @@ python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_
 
 # copy all results to BDrive
 echo "NOW PUSHING EVERYTHING TO BDRIVE USING RCLONE"
-for f in `ls /global/scratch/users/drewhart/ch2/output/analysis_dir/phenotypic_shift_L*_G*.png`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
-rclone copy /global/scratch/users/drewhart/ch2/output/analysis_dir/ch2_gene_flow_dir_analysis.png bdrive:ch2_outputs/analysis/
-for f in `ls /global/scratch/users/drewhart/ch2/output/analysis_dir/ch2_*_over_time.jpg`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
+for f in `ls /global/scratch/users/drewhart/ch2/output/analysis/phenotypic_shift_L*_G*.png`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
+rclone copy /global/scratch/users/drewhart/ch2/output/analysis/ch2_gene_flow_dir_analysis.png bdrive:ch2_outputs/analysis/
+for f in `ls /global/scratch/users/drewhart/ch2/output/analysis/ch2_*_over_time.jpg`; do rclone copy $f bdrive:ch2_outputs/analysis/; done

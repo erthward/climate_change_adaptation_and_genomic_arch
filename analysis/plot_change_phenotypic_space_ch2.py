@@ -27,7 +27,7 @@ dpi = 400
 n_ticklabels = 5
 
 # data directory
-datadir = '/global/scratch/users/drewhart/ch2/output/analysis_dir'
+datadir = '/global/scratch/users/drewhart/ch2/output/analysis'
 
 # way to hard-code the vmax values for the scenarios, given that it would
 # be kind of a pain to write code to do just this
