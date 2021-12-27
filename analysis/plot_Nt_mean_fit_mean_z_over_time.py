@@ -35,6 +35,7 @@ filename_patt = 'output_PID-.*_TS_DATA.csv'
 # list of files to plot
 files = [os.path.join(datadir, f) for f in os.listdir(datadir) if re.search(
                                                         filename_patt, f)]
+print(files)
 
 # way to hard-code the vmax values for the scenarios, given that it would
 # be kind of a pain to write code to do just this
