@@ -49,9 +49,9 @@ df = pd.concat([pd.read_csv(f, na_filter=False) for f in files])
 
 # get list of the ordered time steps
 env_change_start = 2500
-len_env_change_event = int(np.max(df.time_step)/2)
+len_env_change_event = int(np.max(df.time_step)/3)
 time_steps = [*range(env_change_start-len_env_change_event,
-                     env_change_start+len_env_change_event)]
+                     env_change_start+(2*len_env_change_event))]
 
 
 def plot_ts_for_all_scenarios(df, var, show_plots=False):
@@ -105,7 +105,10 @@ def plot_ts_for_all_scenarios(df, var, show_plots=False):
                 ax.add_patch(uncertainty)
                 ax.plot([env_change_start, env_change_start],
                         [ymin, ymax], ':r', alpha = 1)
-                ax.plot(time_steps, means, 'k')
+                ax.plot([env_change_start+len_env_change_event,
+                         env_change_start+len_env_change_event],
+                        [ymin, ymax], ':r', alpha = 1)
+                ax.plot(time_steps, means, 'k', linewidth=0.75)
 
                 # titles and labels, other axes params
                 if linkage_i == 0:

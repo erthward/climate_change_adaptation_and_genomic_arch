@@ -263,6 +263,24 @@ def estimate_vonmises_params(angs, p=2, return_sigmahat=True):
         return muhat_ang, kappahat
 
 
+def convert_compass_ang_2_quadrant_ang(ang, in_rads=True):
+    out_ang = -ang+90
+    if out_ang <0:
+        out_ang = out_ang+360
+    if in_rads:
+        out_ang = 2*np.pi*(out_ang/360)
+    return out_ang
+
+
+def calc_NSness_Eness(dirs):
+    # calculate and store 'north/southness' and 'eastness'
+    sines = [np.sin(convert_compass_ang_2_quadrant_ang(d)) for d in dirs]
+    cosines = [np.cos(convert_compass_ang_2_quadrant_ang(d)) for d in dirs]
+    NSness = np.mean(np.abs(sines))
+    Eness = np.mean([d for d in cosines if d >= 0])
+    return (NSness, Eness)
+
+
 def store_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
               fit_data):
     '''
@@ -275,7 +293,7 @@ def store_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
                     'dir': {k: np.nan for k in ['mu_neut', 'mu_nonneut',
                                                 'kappa_neut', 'kappa_nonneut',
                                                 'std_neut', 'std_nonneut',
-                                                'pval']}
+                                                'pval', 'NSness', 'Eness']}
                    }
 
     # grab the non-neutral loci
@@ -351,6 +369,10 @@ def store_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
             stats_output[stat]['mu_nonneut'] = nonneut_ests[0]
             stats_output[stat]['kappa_nonneut'] = nonneut_ests[1]
             stats_output[stat]['std_nonneut'] = nonneut_ests[2]
+            # calculate and store the 'north/southness' and 'eastness'
+            NSness, Eness = calc_NSness_Eness(nonneut_data)
+            stats_output[stat]['NSness'] = NSness
+            stats_output[stat]['Eness'] = Eness
 
     # store the non-gene-flow data in the right places
     output[nullness][linkage][genicity]['Nt'][n_it].extend(mod.comm[0].Nt)
@@ -461,6 +483,8 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
     kappa_dir_nonneut = []
     #std_dir_neut = []
     std_dir_nonneut = []
+    NSness = []
+    Eness = []
     min_x_b4 = []
     max_x_b4 = []
     min_y_b4 = []
@@ -620,6 +644,18 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
             # store the fitness value
             fit_data.append(np.mean(mod.comm[0]._get_fit()))
 
+        # run the model for another 250 time steps after the climate change
+        # period, just to see if/where impacts are lagged and/or persistent
+        for t in range(T, T+deltaT_env_change):
+
+            # record the Nt, mean fit, and mean z
+            Nt_list.append(mod.comm[0].Nt[-1])
+            mean_fit_list.append(np.mean(mod.comm[0]._get_fit()))
+            mean_z_list.append(np.mean(mod.comm[0]._get_z()[:,0]))
+
+            # walk 1 step
+            mod.walk(1, mode='main', verbose=mod_verbose)
+
         # calculate the min and max x and y coords of the population again
         af_xs = mod.comm[0]._get_x()
         af_ys = mod.comm[0]._get_y()
@@ -652,6 +688,8 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         kappa_dir_nonneut.append(dir_stats['kappa_nonneut'])
         #std_dir_neut.append(dir_stats['std_neut'])
         std_dir_nonneut.append(dir_stats['std_nonneut'])
+        NSness.append(dir_stats['NSness'])
+        Eness.append(dir_stats['NSness'])
 
         min_x_b4.append(min_x_b4_val)
         max_x_b4.append(max_x_b4_val)
@@ -760,6 +798,7 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
             kappa_dir_nonneut,
             #std_dir_neut,
             std_dir_nonneut,
+            NSness, Eness,
             min_x_b4, max_x_b4, min_y_b4, max_y_b4,
             min_x_af, max_x_af, min_y_af, max_y_af,
             Nt_list, mean_fit_list, mean_z_list)
@@ -819,6 +858,8 @@ mu_dir_nonneut_col = []
 kappa_dir_nonneut_col = []
 #std_dir_neut_col = []
 std_dir_nonneut_col = []
+NSness_col = []
+Eness_col = []
 #mean_dist_neut_col = []
 mean_dist_nonneut_col = []
 min_x_b4_col = []
@@ -857,6 +898,7 @@ for genicity in genicities:
          kappa_dir_nonneut,
          #std_dir_neut,
          std_dir_nonneut,
+         NSness, Eness,
          min_x_b4, max_x_b4, min_y_b4, max_y_b4,
          min_x_af, max_x_af, min_y_af, max_y_af,
          Nt_list, mean_fit_list, mean_z_list) = run_sim( 'non-null',
@@ -882,6 +924,7 @@ for genicity in genicities:
          kappa_dir_nonneut_null,
          #std_dir_neut_null,
          std_dir_nonneut_null,
+         NSness_null, Eness_null,
          min_x_b4_null, max_x_b4_null, min_y_b4_null, max_y_b4_null,
          min_x_af_null, max_x_af_null, min_y_af_null, max_y_af_null,
          Nt_list_null, mean_fit_list_null, mean_z_list_null) = run_sim(
@@ -926,6 +969,10 @@ for genicity in genicities:
         #std_dir_neut_col.extend(std_dir_neut_null)
         std_dir_nonneut_col.extend(std_dir_nonneut)
         std_dir_nonneut_col.extend(std_dir_nonneut_null)
+        NSness_col.extend(NSness)
+        NSness_col.extend(NSness_null)
+        Eness_col.extend(Eness)
+        ESness_col.extend(Eness_null)
         #mean_dist_neut_col.extend(mean_dist_neut)
         #mean_dist_neut_col.extend(mean_dist_neut_null)
         mean_dist_nonneut_col.extend(mean_dist_nonneut)
@@ -978,6 +1025,8 @@ df = pd.DataFrame({'linkage': linkage_col,
                    'kappa_dir_nonneut': kappa_dir_nonneut_col,
                    #'std_dir_neut': std_dir_neut_col,
                    'std_dir_nonneut': std_dir_nonneut_col,
+                   'NSness': NSness_col,
+                   'Eness': Eness_col,
                    #'dir_pval': dir_pval_col,
                    #'mean_dist_neut': mean_dist_neut_col,
                    'mean_dist_nonneut': mean_dist_nonneut_col,
