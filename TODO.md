@@ -7,6 +7,10 @@
 
 
 ## ANALYSIS
+- debug the skewed expectation lines in my phenotypic-space plots (only occur on Savio)
+
+- make the expectation line shift in the phenotypic shift plots?
+
 - box plots of delta_Nt and delta_fit again
 
 - should I run all sims longer, after climate change is complete, to show how long effects persist?
