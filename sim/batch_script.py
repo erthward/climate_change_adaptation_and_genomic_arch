@@ -689,7 +689,7 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         #std_dir_neut.append(dir_stats['std_neut'])
         std_dir_nonneut.append(dir_stats['std_nonneut'])
         NSness.append(dir_stats['NSness'])
-        Eness.append(dir_stats['NSness'])
+        Eness.append(dir_stats['Eness'])
 
         min_x_b4.append(min_x_b4_val)
         max_x_b4.append(max_x_b4_val)
@@ -972,7 +972,7 @@ for genicity in genicities:
         NSness_col.extend(NSness)
         NSness_col.extend(NSness_null)
         Eness_col.extend(Eness)
-        ESness_col.extend(Eness_null)
+        Eness_col.extend(Eness_null)
         #mean_dist_neut_col.extend(mean_dist_neut)
         #mean_dist_neut_col.extend(mean_dist_neut_null)
         mean_dist_nonneut_col.extend(mean_dist_nonneut)
