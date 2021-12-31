@@ -29,7 +29,7 @@ for (csv in summary.csvs){
     dfs[[csv]] = read.csv(csv)
 }
 summary.df = ldply(dfs, rbind)
-summary.df$size = 1 + (0.25*floor(log10(c(4, 20, 100)))/2)
+summary.df$size = 1+0.25*floor(log10(as.numeric(as.character(summary.df$genicity))))/2
 summary.df$genicity = as.factor(summary.df$genicity)
 
 num.linkage = c()
@@ -92,19 +92,23 @@ ggplot.delta_Nt
 # boxplot instead
 boxnull = ggplot(df.null) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
     #geom_dotplot(binaxis='y', stackdir='center', position=position_dodge(1)) +
-    scale_fill_manual(values = plot_cols[6:4])
+    scale_fill_manual(values = plot_cols[6:4]) +
+    scale_y_continuous(limits = c(-1000, 1000))
 boxnonull = ggplot(df.nonull) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
     #geom_dotplot(binaxis='y', stackdir='center', position=position_dodge(1)) +
-    scale_fill_manual(values = plot_cols[3:1])
+    scale_fill_manual(values = plot_cols[3:1]) +
+    scale_y_continuous(limits = c(-1000, 1000))
 cowplot::plot_grid(boxnull, boxnonull)
 
 # boxplot instead
 boxnull = ggplot(df.null) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
     #geom_dotplot(binaxis='y', stackdir='center', position=position_dodge(1)) +
-    scale_fill_manual(values = plot_cols[6:4])
+    scale_fill_manual(values = plot_cols[6:4]) +
+    scale_y_continuous(limits = c(-0.03, 0.03))
 boxnonull = ggplot(df.nonull) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
     #geom_dotplot(binaxis='y', stackdir='center', position=position_dodge(1)) +
-    scale_fill_manual(values = plot_cols[3:1])
+    scale_fill_manual(values = plot_cols[3:1]) +
+    scale_y_continuous(limits = c(-0.03, 0.03))
 cowplot::plot_grid(boxnull, boxnonull)
 
 
