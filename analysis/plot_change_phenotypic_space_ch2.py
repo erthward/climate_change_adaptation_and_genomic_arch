@@ -9,25 +9,27 @@ import sys
 import re
 import os
 
-"""
-Enter name of filename corresponding to time step 2499.
-Script will plot for time steps 2499, 2624, and 2749.
-
-"""
+# TODO:
+    # figure out why expectation line and heatmap grid uneven when run on Savio
+    # get rid of right-hand black strip in panelled plot output
 
 # plot params
-title_fontsize = 22
-axislab_fontsize = 12
-ticklab_fontsize = 8
-annot_fontsize = 8
-cbar_fontsize = 9
-fig_width = 13.8
-fig_height = 4.6
+suptitle_fontsize = 50
+title_fontsize = 40
+axislab_fontsize = 20
+ticklab_fontsize = 14
+annot_fontsize = 14
+cbar_fontsize = 14
+fig_width = 14.5
+fig_height = 5.6
 dpi = 400
 n_ticklabels = 5
 
 # data directory
-datadir = '/global/scratch/users/drewhart/ch2/output/analysis'
+if os.getcwd().split('/')[1] == 'home':
+    datadir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
+else:
+    datadir = '/global/scratch/users/drewhart/ch2/output/analysis'
 
 # way to hard-code the vmax values for the scenarios, given that it would
 # be kind of a pain to write code to do just this
@@ -35,16 +37,16 @@ linkages = ['independent', 'weak', 'strong']
 genicities =  [2, 4, 10, 20, 50, 100]
 vmaxes = {l: {g: 0.3 for g in genicities} for l in linkages}
 
-# dictionary of minimum effect-size breaks, to be used for setting up phenotyp
-# arrays
-breaks = {g: 1/g/2 for g in genicities}
-#breaks = {2: 0.25,
-#          4: 0.125,
-#          10: 0.05,
-#          20: 0.025,
-#          50: 0.025,
-#          100: 0.025
-#          }
+# get the horizontal values used in the non-shifting landscape layer
+# and in the before- and after-shifting shifting layer,
+# then set as dict of x and y values for plotting horizontal expectation lines
+stable = np.linspace(0, 1, 50)[[0,-1]]
+b4 = np.linspace(0, 1, 50)[[0,-1]]
+af = np.linspace(0.5, 1, 50)[[0,-1]]
+expec_lines = {2499: (b4, stable),
+               2624: ((b4+af)/2, stable),
+               2749: (af, stable),
+              }
 
 
 def get_min_pw_diff(vals):
@@ -96,6 +98,7 @@ def plot_phenotypic_shift(linkage, genicity):
     fig = plt.figure(dpi=dpi,
                      figsize=(fig_width, fig_height)
                     )
+    #fig.suptitle(genicity, fontdict={'fontsize': suptitle_fontsize})
     gs = fig.add_gridspec(nrows=1, ncols=3, width_ratios=[0.95, 0.95, 1.15])
 
     # loop through the three time steps to be analyzed
@@ -107,19 +110,14 @@ def plot_phenotypic_shift(linkage, genicity):
 
         ax = fig.add_subplot(gs[0, time_step_n])
         #ax.axis('off')
-        ax.set_title(title, fontdict={'fontsize': title_fontsize})
-
-        # get the minimum difference between neighboring phenotypes,
-        # to use as the break between bins in our 2d histogram (i.e., heatmap)
-        brk = breaks[genicity]
+        if linkage == 'independent':
+            ax.set_title(title, fontdict={'fontsize': title_fontsize})
 
         # set up breaks for the 2D histogram (i.e., heatmap)
-        # NOTE: ADDING 2 TO 1/brk GENERATES A NUMBER OF BINS EQUAL TO
-        #       NUMBER OF BREAKS + 1, THUS FIXING THE PROBLEM THAT OTHERWISE
-        #       ARISES THAT SOME BINS SYSTEMATICALLY COLLECT MORE 
-        #       INDIVIDS THAN OTHERS BECAUSE OF THE DISCRETE BREAKS BTWN 
-        #       POSSIBLE PHENOTYPES (which made striped-pattern heatmaps
-        brks = np.linspace(0, 1, int((1/brk) + 2))
+        # NOTE: ADDING 2 TO genicity GENERATES A NUMBER OF BINS EQUAL TO
+        #       THE NUMBER OF POSSIBLE GENOTYPES AND CREATES A SET OF BINS
+        #       THAT CAPTURES EXACTLY 1 POSSIBLE GENOTYPE IN EACH
+        brks = np.linspace(0, 1, genicity + 2)
         # increase the last break (1.0) slightly, so that < captures phenotypes
         # of 1.0
         brks[-1] *= 1.000001
@@ -170,24 +168,28 @@ def plot_phenotypic_shift(linkage, genicity):
                     linewidths=0.3,
                     ax=ax)
 
-        # add diagonal 1:1 line, for comparison
-        # NOTE: invert ylims to match inverted y axis
-        ax.plot(ax.get_xlim(),
-                ax.get_ylim()[::-1],
-                '-k',
-                alpha=0.4,
-                linewidth=0.5)
+        # add diagonal 1:1, and expectation line for comparison at later steps
+        ax.plot(max(ax.get_xlim()) * expec_lines[2499][0],
+                (max(ax.get_ylim())*expec_lines[2499][1]),
+                '-k', alpha=0.4, linewidth=0.5)
+        if time_step > 2500:
+            ax.plot(max(ax.get_xlim()) * expec_lines[time_step][0],
+                    (max(ax.get_ylim())*expec_lines[time_step][1]),
+                    '-k', alpha=0.4, linewidth=0.5)
 
         # set ticks and ticklabels and axis labels
-        ticks = np.linspace(0, len(brks)- 1, n_ticklabels, dtype=np.int)
-        ticklabels = np.linspace(0, np.round(brks[-1],2), n_ticklabels)
+        ticks = np.linspace(0, genicity+1, n_ticklabels)
+        ticklabels = np.linspace(0, 1, n_ticklabels)
         ax.set_xticks(ticks)
         ax.set_xticklabels(ticklabels, fontdict={'fontsize':ticklab_fontsize})
         for tick in ax.get_xticklabels():
             tick.set_rotation(0)
-        ax.set_xlabel('shifting trait',
-                      fontdict={'fontsize': axislab_fontsize})
-        if time_step_n == 0:
+        if linkage == 'strong':
+            ax.set_xlabel('shifting trait',
+                        fontdict={'fontsize': axislab_fontsize})
+        else:
+            ax.set_xlabel('')
+        if time_step_n == 0 and genicity == 4:
             ax.set_yticks(ticks)
             ax.set_yticklabels([tl if (n > 0) else '' for n,
                                         tl in enumerate(ticklabels)],
@@ -209,11 +211,11 @@ def plot_phenotypic_shift(linkage, genicity):
 
     # adjust suplot spacing
     plt.subplots_adjust(left=0.05,
-                        bottom=0.11,
-                        right=0.99,
-                        top=0.90,
-                        wspace=0.08,
-                        hspace=None)
+                        bottom=0.13,
+                        right=0.96,
+                        top=0.85,
+                        wspace=0.14,
+                        hspace=0.05)
 
     # return fig
     return fig
@@ -226,7 +228,7 @@ for linkage in ['independent', 'weak', 'strong']:
         print('\tLINKAGE: %s' % linkage)
         print('\tGENICITY: %i' % genicity)
         dirname_patt = 'mod-non-null_L%s_G%i_its0_' % (linkage, genicity)
-        dirs = os.listdir('.')
+        dirs = os.listdir(datadir)
         candidate_dirs = [d for d in dirs if re.search(dirname_patt, d)]
         if len(candidate_dirs) > 0:
             # make the fig
@@ -237,5 +239,3 @@ for linkage in ['independent', 'weak', 'strong']:
                         dpi=dpi,
                         orientation='landscape',
                        )
-
-plt.show()

@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 from scipy.stats import vonmises
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
+import statsmodels.api as sm
 import os
+
 
 # plot params
 col_label_fontsize = 15
@@ -25,16 +27,14 @@ else:
 
 # TODO:
 
-    # then write linear model to look at multivariate response of dists to the
-    # scenarios
+    # write linear model to look at multivariate response of dists to the
+    # scenarios?
 
-    # then consider if/how to depict uncertainty envelopes on the dists
-
-    # then produce a single, 3x3 plot matrix depicting the null and non-null
-    # characteristic dists across all scenarios
+    # consider if/how to depict uncertainty envelopes on the dists?
 
 
-def vis_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None, nullness=None,
+def vis_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None,
+                    nullness=None,
                     plot_type='circ', to_deg=True, plot_dirlabels=False,
                     on_curr_ax=False, return_axlims=True, n_rand=10000):
     """
@@ -77,6 +77,11 @@ def vis_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None, nullness
         else:
             pass
 
+    # create empty lists to be filled with the N/S- and E-facing PDF densities,
+    # then returned
+    E_densities = []
+    NS_densities = []
+
     # get the current axes, for plotting, if requested
     if on_curr_ax:
         ax = plt.gca()
@@ -105,6 +110,10 @@ def vis_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None, nullness
     elif plot_type == 'circ':
         # get ~3000-ish evenly spaced densities
         dirs = np.arange(0, 2*pi, 0.002)
+        # get indices of directions closest to E, N, and S
+        E_idx = 0
+        N_idx = np.abs(dirs-(pi/2)).argmin()
+        S_idx = np.abs(dirs-(3*pi/2)).argmin()
         # numpy array to contain the output mixture-dist densities
         mix_dens = np.zeros(dirs.shape)
         # for each set of fitted params
@@ -120,6 +129,14 @@ def vis_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None, nullness
                 weight_dens = alpha[i, mix_n] * dens
                 # add the vals to the weighted sum
                 sub_mix_dens = sub_mix_dens + weight_dens
+            # save this mixture distribution's E-facing density
+            # and the mean of its N- and S-facing densities
+            E_dens = sub_mix_dens[E_idx]
+            N_dens = sub_mix_dens[N_idx]
+            S_dens = sub_mix_dens[S_idx]
+            NS_mean_dens = np.mean((N_dens, S_dens))
+            E_densities.append(E_dens)
+            NS_densities.append(NS_mean_dens)
             # store the weighted sum densities
             mix_dens = mix_dens + sub_mix_dens
         # get the mean of the multiple mixture-dist densities
@@ -188,22 +205,33 @@ def vis_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None, nullness
             plt.text(0+0.03*xlims[0], 1.13*ylims[0], 'S', size=18, color='gray')
             plt.text(1.15*xlims[0], 0+0.05*ylims[0], 'W', size=18, color='gray')
 
+    # make sure the E-facing and N/S-facing density data are equal in length
+    assert len(E_densities) == len(NS_densities)
+
     if return_axlims and plot_type == 'circ':
-        return axlims
+        return axlims, E_densities, NS_densities
     else:
-        return
+        return E_densities, NS_densities
 
 
 def make_vM_mix_dist_comparison_grid(df, it=None,
                                      col_labelsize=col_label_fontsize,
                                      row_labelsize=row_label_fontsize,
-                                     plot_type='circ'):
+                                     plot_type='circ',
+                                     return_E_NS_dens_df=True):
     """
     Visualize the null/non-null overlain von Mises mixture distributions
     across all 9 simulation scenarios
 
     NOTE: just defaults to only non-neutral loci for now
     """
+    # dict to store all E-facing and mean N/S-facing densities and their covars
+    E_NS_dens_dict = {'nullness': [],
+                      'genicity': [],
+                      'linkage': [],
+                      'E_dens': [],
+                      'NS_mean_dens': [],
+                     }
     # list to store axlims
     axlims = []
     # make the gridded fig
@@ -244,11 +272,20 @@ def make_vM_mix_dist_comparison_grid(df, it=None,
                 # vis_vM_mix_dist) across all its
                 else:
                     plotdf = nullness_subdf
-                curr_axlims = vis_vM_mix_dist(df=plotdf,
+                curr_axlims, E_densities, NS_densities = vis_vM_mix_dist(
+                                              df=plotdf,
                                               nullness=nullness,
                                               on_curr_ax=True,
                                               plot_type=plot_type)
                 axlims.append(curr_axlims)
+
+                # store the E-facing and mean N/S-facing density data
+                for E_dens_val, NS_dens_val in zip(E_densities, NS_densities):
+                    E_NS_dens_dict['nullness'].append(nullness)
+                    E_NS_dens_dict['genicity'].append(genicity)
+                    E_NS_dens_dict['linkage'].append(linkage)
+                    E_NS_dens_dict['E_dens'].append(E_dens_val)
+                    E_NS_dens_dict['NS_mean_dens'].append(NS_dens_val)
 
 
             # after overplotting null & non-null, increment to next plot number
@@ -282,14 +319,61 @@ def make_vM_mix_dist_comparison_grid(df, it=None,
                         wspace=0.02,
                         hspace=None
                        )
-    # show and return fig
     plt.show()
-    return fig
+    if return_E_NS_dens_df:
+        E_NS_dens_df = pd.DataFrame.from_dict(E_NS_dens_dict)
+        linkage_numeric_dict = {'independent':0.5, 'weak':0.05, 'strong':0.005}
+        E_NS_dens_df['linkage'] = [linkage_numeric_dict[l] for
+                                                    l in E_NS_dens_df.linkage]
+        return (fig, E_NS_dens_df)
+    return (fig, None)
 
 
 # load data
-df = pd.read_csv(os.path.join(datadir, 'ch2_all_fitted_vM_params.csv'), na_filter=False)
+df = pd.read_csv(os.path.join(datadir, 'ch2_all_fitted_vM_params.csv'),
+                 na_filter=False)
 
 # plot the full grid
-grid_fig = make_vM_mix_dist_comparison_grid(df, plot_type='circ', it=None)
-grid_fig.savefig(os.path.join(datadir, 'ch2_gene_flow_dir_analysis.png'), dpi=400)
+grid_fig, E_NS_dens_df = make_vM_mix_dist_comparison_grid(df,
+                                                          plot_type='circ',
+                                                          it=None,
+                                                       return_E_NS_dens_df=True)
+grid_fig.savefig(os.path.join(datadir, 'ch2_gene_flow_dir_analysis.png'),
+                 dpi=400)
+
+
+# run null and non-null statistical models, and gather results into a small df
+results = {'nullness': [],
+           'response_var': [],
+           'covar': [],
+           'coeff': [],
+           'p': [],
+           'R2': [],
+           }
+    # NOTES:
+        # response vars aren't exactly normal (a bit skewed), but not awful
+        # either, so just using a basic linear model for now
+for nullness in ['null', 'non-null']:
+    print('\n%s MODELS\n:' % nullness.upper())
+    for response_var in ['E_dens', 'NS_mean_dens']:
+        print('\n\tresponse var: %s\n' % response_var)
+        subdf = E_NS_dens_df[E_NS_dens_df['nullness'] == nullness]
+        y = subdf[response_var]
+        X = sm.add_constant(subdf[['linkage', 'genicity']])
+        mod = sm.OLS(y, X).fit()
+        coeffs = mod.params
+        print(mod.summary())
+        print('\n'*4 + '+'*80 + '\n'*4)
+        p_vals = mod.pvalues
+        R2 = mod.rsquared
+        for coeff in coeffs.index:
+            results['nullness'].append(nullness)
+            results['response_var'].append(response_var)
+            results['covar'].append(coeff)
+            results['coeff'].append(coeffs[coeff])
+            results['p'].append(coeffs[coeff])
+            results['R2'].append(R2)
+
+results_df = pd.DataFrame.from_dict(results)
+results_df.to_csv(os.path.join(datadir, 'ch2_gene_flow_dir_analysis_stats.csv'),
+                  index=False)

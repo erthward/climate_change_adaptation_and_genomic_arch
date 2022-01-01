@@ -3,27 +3,26 @@ library(tidyverse)
 library(plyr)
 library(nlme)
 library(cowplot)
+library(latex2exp)
+library(ggsignif)
 
-# NEXT STEPS:
 
-# - rerun data on savio using longer pre-climate change period
-# - multivar linear model for vM mix params
-# - tie up box plots and analysis for Nt and fit
-# - tie up plot grid for dir data
-# - decide whether or not to do something with the min/max x/y b4/af data
-# - write scripts to combine, preprocess, and prep all data on savio, get
-#   down to single output tables for each of the above analyses
-# - test run full analysis pipeline, check out results
-# - then run remaining sims, rerun whole pipeline
-
+# TODO
+# possible to add significance-testing stars above? that would be a lot of unnecessary pairwise comparisons though...
 
 
 ######################
 # ANALYSIS FOR Nt, fit
 ######################
 
+#data.dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
+data.dir = '/global/scratch/users/drewhart/ch2/output/output/'
+
+#output.dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
+output.dir = '/global/scratch/users/drewhart/ch2/output/analysis/'
+
 # gather all summary-output files into one
-summary.csvs = list.files()[grep("\\d\\.csv$", list.files())] 
+summary.csvs = list.files(data.dir)[grep("\\d\\.csv$", list.files())] 
 dfs = list()
 for (csv in summary.csvs){
     dfs[[csv]] = read.csv(csv)
@@ -46,12 +45,12 @@ for (linkage in summary.df$linkage){
 }
 summary.df$num.linkage = as.character(num.linkage)
 
-plot_cols = c('#c92900', # dark red
+plot_cols = c('#ff9a80', # lite red
               '#ed5a34', # med red
-              '#ff9a80', # lite red
-              '#0368a6', # dark blue
+              '#c92900', # dark red
+              '#80ceff', # lite blue
               '#369fe0', # med blue
-              '#80ceff') # lite blue
+              '#0368a6') # dark blue
 
 # add color col
 cols = c()
@@ -90,26 +89,36 @@ ggplot.delta_Nt
 
 
 # boxplot instead
+theme_set(theme_linedraw(base_size=20))
+jpeg(paste0(output.dir, 'boxplot_delta_Nt.jpg'), width=5000, height=2500, res=300)
 boxnull = ggplot(df.null) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
-    #geom_dotplot(binaxis='y', stackdir='center', position=position_dodge(1)) +
-    scale_fill_manual(values = plot_cols[6:4]) +
-    scale_y_continuous(limits = c(-1000, 1000))
+    geom_hline(yintercept=0) +
+    scale_fill_manual(values = plot_cols[6:4], labels=c('strong', 'weak', 'independent')) +
+    scale_y_continuous(limits = c(-750, 250)) +
+    labs(y=TeX('$\\Delta$ population size'), x='number of loci per trait')
+
 boxnonull = ggplot(df.nonull) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
-    #geom_dotplot(binaxis='y', stackdir='center', position=position_dodge(1)) +
-    scale_fill_manual(values = plot_cols[3:1]) +
-    scale_y_continuous(limits = c(-1000, 1000))
-cowplot::plot_grid(boxnull, boxnonull)
+    geom_hline(yintercept=0) +
+    scale_fill_manual(values = plot_cols[3:1], labels=c('strong', 'weak', 'independent')) +
+    scale_y_continuous(limits = c(-750, 250)) +
+    labs(y=TeX('$\\Delta$ population size'), x='number of loci per trait')
+cowplot::plot_grid(boxnull, boxnonull) 
+dev.off()
 
 # boxplot instead
+jpeg(paste0(output.dir, 'boxplot_delta_fit.jpg'), width=5000, height=2500, res=300)
 boxnull = ggplot(df.null) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
-    #geom_dotplot(binaxis='y', stackdir='center', position=position_dodge(1)) +
-    scale_fill_manual(values = plot_cols[6:4]) +
-    scale_y_continuous(limits = c(-0.03, 0.03))
+    geom_hline(yintercept=0) +
+    scale_fill_manual(values = plot_cols[6:4], labels=c('strong', 'weak', 'independent')) +
+    scale_y_continuous(limits = c(-0.03, 0.015)) +
+    labs(y=TeX('$\\Delta$ fitness'), x='number of loci per trait')
 boxnonull = ggplot(df.nonull) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
-    #geom_dotplot(binaxis='y', stackdir='center', position=position_dodge(1)) +
-    scale_fill_manual(values = plot_cols[3:1]) +
-    scale_y_continuous(limits = c(-0.03, 0.03))
+    geom_hline(yintercept=0) +
+    scale_fill_manual(values = plot_cols[3:1], labels=c('strong', 'weak', 'independent')) +
+    scale_y_continuous(limits = c(-0.03, 0.015)) +
+    labs(y=TeX('$\\Delta$ fitness'), x='number of loci per trait')
 cowplot::plot_grid(boxnull, boxnonull)
+dev.off()
 
 
 
@@ -119,27 +128,24 @@ cowplot::plot_grid(boxnull, boxnonull)
 #######################
 
 # NOTE: THIS NEEDS TO HAVE BEEN RUN THROUGH THE COLUMN-SORTING PYTHON SCRIPT
-df = read.csv('./TEST_output_SORTED.csv')
-
-# will run separate null and non-null tests
-df.null = df[df$nullness == 'null',]
-df.nonull = df[df$nullness == 'non-null',]
-
-
-mod.man.null = manova(cbind(mu.1, mu.2, mu.3, mu.4,
-                       kappa.1, kappa.2, kappa.3, kappa.4,
-                       alpha.1, alpha.2, alpha.3, alpha.4) ~ linkage * genicity,
-                data = df.null) 
-mod.man = manova(cbind(mu.1, mu.2, mu.3, mu.4,
-                       kappa.1, kappa.2, kappa.3, kappa.4,
-                       alpha.1, alpha.2, alpha.3, alpha.4) ~ linkage * genicity,
-                data = df.nonull) 
-
-summary.aov(mod.man.null)
-summary.aov(mod.man)
-
-
-
+#df = read.csv('./TEST_output_SORTED.csv')
+#
+## will run separate null and non-null tests
+#df.null = df[df$nullness == 'null',]
+#df.nonull = df[df$nullness == 'non-null',]
+#
+#
+#mod.man.null = manova(cbind(mu.1, mu.2, mu.3, mu.4,
+#                       kappa.1, kappa.2, kappa.3, kappa.4,
+#                       alpha.1, alpha.2, alpha.3, alpha.4) ~ linkage * genicity,
+#                data = df.null) 
+#mod.man = manova(cbind(mu.1, mu.2, mu.3, mu.4,
+#                       kappa.1, kappa.2, kappa.3, kappa.4,
+#                       alpha.1, alpha.2, alpha.3, alpha.4) ~ linkage * genicity,
+#                data = df.nonull) 
+#
+#summary.aov(mod.man.null)
+#summary.aov(mod.man)
 
 
 

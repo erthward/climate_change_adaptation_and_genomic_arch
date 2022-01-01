@@ -32,6 +32,9 @@ python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_
 echo "NOW PLOTTING Nt, mean_fit, AND mean_z OVER TIME."
 python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/plot_Nt_mean_fit_mean_z_over_time.py > Nt_mean_fit_mean_z_plotting.pyout
 
+# make delta_Nt and delta_fit boxplots
+echo "NOW PLOTTING delta_Nt and delta_fit boxplots."
+Rscript --vanilla /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/make_boxplots_and_run_stats.R > boxplots_and_stats.Rout
 
 # plot directional gene flow results
 echo "NOW FITTING ALL PIDs VON MISES DISTRIBUTIONS PARAMS"
@@ -46,5 +49,6 @@ python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_
 # copy all results to BDrive
 echo "NOW PUSHING EVERYTHING TO BDRIVE USING RCLONE"
 for f in `ls /global/scratch/users/drewhart/ch2/output/analysis/phenotypic_shift_*.png`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
-rclone copy /global/scratch/users/drewhart/ch2/output/analysis/ch2_gene_flow_dir_analysis.png bdrive:ch2_outputs/analysis/
 for f in `ls /global/scratch/users/drewhart/ch2/output/analysis/ch2_*_over_time.jpg`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
+for f in `ls /global/scratch/users/drewhart/ch2/output/analysis/boxplot*.jpg`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
+rclone copy /global/scratch/users/drewhart/ch2/output/analysis/ch2_gene_flow_dir_analysis.png bdrive:ch2_outputs/analysis/

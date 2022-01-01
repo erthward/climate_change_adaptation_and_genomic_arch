@@ -141,7 +141,7 @@ def plot_ts_for_all_scenarios(df, var, show_plots=False):
                             top=0.88,
                             wspace=0.1,
                             hspace=0.1)
-        fig.suptitle('%s' % var)
+        #fig.suptitle('%s' % var)
         fig.savefig(os.path.join(datadir, 'ch2_%s_over_time.jpg' % var),
                             dpi=dpi, orientation='landscape')
 

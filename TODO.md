@@ -3,17 +3,15 @@
 ## SIMS
 - debug so that each iteration gets saved (rather than only 1 iteration from each scenario,PID combo!) (but not so important because I can just run a larger number of jobs to generate the full desired number of its)
 
+- just realized! should my null be what it currently is (i.e., no natural selection at all), or should it feature natural selection but no environmental change event??
+
 - once everything is set, run full set of iterations, combine all output in one dir, then back up on BDrive
 
 
 ## ANALYSIS
 - debug the skewed expectation lines in my phenotypic-space plots (only occur on Savio)
 
-- make the expectation line shift in the phenotypic shift plots?
-
-- box plots of delta_Nt and delta_fit again
-
-- should I run all sims longer, after climate change is complete, to show how long effects persist?
+- perhaps just scatterplots instead of heatmaps for pheno shift? and then fit and plot trend line against expected, and run statistical test of area btwn trend and expected as function of genicity and linkage?
 
 - decide if/how to run stats tests, then wrap all of that into the ch2_analys_job.sh script
 
@@ -23,6 +21,7 @@
 
 
 ## WRITING
+- go back and do more reading, gather citations, and build up intro and discussion material
 - begin drafting: 
   - put all results into draft as figs
   - brainstorm bulleted list of all results of interest to be mentioned

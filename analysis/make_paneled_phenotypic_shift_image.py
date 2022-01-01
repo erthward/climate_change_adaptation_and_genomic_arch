@@ -4,29 +4,33 @@ from PIL import Image
 import os, re
 
 # loosen PIL Image-size limit, to prevent DecompressionBombWarning error
-#Image.MAX_IMAGE_PIXELS = None
+Image.MAX_IMAGE_PIXELS = None
 
 # load all images
-#analysis_dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev'
-analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
+if os.getcwd().split('/')[1] == 'home':
+    analysis_dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev'
+else:
+    analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
+
 im_files = [f for f in os.listdir(analysis_dir) if re.search(
-                                                    '^phenotypic_shift.*', f)]
-ims = {f:Image.open(f, 'r') for f in im_files}
+                                                    '^phenotypic_shift_L.*', f)]
+ims = {f:Image.open(os.path.join(analysis_dir, f), 'r') for f in im_files}
 
 # get size of an image
 width, height = [*ims.values()][0].size
 
 # set sizes of margins to be cropped and replaced with white
-crop_left = 250
-crop_top = 175
-crop_right = -350
-crop_bott = -185
+crop_left = 0
+crop_top = 0
+crop_right = 0
+crop_bott = 0
 
 
 # generate the paneled output image
 nrow=3
 ncol=3
-out_im = Image.new('RGB',(int(width*ncol*1.01), int(height*nrow*1.01)))
+out_im = Image.new('RGB',(int(width*ncol)-2*crop_left+2*crop_right,
+                          int(height*nrow)-2*crop_top+2*crop_bott))
 
 # function to pad an image
 # adapted from: https://note.nkmk.me/en/python-pillow-add-margin-expand-canvas/
@@ -78,6 +82,8 @@ for i, linkage in enumerate(['independent', 'weak', 'strong']):
         # add some space between
 
         px, py = j*width, i*height
+        if i > 0:
+            py = py-(i*crop_top)
         out_im.paste(curr_im,(px,py))
 
 # save image to file
