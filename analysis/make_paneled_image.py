@@ -1,7 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
-import os, re
+import os, re, sys
+
+plot_type = sys.argv[1].upper()
+assert plot_type.upper() in ['HEAT',
+                             'SCAT',
+                             'DENS'], ('Plot type can only be "HEAT", '
+                                       '"SCAT", or "DENS".')
 
 # loosen PIL Image-size limit, to prevent DecompressionBombWarning error
 Image.MAX_IMAGE_PIXELS = None
@@ -12,8 +18,12 @@ if os.getcwd().split('/')[1] == 'home':
 else:
     analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
 
-im_files = [f for f in os.listdir(analysis_dir) if re.search(
-                                                    '^phenotypic_shift_L.*', f)]
+if plot_type == 'DENS':
+    im_files = [f for f in os.listdir(analysis_dir) if re.search(
+                                    '^pop_density_shift_L.*', f)]
+else:
+    im_files = [f for f in os.listdir(analysis_dir) if re.search(
+                                    '^phenotypic_shift_L.*%s' % plot_type, f)]
 ims = {f:Image.open(os.path.join(analysis_dir, f), 'r') for f in im_files}
 
 # get size of an image
@@ -48,8 +58,15 @@ for i, linkage in enumerate(['independent', 'weak', 'strong']):
     for j, genicity in enumerate([4, 20, 100]):
 
         # get the current image
-        curr_im_filename_patt = '^phenotypic_shift_L%s_G\d*%i\.png' % (linkage,
-                                                                       genicity)
+        if plot_type == 'DENS':
+            curr_im_filename_patt = '^pop_density_shift_L%s_G\d*%i\.png' % (
+                                                                    linkage,
+                                                                    genicity)
+        else:
+            curr_im_filename_patt = '^phenotypic_shift_L%s_G\d*%i_%s\.png' % (
+                                                                    linkage,
+                                                                    genicity,
+                                                                    plot_type)
         curr_im = [v for k, v in ims.items() if re.search(curr_im_filename_patt,
                                                           k)]
         assert len(curr_im) == 1
@@ -87,4 +104,8 @@ for i, linkage in enumerate(['independent', 'weak', 'strong']):
         out_im.paste(curr_im,(px,py))
 
 # save image to file
-out_im.save(os.path.join(analysis_dir, 'phenotypic_shift_grid_fig.jpg'))
+if plot_type == 'DENS':
+    out_im.save(os.path.join(analysis_dir, 'pop_density_shift_grid_fig.jpg'))
+else:
+    out_im.save(os.path.join(analysis_dir,
+                             'phenotypic_shift_grid_fig_%s.jpg' % plot_type))

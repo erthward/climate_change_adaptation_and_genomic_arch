@@ -2,9 +2,12 @@ import pandas as pd
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from matplotlib.patches import Polygon as mplPolygon
+from collections import Counter as C
 from palettable.cartocolors.sequential import PinkYl_7
 from palettable.scientific.sequential import Acton_20_r
-import seaborn as sns
+from shapely.geometry import Polygon as shapelyPolygon
+import statsmodels.api as sm
 import sys
 import re
 import os
@@ -12,6 +15,7 @@ import os
 # TODO:
     # figure out why expectation line and heatmap grid uneven when run on Savio
     # get rid of right-hand black strip in panelled plot output
+
 
 # plot params
 suptitle_fontsize = 50
@@ -24,6 +28,12 @@ fig_width = 14.5
 fig_height = 5.6
 dpi = 400
 n_ticklabels = 5
+linewidth = 1
+linealpha = 0.8
+marker_sizes = {4: 500,
+                20: 40,
+                100: 3,
+               }
 
 # data directory
 if os.getcwd().split('/')[1] == 'home':
@@ -31,11 +41,9 @@ if os.getcwd().split('/')[1] == 'home':
 else:
     datadir = '/global/scratch/users/drewhart/ch2/output/analysis'
 
-# way to hard-code the vmax values for the scenarios, given that it would
-# be kind of a pain to write code to do just this
+# lists of all possible linkage and genicity values
 linkages = ['independent', 'weak', 'strong']
 genicities =  [2, 4, 10, 20, 50, 100]
-vmaxes = {l: {g: 0.3 for g in genicities} for l in linkages}
 
 # get the horizontal values used in the non-shifting landscape layer
 # and in the before- and after-shifting shifting layer,
@@ -61,7 +69,7 @@ def get_min_pw_diff(vals):
     return(min(diffs))
 
 
-def plot_phenotypic_shift(linkage, genicity):
+def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
 
     assert linkage in ['independent', 'weak', 'strong']
     assert genicity in [2, 4, 10, 20, 50, 100]
@@ -113,16 +121,11 @@ def plot_phenotypic_shift(linkage, genicity):
         if linkage == 'independent':
             ax.set_title(title, fontdict={'fontsize': title_fontsize})
 
-        # set up breaks for the 2D histogram (i.e., heatmap)
-        # NOTE: ADDING 2 TO genicity GENERATES A NUMBER OF BINS EQUAL TO
-        #       THE NUMBER OF POSSIBLE GENOTYPES AND CREATES A SET OF BINS
-        #       THAT CAPTURES EXACTLY 1 POSSIBLE GENOTYPE IN EACH
-        brks = np.linspace(0, 1, genicity + 2)
-        # increase the last break (1.0) slightly, so that < captures phenotypes
-        # of 1.0
-        brks[-1] *= 1.000001
-        # make the heatmap array
-        arr = np.zeros([len(brks)-1]*2)
+        xs = []
+        ys = []
+
+        polys = []
+        areas = []
 
         # loop through all the sims' directories
         for sim_dirname, sim_filenames in filenames.items():
@@ -132,56 +135,110 @@ def plot_phenotypic_shift(linkage, genicity):
             # get phenotype data
             zs = np.stack([np.array([float(n) for n in val.lstrip(
                 '[').rstrip(']').split(', ')]) for val in df['z']])
-            z_trt0 = zs[:, 0]
-            z_trt1 = zs[:, 1]
+            curr_xs = [*zs[:, 0]]
+            xs.extend(curr_xs)
+            curr_ys = [*zs[:, 1]]
+            ys.extend(curr_ys)
 
-            # fill the heatmap array (i.e., 2d histogram)
-            # NOTE: to make shift appear L-->R (matching spatial shift across
-            # landscape), i-->rows-->trait1-->stable trait,
-            # whereas j-->cols-->trait0-->shifting trait
-            for i, brk_trt1 in enumerate(brks[:-1]):
-                for j, brk_trt0 in enumerate(brks[:-1]):
-                   ct = np.sum((zs[:,0]>=brk_trt0) *
-                                (zs[:,0]<brks[j+1]) *
-                                (zs[:,1]>=brk_trt1) *
-                                (zs[:,1]<brks[i+1]))
-                   arr[i, j] += ct
+            # TODO: get polygon area for this iteration
+            if time_step > 2700:
+                if not fix_ur_corner:
+                    X = sm.add_constant(np.vstack(curr_xs))
+                    y = np.vstack(curr_ys)
+                else:
+                    # NOTE: subtract 1 from x values, and add no constant term, 
+                    #       then later add 1 again to trasnlate back, to be able to
+                    #       fix upper-left corner at (1,1)
+                    X = np.vstack(curr_xs) - 1
+                    y = np.vstack(curr_ys) - 1
+                mod = sm.OLS(y, X).fit()
+                pred_xs = [0, 1]
+                if fix_ur_corner:
+                    pred_xs = [pred_x-1 for pred_x in pred_xs]
+                    pred_ys = mod.predict(pred_xs)
+                    pred_xs = [pred_x +1 for pred_x in pred_xs]
+                    pred_ys = [pred_y +1 for pred_y in pred_ys]
+                else:
+                    # NOTE: need to add in the constant term to get predictions
+                    pred_ys = mod.predict(np.array([*zip([1,1], pred_xs)]))
+                poly_xs = [*pred_xs, expec_lines[time_step][0][0], pred_xs[0]]
+                poly_ys = [*pred_ys, expec_lines[time_step][1][0], pred_ys[0]]
+                poly = shapelyPolygon([*zip(poly_xs, poly_ys)])
+                area = poly.area
+                polys.append(poly)
+                areas.append(area)
 
-        arr = arr/np.sum(arr)
-        assert np.allclose(np.sum(arr), 1)
+        # plot the scatter
+        uniqs = [*set([*zip(xs, ys)])]
+        cts = C([*zip(xs, ys)])
+        sizes = [cts[uniq] for uniq in uniqs]
+        sizes = [(s-np.min(sizes))/(np.max(sizes)-np.min(sizes)) for s in sizes]
+        max_alpha = 0.9
+        alphas = [s*max_alpha for s in sizes]
+        max_size = 25
+        sizes = np.array(sizes) * max_size
+        plot_color = '#000000'
+        for coords, size, alpha in zip(uniqs, sizes, alphas):
+            x, y = coords
+            ax.scatter(x, y,
+                       s=marker_sizes[genicity],
+                       c=plot_color,
+                       alpha=alpha,
+                       edgecolors='none')
 
-        # create labels array
-        annot = np.array(['%0.3f' % n for n in arr.ravel()]).reshape(arr.shape)
-
-        # plot the heatmap
-        sns.heatmap(arr,
-                    #vmin=0,
-                    #vmax=vmaxes[linkage][genicity],
-                    #annot=annot,
-                    #annot_kws = {'fontsize': annot_fontsize},
-                    fmt="",
-                    cmap=Acton_20_r.mpl_colormap,
-                    #cmap=PinkYl_7.mpl_colormap,
-                    #cmap=mpl.cm.Wistia,
-                    #cbar=False,
-                    cbar=time_step_n==2,
-                    linewidths=0.3,
-                    ax=ax)
-
-        # add diagonal 1:1, and expectation line for comparison at later steps
-        ax.plot(max(ax.get_xlim()) * expec_lines[2499][0],
-                (max(ax.get_ylim())*expec_lines[2499][1]),
-                '-k', alpha=0.4, linewidth=0.5)
+        # fit linear regression, if in second or third time point
         if time_step > 2500:
-            ax.plot(max(ax.get_xlim()) * expec_lines[time_step][0],
-                    (max(ax.get_ylim())*expec_lines[time_step][1]),
-                    '-k', alpha=0.4, linewidth=0.5)
+            if not fix_ur_corner:
+                X = sm.add_constant(np.vstack(xs))
+                y = np.vstack(ys)
+            else:
+                # NOTE: subtract 1 from x values, and add no constant term, 
+                #       then later add 1 again to trasnlate back, to be able to
+                #       fix upper-left corner at (1,1)
+                X = np.vstack(xs) - 1
+                y = np.vstack(ys) - 1
+            mod = sm.OLS(y, X).fit()
+            pred_xs = [0, 1]
+            if fix_ur_corner:
+                pred_xs = [pred_x-1 for pred_x in pred_xs]
+                pred_ys = mod.predict(pred_xs)
+                pred_xs = [pred_x +1 for pred_x in pred_xs]
+                pred_ys = [pred_y +1 for pred_y in pred_ys]
+            else:
+                # NOTE: need to add in the constant term to get predictions
+                pred_ys = mod.predict(np.array([*zip([1,1], pred_xs)]))
+            ax.plot(pred_xs, pred_ys, ':', color=plot_color, alpha=linealpha,
+                    linewidth=linewidth)
+
+        # add expectation and trend lines, as needed
+        if time_step > 2500:
+            # calculate area between trend line and expectation line
+            # (i.e. 'phenotypic undershoot')
+            poly_xs = [*pred_xs, expec_lines[time_step][0][0], pred_xs[0]]
+            poly_ys = [*pred_ys, expec_lines[time_step][1][0], pred_ys[0]]
+            poly = shapelyPolygon([*zip(poly_xs, poly_ys)])
+            area = poly.area
+            # save the area for output, if final timestep
+            # and plot the area
+            poly = mplPolygon([*zip(poly_xs, poly_ys)])
+            poly_color = '#f24156'
+            poly.set_color(poly_color)
+            poly.set_alpha(0.5)
+            ax.add_patch(poly)
+            # expectation line
+            ax.plot(*expec_lines[time_step], '-k', alpha=linealpha,
+                    linewidth=linewidth)
+        # expectation line
+        ax.plot(*expec_lines[2499], '-k', alpha=linealpha, linewidth=linewidth)
+
 
         # set ticks and ticklabels and axis labels
-        ticks = np.linspace(0, genicity+1, n_ticklabels)
+        ticks = np.linspace(0, 1, n_ticklabels)
         ticklabels = np.linspace(0, 1, n_ticklabels)
         ax.set_xticks(ticks)
         ax.set_xticklabels(ticklabels, fontdict={'fontsize':ticklab_fontsize})
+        ax.set_xlim([0,1])
+        ax.set_ylim([0,1])
         for tick in ax.get_xticklabels():
             tick.set_rotation(0)
         if linkage == 'strong':
@@ -203,7 +260,7 @@ def plot_phenotypic_shift(linkage, genicity):
             ax.set_ylabel('')
 
         # other plot controls
-        ax.invert_yaxis()
+        #ax.invert_yaxis()
         ax.tick_params(axis=u'both', which=u'both',length=0) # make ticks len==0
 
     # adjust colorbar label fontsize
@@ -218,9 +275,11 @@ def plot_phenotypic_shift(linkage, genicity):
                         hspace=0.05)
 
     # return fig
-    return fig
+    return fig, areas
 
 
+# dict to store pheno undershoot area data
+pheno_undershoot_dict = {'linkage': [], 'genicity': [], 'undershoot': []}
 # produce plots for all scenarios
 for linkage in ['independent', 'weak', 'strong']:
     for genicity in [2, 4, 10, 20, 50, 100]:
@@ -232,10 +291,33 @@ for linkage in ['independent', 'weak', 'strong']:
         candidate_dirs = [d for d in dirs if re.search(dirname_patt, d)]
         if len(candidate_dirs) > 0:
             # make the fig
-            fig = plot_phenotypic_shift(linkage, genicity)
+            fig, undershoot = plot_phenotypic_shift(linkage, genicity)
             # save the fig
-            fig.savefig(os.path.join(datadir, 'phenotypic_shift_L%s_G%s.png' % (linkage,
-                                                        str(genicity).zfill(2))),
+            fig.savefig(os.path.join(datadir,
+                        'phenotypic_shift_L%s_G%s_SCAT.png' % (linkage,
+                                                    str(genicity).zfill(2))),
                         dpi=dpi,
                         orientation='landscape',
                        )
+            # save the undershoot data
+            pheno_undershoot_dict['linkage'].extend([linkage]*len(undershoot))
+            pheno_undershoot_dict['genicity'].extend([genicity]*len(undershoot))
+            pheno_undershoot_dict['undershoot'].extend(undershoot)
+
+# analyze undershoot data
+linkage_dict = {'independent': 0.5, 'weak': 0.05, 'strong': 0.005}
+pheno_undershoot_df = pd.DataFrame.from_dict(pheno_undershoot_dict).replace(
+    {'linkage': linkage_dict})
+print(pheno_undershoot_df)
+pheno_undershoot_df.to_csv(os.path.join(datadir,
+                                        'phenotypic_shift_undershoot.csv'),
+                           index=False)
+#pheno_undershoot_df['intxn'] = (pheno_undershoot_df.linkage *
+#                                pheno_undershoot_df.genicity)
+
+y = pheno_undershoot_df['undershoot']
+X = sm.add_constant(pheno_undershoot_df[['linkage', 'genicity']])#, 'intxn']])
+mod = sm.OLS(y, X).fit()
+print(mod.summary())
+
+

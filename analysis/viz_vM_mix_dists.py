@@ -6,6 +6,8 @@ from scipy.stats import vonmises
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 import statsmodels.api as sm
+from statsmodels.formula.api import ols
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import os
 
 
@@ -33,7 +35,7 @@ else:
     # consider if/how to depict uncertainty envelopes on the dists?
 
 
-def vis_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None,
+def viz_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None,
                     nullness=None,
                     plot_type='circ', to_deg=True, plot_dirlabels=False,
                     on_curr_ax=False, return_axlims=True, n_rand=10000):
@@ -269,10 +271,10 @@ def make_vM_mix_dist_comparison_grid(df, it=None,
                 if it is not None:
                     plotdf = nullness_subdf[nullness_subdf.it == it]
                 # otherwise, plot mean densities (calculated within
-                # vis_vM_mix_dist) across all its
+                # viz_vM_mix_dist) across all its
                 else:
                     plotdf = nullness_subdf
-                curr_axlims, E_densities, NS_densities = vis_vM_mix_dist(
+                curr_axlims, E_densities, NS_densities = viz_vM_mix_dist(
                                               df=plotdf,
                                               nullness=nullness,
                                               on_curr_ax=True,
@@ -338,6 +340,9 @@ grid_fig, E_NS_dens_df = make_vM_mix_dist_comparison_grid(df,
                                                           plot_type='circ',
                                                           it=None,
                                                        return_E_NS_dens_df=True)
+E_NS_dens_df.to_csv(os.path.join(datadir, 'ch2_E_NS_gene_flow_densities.csv'),
+                    index=False)
+
 grid_fig.savefig(os.path.join(datadir, 'ch2_gene_flow_dir_analysis.png'),
                  dpi=400)
 
@@ -353,11 +358,49 @@ results = {'nullness': [],
     # NOTES:
         # response vars aren't exactly normal (a bit skewed), but not awful
         # either, so just using a basic linear model for now
+all_tuk_data = []
 for nullness in ['null', 'non-null']:
     print('\n%s MODELS\n:' % nullness.upper())
     for response_var in ['E_dens', 'NS_mean_dens']:
         print('\n\tresponse var: %s\n' % response_var)
         subdf = E_NS_dens_df[E_NS_dens_df['nullness'] == nullness]
+
+        # code for two-way ANOVA with post-hoc Tukey HSD test stolen from:
+        # https://towardsdatascience.com/anova-tukey-test-in-python-b3082b6e6bda
+
+        # R-style formula specification using a string
+        # NOTE: C() operator coerces a variable to categorical
+        formula = ('%s ~ C(linkage) + C(genicity) + '
+                   'C(linkage):C(genicity)') % response_var
+        lm = ols(formula, subdf).fit()
+        table = sm.stats.anova_lm(lm, typ=2)
+        print(table)
+        # perform multiple pairwise comparison (Tukey HSD)
+        subdf['combination'] = (subdf.linkage.astype(str) + " / " +
+                                subdf.genicity.astype(str))
+        tuk = pairwise_tukeyhsd(endog=subdf[response_var],
+                                groups=subdf['combination'], alpha=0.05)
+        # coerce the tukeyhsd table to a DataFrame, then filter and sort
+        tukey_data = pd.DataFrame(data=tuk._results_table.data[1:],
+                                  columns = tuk._results_table.data[0])
+        group1_comp =tukey_data.loc[tukey_data.reject ==
+                                    True].groupby('group1').reject.count()
+        group2_comp = tukey_data.loc[tukey_data.reject ==
+                                     True].groupby('group2').reject.count()
+        tukey_data_summ = pd.concat([group1_comp, group2_comp], axis=1)
+        tukey_data_summ = tukey_data_summ.fillna(0)
+        tukey_data_summ.columns = ['reject1', 'reject2']
+        tukey_data_summ['total_sum'] = (tukey_data_summ.reject1 +
+                                        tukey_data_summ.reject2)
+        print('\n\n\tTukey HSD pairwise comparison test results:\n\n')
+        print(tukey_data_summ.sort_values('total_sum',ascending=False))
+        # save these Tukey results to our list
+        tukey_data['nullness'] = nullness
+        tukey_data['dir'] = response_var
+        all_tuk_data.append(tukey_data)
+
+
+        # build identical model, but with numeric instead of categorical vars
         y = subdf[response_var]
         X = sm.add_constant(subdf[['linkage', 'genicity']])
         mod = sm.OLS(y, X).fit()
@@ -376,4 +419,7 @@ for nullness in ['null', 'non-null']:
 
 results_df = pd.DataFrame.from_dict(results)
 results_df.to_csv(os.path.join(datadir, 'ch2_gene_flow_dir_analysis_stats.csv'),
+                  index=False)
+tuk_df = pd.concat(all_tuk_data)
+tuk_df.to_csv(os.path.join(datadir, 'ch2_gene_flow_dir_tukey_results.csv'),
                   index=False)

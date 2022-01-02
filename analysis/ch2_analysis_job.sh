@@ -23,10 +23,16 @@
 # load needed modules
 module load python r gsl gcc rclone
 
-# plot phenotypic shift results, then push results to BDrive
+# plot phenotypic shift results
 echo "NOW PLOTTING PHENOTYPIC SHIFT."
-python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/plot_change_phenotypic_space_ch2.py > pheno_plotting.pyout
-python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/make_paneled_phenotypic_shift_image.py > pheno_panelling.pyout
+python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/plot_change_phenotypic_space_ch2_HEAT.py > pheno_heat.pyout
+python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/plot_change_phenotypic_space_ch2_SCAT.py > pheno_scat.pyout
+python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/make_paneled_image.py SCAT > scat_panelling.pyout
+python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/make_paneled_image.py HEAT > heat_panelling.pyout
+
+# plot pop-density shift results
+python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/plot_change_pop_density.py > pop_dens.pyout
+python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/make_paneled_image.py DENS > dens_panelling.pyout
 
 # make plots for population size, average fitness, and average phenotype
 echo "NOW PLOTTING Nt, mean_fit, AND mean_z OVER TIME."
@@ -34,7 +40,7 @@ python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_
 
 # make delta_Nt and delta_fit boxplots
 echo "NOW PLOTTING delta_Nt and delta_fit boxplots."
-Rscript --vanilla /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/make_boxplots_and_run_stats.R > boxplots_and_stats.Rout
+Rscript --vanilla /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/make_boxplots.R > boxplots_and_stats.Rout
 
 # plot directional gene flow results
 echo "NOW FITTING ALL PIDs VON MISES DISTRIBUTIONS PARAMS"
@@ -42,12 +48,15 @@ python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_
 echo "NOW CONCATENATING FITTED VON MISES PARAMS CSVs"
 python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/concatenate_fitted_von_mises_mixture_params_files.py > gene_flow_param_concat.pyout
 echo "NOW PLOTTING FITTED GENE FLOW DIRECTIONAL DISTRIBUTIONS."
-python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/vis_vM_mix_dists.py > gene_flow_plotting.pyout
+python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/viz_vM_mix_dists.py > gene_flow_plotting.pyout
 
 # run stats tests and output results
+Rscript --vanilla /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/run_tests.R > test_results.Rout
+
 
 # copy all results to BDrive
 echo "NOW PUSHING EVERYTHING TO BDRIVE USING RCLONE"
+for f in `ls /global/scratch/users/drewhart/ch2/output/analysis/pop_density_shift_*.png`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
 for f in `ls /global/scratch/users/drewhart/ch2/output/analysis/phenotypic_shift_*.png`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
 for f in `ls /global/scratch/users/drewhart/ch2/output/analysis/ch2_*_over_time.jpg`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
 for f in `ls /global/scratch/users/drewhart/ch2/output/analysis/boxplot*.jpg`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
