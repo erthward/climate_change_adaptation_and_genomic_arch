@@ -31,6 +31,7 @@ python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_
 python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/make_paneled_image.py HEAT > heat_panelling.pyout
 
 # plot pop-density shift results
+echo "NOW PLOTTING POP-DENSITY SHIFT."
 python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/plot_change_pop_density.py > pop_dens.pyout
 python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/make_paneled_image.py DENS > dens_panelling.pyout
 
@@ -51,6 +52,7 @@ echo "NOW PLOTTING FITTED GENE FLOW DIRECTIONAL DISTRIBUTIONS."
 python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/viz_vM_mix_dists.py > gene_flow_plotting.pyout
 
 # run stats tests and output results
+echo "NOW RUNNING REMAINING STATISTICAL TESTS"
 Rscript --vanilla /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/run_tests.R > test_results.Rout
 
 

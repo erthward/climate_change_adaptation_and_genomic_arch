@@ -27,7 +27,7 @@ if (strsplit(getwd(), '/')[[1]][2] == 'home'){
 summary.csvs = list.files(data.dir)[grep("^output_PID-\\d+\\.csv$", list.files(data.dir))] 
 dfs = list()
 for (csv in summary.csvs){
-    dfs[[csv]] = read.csv(csv)
+    dfs[[csv]] = read.csv(paste0(data.dir, csv))
 }
 summary.df = ldply(dfs, rbind)
 summary.df$size = 1+0.25*floor(log10(as.numeric(as.character(summary.df$genicity))))/2

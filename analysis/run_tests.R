@@ -25,7 +25,7 @@ if (strsplit(getwd(), '/')[[1]][2] == 'home'){
 summary.csvs = list.files(data.dir)[grep("^output_PID-\\d+\\.csv$", list.files(data.dir))] 
 dfs = list()
 for (csv in summary.csvs){
-    dfs[[csv]] = read.csv(csv)
+    dfs[[csv]] = read.csv(paste0(data.dir, csv))
 }
 summary.df = ldply(dfs, rbind)
 summary.df$size = 1+0.25*floor(log10(as.numeric(as.character(summary.df$genicity))))/2
@@ -48,6 +48,12 @@ summary.df$fact.linkage = as.factor(as.character(fact.linkage))
 df.nonull = summary.df[summary.df$nullness == 'non_null',]
 df.null = summary.df[summary.df$nullness == 'null',]
 
+
+cat('\n\n')
+cat('DELTA_NT')
+cat('\n')
+cat('-------------------------------------------------------------')
+
 # interaction plots
 
 jpeg(paste0(output.dir, 'delta_Nt_intxn_plot.jpg'), width=5000, height=2500, res=300)
@@ -59,17 +65,24 @@ with(df.nonull, interaction.plot(genicity, fact.linkage, delta_Nt, fun = mean,
 dev.off()
 
 # fit ANOVAs
+cat('\n\n')
+cat('-----null---------------------------------------------------')
+cat('\n\n')
 mod.null <- aov(delta_Nt ~ fact.linkage + genicity + fact.linkage:genicity,
                 data = df.null)
-summary(mod.null)
-mod.nonull <- aov(delta_Nt ~ fact.linkage + genicity + fact.linkage:genicity,
-                data = df.nonull)
-summary(mod.nonull)
+print(summary(mod.null))
 # post-hoc Tukey's HSD pairwise comparison test
 print("Tukey's HSD: delta_Nt: null")
 print(TukeyHSD(mod.null, which = "fact.linkage"))
 print(TukeyHSD(mod.null, which = "genicity"))
 print(TukeyHSD(mod.null, which = "fact.linkage:genicity"))
+
+cat('\n\n')
+cat('--non-null--------------------------------------------------')
+cat('\n\n')
+mod.nonull <- aov(delta_Nt ~ fact.linkage + genicity + fact.linkage:genicity,
+                data = df.nonull)
+print(summary(mod.nonull))
 print("Tukey's HSD: delta_Nt: non-null")
 print(TukeyHSD(mod.nonull, which = "fact.linkage"))
 print(TukeyHSD(mod.nonull, which = "genicity"))
@@ -82,6 +95,12 @@ print(TukeyHSD(mod.nonull, which = "fact.linkage:genicity"))
   # with post-hoc all-pairwise comparisons for non-null
 #--------------------------------------------------------------------------
 
+cat('\n\n')
+cat('DELTA_FIT')
+cat('\n')
+cat('-------------------------------------------------------------')
+
+
 # interaction plots
 
 jpeg(paste0(output.dir, 'delta_fit_intxn_plot.jpg'), width=5000, height=2500, res=300)
@@ -93,17 +112,24 @@ with(df.nonull, interaction.plot(genicity, fact.linkage, delta_fit, fun = mean,
 dev.off()
 
 # fit ANOVAs
+cat('\n\n')
+cat('-----null---------------------------------------------------')
+cat('\n\n')
 mod.null <- aov(delta_fit ~ fact.linkage + genicity + fact.linkage:genicity,
                 data = df.null)
-summary(mod.null)
-mod.nonull <- aov(delta_fit ~ fact.linkage + genicity + fact.linkage:genicity,
-                data = df.nonull)
-summary(mod.nonull)
-# post-hoc Tukey's HSD pairwise comparison test
+print(summary(mod.null))
 print("Tukey's HSD: delta_fit: null")
 print(TukeyHSD(mod.null, which = "fact.linkage"))
 print(TukeyHSD(mod.null, which = "genicity"))
 print(TukeyHSD(mod.null, which = "fact.linkage:genicity"))
+
+cat('\n\n')
+cat('--non-null--------------------------------------------------')
+cat('\n\n')
+mod.nonull <- aov(delta_fit ~ fact.linkage + genicity + fact.linkage:genicity,
+                data = df.nonull)
+print(summary(mod.nonull))
+# post-hoc Tukey's HSD pairwise comparison test
 print("Tukey's HSD: delta_fit: non-null")
 print(TukeyHSD(mod.nonull, which = "fact.linkage"))
 print(TukeyHSD(mod.nonull, which = "genicity"))
@@ -111,11 +137,17 @@ print(TukeyHSD(mod.nonull, which = "fact.linkage:genicity"))
 
 
 ###########################################################################
-# pheno shift/undershoot
+# pheno shift/shortfall
   # one ANOVA with post-hoc all-pairwise comparisons
 #--------------------------------------------------------------------------
 
-pheno.df = read.csv(paste0(data.dir, 'phenotypic_shift_undershoot.csv'))
+cat('\n\n')
+cat('PHENO SHORTFALL')
+cat('\n')
+cat('-------------------------------------------------------------')
+
+
+pheno.df = read.csv(paste0(output.dir, 'phenotypic_shift_undershoot.csv'))
 jpeg(paste0(output.dir, 'pheno_undershoot_intxn_plot.jpg'), width=5000, height=2500, res=300)
 with(pheno.df, interaction.plot(genicity, linkage, undershoot, fun = mean,
                                      main='Intxn Plot: pheno_undershoot'))
@@ -126,7 +158,7 @@ pheno.df$genicity = as.factor(as.character(pheno.df$genicity))
 # fit ANOVAs
 mod <- aov(undershoot ~ linkage + genicity + linkage:genicity,
            data = pheno.df)
-summary(mod)
+print(summary(mod))
 # post-hoc Tukey's HSD pairwise comparison test
 print("Tukey's HSD: phenotypic undershoot")
 print(TukeyHSD(mod, which = "linkage"))
