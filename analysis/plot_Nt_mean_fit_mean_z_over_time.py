@@ -28,8 +28,11 @@ n_ticklabels = 5
 if os.getcwd().split('/')[1] == 'home':
     datadir = ('/home/deth/Desktop/CAL/research/projects/sim/ch2/'
                'climate_change_adaptation_and_genomic_arch/analysis')
+    analysis_dir = ('/home/deth/Desktop/CAL/research/projects/sim/ch2/'
+                    'climate_change_adaptation_and_genomic_arch/analysis')
 else:
-    datadir = '/global/scratch/users/drewhart/ch2/output/analysis'
+    datadir = '/global/scratch/users/drewhart/ch2/output/output'
+    analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
 filename_patt = 'output_PID-.*_TS_DATA.csv'
 
 # list of files to plot
@@ -142,7 +145,7 @@ def plot_ts_for_all_scenarios(df, var, show_plots=False):
                             wspace=0.1,
                             hspace=0.1)
         #fig.suptitle('%s' % var)
-        fig.savefig(os.path.join(datadir, 'ch2_%s_over_time.jpg' % var),
+        fig.savefig(os.path.join(analysis_dir, 'ch2_%s_over_time.jpg' % var),
                             dpi=dpi, orientation='landscape')
 
 plot_ts_for_all_scenarios(df, 'Nt')

@@ -5,6 +5,10 @@ library(movMF) # for fitting mixtures of von Mises dists
 plot.circ = F # include circular plots? (BROKEN FOR NOW, SO FALSE!)
 plot.examp = F # whether or not to plot the random example hists
 
+# establish data.dir and analysis.dir strings (INCLUDING THEIR SLASHES ON EITHER SIDE!)
+datadir.str = '/output/'
+datadir.str = '/analysis/'
+
 
 if (plot.examp){
     par(mfrow=c(3,2))
@@ -219,5 +223,6 @@ for (genicity in uniques[['genicity']]){
 output.df = data.frame(output)
 
 # write output.df to disk
-out.filename = gsub('_DIR', '_DIR_FITTED_PARAMS', datafile)
+out.filename = gsub(datadir.str, analysisdir.str, 
+                    gsub('_DIR', '_DIR_FITTED_PARAMS', datafile))
 write.csv(output.df, out.filename, row.names=F)

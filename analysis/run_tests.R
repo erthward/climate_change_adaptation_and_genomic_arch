@@ -9,10 +9,10 @@ library(ggsignif)
 
 if (strsplit(getwd(), '/')[[1]][2] == 'home'){
     data.dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
-    output.dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
+    analysis.dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
 } else {
     data.dir = '/global/scratch/users/drewhart/ch2/output/output/'
-    output.dir = '/global/scratch/users/drewhart/ch2/output/analysis/'
+    analysis.dir = '/global/scratch/users/drewhart/ch2/output/analysis/'
 }
 
 ###########################################################################
@@ -56,7 +56,7 @@ cat('-------------------------------------------------------------')
 
 # interaction plots
 
-jpeg(paste0(output.dir, 'delta_Nt_intxn_plot.jpg'), width=5000, height=2500, res=300)
+jpeg(paste0(analysis.dir, 'delta_Nt_intxn_plot.jpg'), width=5000, height=2500, res=300)
 par(mfrow=c(1,2))
 with(df.null, interaction.plot(genicity, fact.linkage, delta_Nt, fun = mean,
                                      main='Intxn Plot: delta_Nt: Null'))
@@ -103,7 +103,7 @@ cat('-------------------------------------------------------------')
 
 # interaction plots
 
-jpeg(paste0(output.dir, 'delta_fit_intxn_plot.jpg'), width=5000, height=2500, res=300)
+jpeg(paste0(analysis.dir, 'delta_fit_intxn_plot.jpg'), width=5000, height=2500, res=300)
 par(mfrow=c(1,2))
 with(df.null, interaction.plot(genicity, fact.linkage, delta_fit, fun = mean,
                                      main='Intxn Plot: delta_fit: Null'))
@@ -147,8 +147,8 @@ cat('\n')
 cat('-------------------------------------------------------------')
 
 
-pheno.df = read.csv(paste0(output.dir, 'phenotypic_shift_undershoot.csv'))
-jpeg(paste0(output.dir, 'pheno_undershoot_intxn_plot.jpg'), width=5000, height=2500, res=300)
+pheno.df = read.csv(paste0(analysis.dir, 'phenotypic_shift_undershoot.csv'))
+jpeg(paste0(analysis.dir, 'pheno_undershoot_intxn_plot.jpg'), width=5000, height=2500, res=300)
 with(pheno.df, interaction.plot(genicity, linkage, undershoot, fun = mean,
                                      main='Intxn Plot: pheno_undershoot'))
 dev.off()

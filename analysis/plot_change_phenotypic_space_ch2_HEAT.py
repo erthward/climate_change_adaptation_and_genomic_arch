@@ -28,8 +28,10 @@ n_ticklabels = 5
 # data directory
 if os.getcwd().split('/')[1] == 'home':
     datadir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
+    analysis_dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
 else:
-    datadir = '/global/scratch/users/drewhart/ch2/output/analysis'
+    datadir = '/global/scratch/users/drewhart/ch2/output/output'
+    analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
 
 # way to hard-code the vmax values for the scenarios, given that it would
 # be kind of a pain to write code to do just this
@@ -234,7 +236,7 @@ for linkage in ['independent', 'weak', 'strong']:
             # make the fig
             fig = plot_phenotypic_shift(linkage, genicity)
             # save the fig
-            fig.savefig(os.path.join(datadir,
+            fig.savefig(os.path.join(analysis_dir,
                         'phenotypic_shift_L%s_G%s_HEAT.png' % (linkage,
                                                     str(genicity).zfill(2))),
                         dpi=dpi,

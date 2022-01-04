@@ -22,10 +22,10 @@ n_ticklabels = 5
 
 # data directory
 if os.getcwd().split('/')[1] == 'home':
-    datadir = ('/home/deth/Desktop/CAL/research/projects/sim/'
+    analysis_dir = ('/home/deth/Desktop/CAL/research/projects/sim/'
                'ch2/climate_change_adaptation_and_genomic_arch/analysis')
 else:
-    datadir = '/global/scratch/users/drewhart/ch2/output/analysis'
+    analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
 
 # TODO:
 
@@ -332,7 +332,7 @@ def make_vM_mix_dist_comparison_grid(df, it=None,
 
 
 # load data
-df = pd.read_csv(os.path.join(datadir, 'ch2_all_fitted_vM_params.csv'),
+df = pd.read_csv(os.path.join(analysis_dir, 'ch2_all_fitted_vM_params.csv'),
                  na_filter=False)
 
 # plot the full grid
@@ -340,10 +340,10 @@ grid_fig, E_NS_dens_df = make_vM_mix_dist_comparison_grid(df,
                                                           plot_type='circ',
                                                           it=None,
                                                        return_E_NS_dens_df=True)
-E_NS_dens_df.to_csv(os.path.join(datadir, 'ch2_E_NS_gene_flow_densities.csv'),
+E_NS_dens_df.to_csv(os.path.join(analysis_dir, 'ch2_E_NS_gene_flow_densities.csv'),
                     index=False)
 
-grid_fig.savefig(os.path.join(datadir, 'ch2_gene_flow_dir_analysis.png'),
+grid_fig.savefig(os.path.join(analysis_dir, 'ch2_gene_flow_dir_analysis.png'),
                  dpi=400)
 
 
@@ -418,8 +418,8 @@ for nullness in ['null', 'non-null']:
             results['R2'].append(R2)
 
 results_df = pd.DataFrame.from_dict(results)
-results_df.to_csv(os.path.join(datadir, 'ch2_gene_flow_dir_analysis_stats.csv'),
+results_df.to_csv(os.path.join(analysis_dir, 'ch2_gene_flow_dir_analysis_stats.csv'),
                   index=False)
 tuk_df = pd.concat(all_tuk_data)
-tuk_df.to_csv(os.path.join(datadir, 'ch2_gene_flow_dir_tukey_results.csv'),
+tuk_df.to_csv(os.path.join(analysis_dir, 'ch2_gene_flow_dir_tukey_results.csv'),
                   index=False)

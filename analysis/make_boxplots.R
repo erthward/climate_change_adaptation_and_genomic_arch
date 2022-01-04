@@ -17,10 +17,10 @@ library(ggsignif)
 
 if (strsplit(getwd(), '/')[[1]][2] == 'home'){
     data.dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
-    output.dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
+    analysis.dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
 } else {
     data.dir = '/global/scratch/users/drewhart/ch2/output/output/'
-    output.dir = '/global/scratch/users/drewhart/ch2/output/analysis/'
+    analysis.dir = '/global/scratch/users/drewhart/ch2/output/analysis/'
 }
 
 # gather all summary-output files into one
@@ -92,7 +92,7 @@ ggplot.delta_Nt
 
 # boxplot instead
 theme_set(theme_linedraw(base_size=20))
-jpeg(paste0(output.dir, 'boxplot_delta_Nt.jpg'), width=5000, height=2500, res=300)
+jpeg(paste0(analysis.dir, 'boxplot_delta_Nt.jpg'), width=5000, height=2500, res=300)
 boxnull = ggplot(df.null) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
     geom_hline(yintercept=0) +
     scale_fill_manual(values = plot_cols[6:4], labels=c('strong', 'weak', 'independent')) +
@@ -108,7 +108,7 @@ cowplot::plot_grid(boxnull, boxnonull)
 dev.off()
 
 # boxplot instead
-jpeg(paste0(output.dir, 'boxplot_delta_fit.jpg'), width=5000, height=2500, res=300)
+jpeg(paste0(analysis.dir, 'boxplot_delta_fit.jpg'), width=5000, height=2500, res=300)
 boxnull = ggplot(df.null) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
     geom_hline(yintercept=0) +
     scale_fill_manual(values = plot_cols[6:4], labels=c('strong', 'weak', 'independent')) +
