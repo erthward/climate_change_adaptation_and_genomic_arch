@@ -442,6 +442,12 @@ def set_params(params, linkage, genicity, nullness):
             'defined']['rast'] = np.ones((50, 50))*0.5
         copy_params['landscape']['layers']['stable']['init'][
             'defined']['rast'] = np.ones((50, 50))*0.5
+        # DETH: 2022-01-04: and, experimentally, get rid of selection
+        # (without getting rid of fitness values)
+        for trt_i in range(2):
+            copy_params['comm']['species']['spp_0'][
+                'gen_arch']['traits']['trait_%i' % trt-i]['phi'] = 0
+
 
     return copy_params, genarch_filename
 

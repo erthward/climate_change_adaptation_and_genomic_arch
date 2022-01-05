@@ -4,6 +4,7 @@
 - debug so that each iteration gets saved (rather than only 1 iteration from each scenario,PID combo!) (but not so important because I can just run a larger number of jobs to generate the full desired number of its)
 
 - just realized! should my null be what it currently is (i.e., no natural selection at all), or should it feature natural selection but no environmental change event??
+  - right now is yes selection, no gradient, no env change --> should be yes selection, yes gradient, no change? or no to all?
 
 - once everything is set, run full set of iterations, combine all output in one dir, then back up on BDrive
 
