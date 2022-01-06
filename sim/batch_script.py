@@ -447,7 +447,7 @@ def set_params(params, linkage, genicity, nullness):
         # (without getting rid of fitness values)
         #for trt_i in range(2):
         #    copy_params['comm']['species']['spp_0'][
-        #        'gen_arch']['traits']['trait_%i' % trt-i]['phi'] = 0
+        #        'gen_arch']['traits']['trait_%i' % trt_i]['phi'] = 0
 
 
     return copy_params, genarch_filename
