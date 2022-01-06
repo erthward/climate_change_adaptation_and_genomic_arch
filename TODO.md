@@ -5,6 +5,7 @@
 
 - just realized! should my null be what it currently is (i.e., no natural selection at all), or should it feature natural selection but no environmental change event??
   - right now is yes selection, no gradient, no env change --> should be yes selection, yes gradient, no change? or no to all?
+  - OR SHOULD MY NULL ONLY HAVE 1 TRAIT??? whole different type of null, but in some sense this sits underneath all my hypotheses...
 
 - once everything is set, run full set of iterations, combine all output in one dir, then back up on BDrive
 
@@ -50,6 +51,7 @@
 ### ANALYSIS Qs
 
   - should I write code to calculate, save, and then analyze shift in the genetic covar matrix (G) (a la McGuigan 2006 MolEcol)?
+    - genetic covar matrix could be calculable, but werid because a.) usually calculated from phenotype data as a quant genetics methods casting light on allelic conditions, rather than from the genomic data themselves, and pointless because b.) I only have two traits, and I know the additive genetic variation for each (i.e., the diagonal), so it would only amount to calculating the phenotypic correlation of my two traits, which I have fixed by way of the landscape structure. What I’ve been talking about all this time is actually not a ‘shifting genetic covariance structure’, if I’m thinking about this right, but rather ‘shifting allelic covariance’, i.e., selection for new haplotypes. The sim setup feels weirder than ever now because a.) this just happens at varying rates across the landscape (i.e., env isn’t changing at the far left, then change rate increases to its maximum and far right), yet b.) at the same time gene flow can happen across the landscape, potentially swamping that signal.  ⁠⁠—> Is there a way to readjust the landscape setup so that rate of env change is constant across it?? Or should I just leave it this way and treat that as my purposeful setup. I’m back at square 1 from two years ago… :( 
 
   - should I consider how to look at modes of adaptation a la Retini et al. 2019, so that I can compare and contrast results to theirs?
 

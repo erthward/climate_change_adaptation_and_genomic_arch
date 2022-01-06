@@ -121,7 +121,7 @@ else:
     params_filepath=(('/global/scratch/users/drewhart/ch2/'
                       'climate_change_adaptation_and_genomic_arch/sim/template_params.py'))
     # path to dir for output CSVs
-    output_path = '/global/scratch/users/drewhart/ch2/output/output'
+    output_path = '/global/scratch/users/drewhart/ch2/output/output_correct_null'
 
 # make sure job is running in the right directory
 #os.chdir(output_path)
@@ -435,18 +435,19 @@ def set_params(params, linkage, genicity, nullness):
         trt['alpha_distr_mu'] = 1/genicity
 
     # if this is a null sim, edit the params so that
-    # no env change occurs and there is no gradient
+    # no env change occurs 
     if nullness == 'null':
         copy_params['landscape']['layers']['shift'].pop('change');
-        copy_params['landscape']['layers']['shift']['init'][
-            'defined']['rast'] = np.ones((50, 50))*0.5
-        copy_params['landscape']['layers']['stable']['init'][
-            'defined']['rast'] = np.ones((50, 50))*0.5
+        # DETH: 2022-01-05: change the null to still have gradient but no shift
+        #copy_params['landscape']['layers']['shift']['init'][
+        #    'defined']['rast'] = np.ones((50, 50))*0.5
+        #lcopy_params['landscape']['layers']['stable']['init'][
+        #    'defined']['rast'] = np.ones((50, 50))*0.5
         # DETH: 2022-01-04: and, experimentally, get rid of selection
         # (without getting rid of fitness values)
-        for trt_i in range(2):
-            copy_params['comm']['species']['spp_0'][
-                'gen_arch']['traits']['trait_%i' % trt-i]['phi'] = 0
+        #for trt_i in range(2):
+        #    copy_params['comm']['species']['spp_0'][
+        #        'gen_arch']['traits']['trait_%i' % trt-i]['phi'] = 0
 
 
     return copy_params, genarch_filename

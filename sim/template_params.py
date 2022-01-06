@@ -9,7 +9,7 @@ stable = np.vstack([np.linspace(1, 0, 50) for _ in range(50)])
 K = np.ones((50,50))
 
 # show the landscape, for debugging, if requested
-debug_landscape = False
+debug_landscape = True
 if debug_landscape:
     import matplotlib.pyplot as plt
     fig = plt.figure()
@@ -120,7 +120,7 @@ params = {
                         #ending timestep of event
                         'end_t':            2749,
                         #number of stepwise changes in event
-                        'n_steps':          50,
+                        'n_steps':          250,
                         }, # <END> event 0
 
                     }, # <END> 'change'
@@ -356,7 +356,6 @@ params = {
                     'n_recomb_paths_mem':       int(1e4),
                     #total number of recomb paths to simulate
                     'n_recomb_paths_tot':       int(1e5),
-                    #
                     'n_recomb_sims':            100_000,
                     #whether to generate recombination paths at each timestep
                     'allow_ad_hoc_recomb':       False,
