@@ -63,20 +63,23 @@ def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
             candidate_filenames = [fn for fn in os.listdir(os.path.join(
                 datadir, dirname, 'it--1', 'spp-spp_0')) if re.search(filename_patt,
                                                              fn)]
+            # drop the middle-timestep files
+            candidate_filenames = [fn for fn in candidate_filenames if not
+                                   re.search('2624', fn)]
             candidate_filenames = [os.path.join(datadir, dirname, 'it--1', 'spp-spp_0',
                                             fn) for fn in candidate_filenames]
             # only add this directory and its files to the analysis if I got all 3 timeteps,
             # otherwise print warning
-            if len(candidate_filenames) == 3:
+            if len(candidate_filenames) == 2:
                 assert len([fn for fn in candidate_filenames if '-2499_' in fn])== 1
-                assert len([fn for fn in candidate_filenames if '-2624_' in fn])== 1
+                #assert len([fn for fn in candidate_filenames if '-2624_' in fn])== 1
                 assert len([fn for fn in candidate_filenames if '-2749_' in fn])== 1
                 # sort files by timestep
                 candidate_filenames = [*np.sort(candidate_filenames)]
                 filenames[dirname] = candidate_filenames
             else:
                 print(('\n\nWARNING: following directory did not contain'
-                       '3 files, 1 for each of the right timesteps:\n\n\t'
+                       '2 valid files, 1 for each of the right timesteps:\n\n\t'
                        '%s\n\n') % dirname)
 
     # create the figure
@@ -84,11 +87,11 @@ def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
                      figsize=(fig_width, fig_height)
                     )
     #fig.suptitle(genicity, fontdict={'fontsize': suptitle_fontsize})
-    gs = fig.add_gridspec(nrows=1, ncols=3, width_ratios=[0.95, 0.95, 1.15])
+    gs = fig.add_gridspec(nrows=1, ncols=2, width_ratios=[0.95, 1.15])
 
     # loop through the three time steps to be analyzed
     time_steps = {'before': 2499,
-                  'during': 2624,
+                  #'during': 2624,
                   'after': 2749}
     for time_step_n, time_step_info in enumerate(time_steps.items()):
         title, time_step = time_step_info
@@ -127,7 +130,8 @@ def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
         if overall_max_dens_per_run is None:
             overall_max_dens_per_run = 4*file_ct
         im = ax.imshow(cts/file_ct,
-                       cmap=mpl.cm.YlOrBr_r,
+                       #cmap=mpl.cm.YlOrBr_r,
+                       cmap=mpl.cm.bone,
                        vmin=0,
                        vmax=overall_max_dens_per_run,
                       )

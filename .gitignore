@@ -1,6 +1,7 @@
 *.gif
 ./figs
 *.png
+*/jpg
 __pycache__/*
 slurm*.out
 GNX_mod*/

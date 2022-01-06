@@ -26,8 +26,7 @@ n_ticklabels = 5
 
 # data directory
 if os.getcwd().split('/')[1] == 'home':
-    datadir = ('/home/deth/Desktop/CAL/research/projects/sim/ch2/'
-               'climate_change_adaptation_and_genomic_arch/analysis')
+    datadir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
     analysis_dir = ('/home/deth/Desktop/CAL/research/projects/sim/ch2/'
                     'climate_change_adaptation_and_genomic_arch/analysis')
 else:
@@ -38,7 +37,6 @@ filename_patt = 'output_PID-.*_TS_DATA.csv'
 # list of files to plot
 files = [os.path.join(datadir, f) for f in os.listdir(datadir) if re.search(
                                                         filename_patt, f)]
-print(files)
 
 # way to hard-code the vmax values for the scenarios, given that it would
 # be kind of a pain to write code to do just this
@@ -80,6 +78,15 @@ def plot_ts_for_all_scenarios(df, var, show_plots=False):
         for genicity_j, genicity in enumerate(genicities):
 
             ax = fig.add_subplot(gs[linkage_i, genicity_j])
+
+            # plot a dim gray box over the post-environmental change time period
+            after = plt.Polygon([[time_steps[-1], ymin],
+                                 [time_steps[-1], ymax],
+                                 [time_steps[-len_env_change_event-1], ymax],
+                                 [time_steps[-len_env_change_event-1], ymin],
+                                 [time_steps[-1], ymin]])
+            after.set_color('#aaaaaa66')
+            ax.add_patch(after)
 
             # loop over nullnesses
             for nullness in ['null', 'non-null']:
@@ -132,7 +139,6 @@ def plot_ts_for_all_scenarios(df, var, show_plots=False):
                     ax.set_yticklabels([])
                 ax.set_ylim([ymin,ymax])
                 ax.set_xlim([np.min(time_steps), np.max(time_steps)])
-
 
     if show_plots:
         plt.show()
