@@ -24,7 +24,7 @@ axislab_fontsize = 20
 ticklab_fontsize = 14
 annot_fontsize = 14
 cbar_fontsize = 14
-fig_width = 14.5
+fig_width = 10.5
 fig_height = 5.6
 dpi = 400
 n_ticklabels = 5
@@ -34,6 +34,12 @@ marker_sizes = {4: 500,
                 20: 40,
                 100: 3,
                }
+subplots_adj_left=0.08
+subplots_adj_bottom=0.13
+subplots_adj_right=0.96
+subplots_adj_top=0.85
+subplots_adj_wspace=0.14
+subplots_adj_hspace=0.05
 
 # data directory
 if os.getcwd().split('/')[1] == 'home':
@@ -42,6 +48,10 @@ if os.getcwd().split('/')[1] == 'home':
 else:
     datadir = '/global/scratch/users/drewhart/ch2/output/output'
     analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
+
+# get arg determining whether to plot null or non-null sims
+nullness = sys.argv[1].lower()
+assert nullness in ['null', 'non-null']
 
 # lists of all possible linkage and genicity values
 linkages = ['independent', 'weak', 'strong']
@@ -57,6 +67,11 @@ expec_lines = {2499: (b4, stable),
                2624: ((b4+af)/2, stable),
                2749: (af, stable),
               }
+
+# values for the undershoot colors
+undershoot_colors = {'non-null': '#f24156',
+                     'null': '#55b6f2',
+                    }
 
 
 def get_min_pw_diff(vals):
@@ -77,9 +92,11 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
     assert genicity in [2, 4, 10, 20, 50, 100]
 
     # get candidate filenames for time-step-2499 files
-    dirname_patt = 'mod-non-null_L%s_G%i_its0_' % (linkage, genicity)
-    filename_patt = ('mod-non-null_L%s_G%i_its0_randID\d{7}PID-'
-                     '\d{5,6}_it--1_t-2\d{3}_spp-spp_0.csv') % (linkage, genicity)
+    dirname_patt = 'mod-%s_L%s_G%i_its0_' % (nullness, linkage, genicity)
+    filename_patt = ('mod-%s_L%s_G%i_its0_randID\d{7}PID-'
+                     '\d{5,6}_it--1_t-2\d{3}_spp-spp_0.csv') % (nullness,
+                                                                linkage,
+                                                                genicity)
 
     filenames = {}
     for dirname in os.listdir(datadir):
@@ -226,7 +243,7 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
             # save the area for output, if final timestep
             # and plot the area
             poly = mplPolygon([*zip(poly_xs, poly_ys)])
-            poly_color = '#f24156'
+            poly_color = undershoot_colors[nullness]
             poly.set_color(poly_color)
             poly.set_alpha(0.5)
             ax.add_patch(poly)
@@ -272,12 +289,12 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
     fig.get_axes()[-1].tick_params(labelsize=cbar_fontsize)
 
     # adjust suplot spacing
-    plt.subplots_adjust(left=0.05,
-                        bottom=0.13,
-                        right=0.96,
-                        top=0.85,
-                        wspace=0.14,
-                        hspace=0.05)
+    plt.subplots_adjust(left=subplots_adj_left,
+                        bottom=subplots_adj_bottom,
+                        right=subplots_adj_right,
+                        top=subplots_adj_top,
+                        wspace=subplots_adj_wspace,
+                        hspace=subplots_adj_hspace)
 
     # return fig
     return fig, areas
@@ -291,7 +308,7 @@ for linkage in ['independent', 'weak', 'strong']:
         print('\n\n======================\n\n')
         print('\tLINKAGE: %s' % linkage)
         print('\tGENICITY: %i' % genicity)
-        dirname_patt = 'mod-non-null_L%s_G%i_its0_' % (linkage, genicity)
+        dirname_patt = 'mod-%s_L%s_G%i_its0_' % (nullness, linkage, genicity)
         dirs = os.listdir(datadir)
         candidate_dirs = [d for d in dirs if re.search(dirname_patt, d)]
         if len(candidate_dirs) > 0:
@@ -299,8 +316,10 @@ for linkage in ['independent', 'weak', 'strong']:
             fig, undershoot = plot_phenotypic_shift(linkage, genicity)
             # save the fig
             fig.savefig(os.path.join(analysis_dir,
-                        'phenotypic_shift_L%s_G%s_SCAT.png' % (linkage,
-                                                    str(genicity).zfill(2))),
+                        'phenotypic_shift_L%s_G%s%s.png' % (
+                                linkage,
+                                str(genicity).zfill(2),
+                                '_NULL'* (nullness == 'null'))),
                         dpi=dpi,
                         orientation='landscape',
                        )
@@ -315,7 +334,7 @@ pheno_undershoot_df = pd.DataFrame.from_dict(pheno_undershoot_dict).replace(
     {'linkage': linkage_dict})
 print(pheno_undershoot_df)
 pheno_undershoot_df.to_csv(os.path.join(datadir,
-                                        'phenotypic_shift_undershoot.csv'),
+           'phenotypic_shift_undershoot%s.csv' % ('_NULL' * (nullness=='null'))),
                            index=False)
 #pheno_undershoot_df['intxn'] = (pheno_undershoot_df.linkage *
 #                                pheno_undershoot_df.genicity)
@@ -324,5 +343,3 @@ y = pheno_undershoot_df['undershoot']
 X = sm.add_constant(pheno_undershoot_df[['linkage', 'genicity']])#, 'intxn']])
 mod = sm.OLS(y, X).fit()
 print(mod.summary())
-
-

@@ -8,6 +8,11 @@ assert plot_type.upper() in ['HEAT',
                              'SCAT',
                              'DENS'], ('Plot type can only be "HEAT", '
                                        '"SCAT", or "DENS".')
+if plot_type == 'SCAT':
+    nullness = sys.argv[2].lower()
+    assert nullness in ['null', 'non-null']
+else:
+    nullness = None
 
 # loosen PIL Image-size limit, to prevent DecompressionBombWarning error
 Image.MAX_IMAGE_PIXELS = None
@@ -23,7 +28,7 @@ if plot_type == 'DENS':
                                     '^pop_density_shift_L.*', f)]
 else:
     im_files = [f for f in os.listdir(analysis_dir) if re.search(
-                                    '^phenotypic_shift_L.*%s' % plot_type, f)]
+        '^phenotypic_shift_L.*%s' % ('_NULL' * (nullness == 'null')), f)]
 ims = {f:Image.open(os.path.join(analysis_dir, f), 'r') for f in im_files}
 
 # get size of an image
@@ -63,10 +68,10 @@ for i, linkage in enumerate(['independent', 'weak', 'strong']):
                                                                     linkage,
                                                                     genicity)
         else:
-            curr_im_filename_patt = '^phenotypic_shift_L%s_G\d*%i_%s\.png' % (
-                                                                    linkage,
-                                                                    genicity,
-                                                                    plot_type)
+            curr_im_filename_patt = '^phenotypic_shift_L%s_G\d*%i%s\.png' % (
+                        linkage,
+                        genicity,
+                        '_NULL' * (nullness == 'null'))
         curr_im = [v for k, v in ims.items() if re.search(curr_im_filename_patt,
                                                           k)]
         assert len(curr_im) == 1
@@ -108,4 +113,4 @@ if plot_type == 'DENS':
     out_im.save(os.path.join(analysis_dir, 'pop_density_shift_grid_fig.jpg'))
 else:
     out_im.save(os.path.join(analysis_dir,
-                             'phenotypic_shift_grid_fig_%s.jpg' % plot_type))
+        'phenotypic_shift_grid_fig_%s.jpg' % ('_NULL' * (nullness == 'null'))))

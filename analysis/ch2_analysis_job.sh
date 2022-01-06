@@ -25,8 +25,10 @@ module load python r gsl gcc rclone
 
 # plot phenotypic shift results
 echo "NOW PLOTTING PHENOTYPIC SHIFT."
-python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/plot_change_phenotypic_space.py > pheno_shift.pyout
-python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/make_paneled_image.py SCAT > scat_panelling.pyout
+python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/plot_change_phenotypic_space.py non-null > pheno_shift.pyout
+python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/make_paneled_image.py SCAT non-null > pheno_panelling.pyout
+python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/plot_change_phenotypic_space.py null > pheno_shift_NULL.pyout
+python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/make_paneled_image.py SCAT null > pheno_panelling_NULL.pyout
 
 # plot pop-density shift results
 echo "NOW PLOTTING POP-DENSITY SHIFT."

@@ -24,7 +24,7 @@ axislab_fontsize = 20
 ticklab_fontsize = 14
 annot_fontsize = 14
 cbar_fontsize = 14
-fig_width = 14.5
+fig_width = 11.2
 fig_height = 5.6
 dpi = 400
 n_ticklabels = 5
@@ -130,8 +130,8 @@ def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
         if overall_max_dens_per_run is None:
             overall_max_dens_per_run = 4*file_ct
         im = ax.imshow(cts/file_ct,
-                       #cmap=mpl.cm.YlOrBr_r,
-                       cmap=mpl.cm.bone,
+                       #cmap=mpl.cm.bone,
+                       cmap=mpl.cm.gray,
                        vmin=0,
                        vmax=overall_max_dens_per_run,
                       )
