@@ -113,4 +113,4 @@ if plot_type == 'DENS':
     out_im.save(os.path.join(analysis_dir, 'pop_density_shift_grid_fig.jpg'))
 else:
     out_im.save(os.path.join(analysis_dir,
-        'phenotypic_shift_grid_fig_%s.jpg' % ('_NULL' * (nullness == 'null'))))
+        'phenotypic_shift_grid_fig%s.jpg' % ('_NULL' * (nullness == 'null'))))
