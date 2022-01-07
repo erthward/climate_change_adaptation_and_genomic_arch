@@ -264,7 +264,7 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
         for tick in ax.get_xticklabels():
             tick.set_rotation(0)
         if linkage == 'strong':
-            ax.set_xlabel('shifting trait',
+            ax.set_xlabel('shifting gradient',
                         fontdict={'fontsize': axislab_fontsize})
         else:
             ax.set_xlabel('')
@@ -275,7 +275,7 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
                                fontdict={'fontsize':ticklab_fontsize})
             for tick in ax.get_yticklabels():
                     tick.set_rotation(90)
-            ax.set_ylabel('stable trait',
+            ax.set_ylabel('stable gradient',
                           fontdict={'fontsize': axislab_fontsize})
         else:
             ax.set_yticks(())
