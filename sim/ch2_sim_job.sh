@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job name:
-#SBATCH --job-name=ch2_data
+#SBATCH --job-name=ch2_sim
 #
 # Account:
 #SBATCH --account=fc_landgen
