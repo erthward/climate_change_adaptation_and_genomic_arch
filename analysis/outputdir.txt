@@ -1,1 +1,1 @@
-/global/scratch/users/drewhart/ch2/output/output_correct_null/
+/global/scratch/users/drewhart/ch2/output/output/
