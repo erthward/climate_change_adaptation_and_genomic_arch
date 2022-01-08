@@ -116,9 +116,9 @@ params = {
                         #of files for each stepwise change in event
                         'change_rast':              af,
                         #starting timestep of event
-                        'start_t':          2500,
+                        'start_t':          1000,
                         #ending timestep of event
-                        'end_t':            2749,
+                        'end_t':            1250,
                         #number of stepwise changes in event
                         'n_steps':          250,
                         }, # <END> event 0
@@ -447,7 +447,7 @@ params = {
 ###############
     'model': {
         #total Model runtime (in timesteps)
-        'T':            2750,
+        'T':            1500,
         #min burn-in runtime (in timesteps)
         'burn_T':       30,
         #seed number

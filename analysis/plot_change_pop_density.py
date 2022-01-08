@@ -50,6 +50,11 @@ else:
 linkages = ['independent', 'weak', 'strong']
 genicities =  [2, 4, 10, 20, 50, 100]
 
+# environmental change time steps
+change_start_t = 999
+change_half_t = 1124
+change_end_t = 1249
+
 
 def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
                            overall_max_dens_per_run=None):
@@ -57,7 +62,7 @@ def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
     assert linkage in ['independent', 'weak', 'strong']
     assert genicity in [2, 4, 10, 20, 50, 100]
 
-    # get candidate filenames for time-step-2499 files
+    # get candidate filenames for change-start-time-step files
     dirname_patt = 'mod-non-null_L%s_G%i_its0_' % (linkage, genicity)
     filename_patt = ('mod-non-null_L%s_G%i_its0_randID\d{7}PID-'
                      '\d{5,6}_it--1_t-2\d{3}_spp-spp_0.csv') % (linkage, genicity)
@@ -71,15 +76,15 @@ def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
                                                              fn)]
             # drop the middle-timestep files
             candidate_filenames = [fn for fn in candidate_filenames if not
-                                   re.search('2624', fn)]
+                                   re.search('%i' % change_half_t, fn)]
             candidate_filenames = [os.path.join(datadir, dirname, 'it--1', 'spp-spp_0',
                                             fn) for fn in candidate_filenames]
             # only add this directory and its files to the analysis if I got all 3 timeteps,
             # otherwise print warning
             if len(candidate_filenames) == 2:
-                assert len([fn for fn in candidate_filenames if '-2499_' in fn])== 1
-                #assert len([fn for fn in candidate_filenames if '-2624_' in fn])== 1
-                assert len([fn for fn in candidate_filenames if '-2749_' in fn])== 1
+                assert len([fn for fn in candidate_filenames if '-%i_' % change_start_t in fn])== 1
+                #assert len([fn for fn in candidate_filenames if '-%i_' % change_half_t in fn])== 1
+                assert len([fn for fn in candidate_filenames if '-%i_' % change_end_t in fn])== 1
                 # sort files by timestep
                 candidate_filenames = [*np.sort(candidate_filenames)]
                 filenames[dirname] = candidate_filenames
@@ -96,9 +101,9 @@ def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
     gs = fig.add_gridspec(nrows=1, ncols=2, width_ratios=[0.95, 1.15])
 
     # loop through the three time steps to be analyzed
-    time_steps = {'before': 2499,
-                  #'during': 2624,
-                  'after': 2749}
+    time_steps = {'before': change_start_t,
+                  #'during': change_half_t,
+                  'after': change_end_t}
     for time_step_n, time_step_info in enumerate(time_steps.items()):
         title, time_step = time_step_info
 
@@ -142,7 +147,7 @@ def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
                        vmax=overall_max_dens_per_run,
                       )
         # add colorbar to rightmost plot
-        if time_step > 2700:
+        if time_step > change_half+2:
             plt.colorbar(im)
 
         # set ticks and ticklabels and axis labels
@@ -210,21 +215,3 @@ for linkage in ['independent', 'weak', 'strong']:
                         dpi=dpi,
                         orientation='landscape',
                        )
-            # save the undershoot data
-            #dens_change_dict['linkage'].extend([linkage]*len(undershoot))
-            #dens_change_dict['genicity'].extend([genicity]*len(undershoot))
-            #dens_change_dict['undershoot'].extend(undershoot)
-
-# analyze undershoot data
-#linkage_dict = {'independent': 0.5, 'weak': 0.05, 'strong': 0.005}
-#dens_change_dict = pd.DataFrame.from_dict(dens_change_dict).replace(
-#    {'linkage': linkage_dict})
-#print(dens_change_dict)
-#dens_change_df.to_csv(os.path.join(datadir, 'dens_change.csv'), index=False)
-
-#y = dens_change_df['dens_change']
-#X = sm.add_constant(dens_change_df[['linkage', 'genicity']])#, 'intxn']])
-#mod = sm.OLS(y, X).fit()
-#print(mod.summary())
-
-

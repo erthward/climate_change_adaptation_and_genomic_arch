@@ -55,6 +55,12 @@ else:
     #datadir = '/global/scratch/users/drewhart/ch2/output/output'
     #analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
 
+# environmental change time steps
+change_start_t = 999
+change_half_t = 1124
+change_end_t = 1249
+change_len = change_end_t - change_start_t
+
 # get arg determining whether to plot null or non-null sims
 nullness = sys.argv[1].lower()
 assert nullness in ['null', 'non-null']
@@ -69,9 +75,9 @@ genicities =  [2, 4, 10, 20, 50, 100]
 stable = np.linspace(0, 1, 50)[[0,-1]]
 b4 = np.linspace(0, 1, 50)[[0,-1]]
 af = np.linspace(0.5, 1, 50)[[0,-1]]
-expec_lines = {2499: (b4, stable),
-               2624: ((b4+af)/2, stable),
-               2749: (af, stable),
+expec_lines = {change_start_t: (b4, stable),
+               change_half_t: ((b4+af)/2, stable),
+               change_end_t: (af, stable),
               }
 
 # values for the undershoot colors
@@ -97,7 +103,7 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
     assert linkage in ['independent', 'weak', 'strong']
     assert genicity in [2, 4, 10, 20, 50, 100]
 
-    # get candidate filenames for time-step-2499 files
+    # get candidate filenames for change-start-time-step files
     dirname_patt = 'mod-%s_L%s_G%i_its0_' % (nullness, linkage, genicity)
     filename_patt = ('mod-%s_L%s_G%i_its0_randID\d{7}PID-'
                      '\d{5,6}_it--1_t-2\d{3}_spp-spp_0.csv') % (nullness,
@@ -113,15 +119,15 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
                                                              fn)]
             # drop the middle-timestep files
             candidate_filenames = [fn for fn in candidate_filenames if not
-                                   re.search('2624', fn)]
+                                   re.search('%i' % change_half_t, fn)]
             candidate_filenames = [os.path.join(datadir, dirname, 'it--1', 'spp-spp_0',
                                             fn) for fn in candidate_filenames]
             # only add this directory and its files to the analysis if I got all 3 timeteps,
             # otherwise print warning
             if len(candidate_filenames) == 2:
-                assert len([fn for fn in candidate_filenames if '-2499_' in fn])== 1
-                #assert len([fn for fn in candidate_filenames if '-2624_' in fn])== 1
-                assert len([fn for fn in candidate_filenames if '-2749_' in fn])== 1
+                assert len([fn for fn in candidate_filenames if '-%i_' % change_start_t in fn])== 1
+                #assert len([fn for fn in candidate_filenames if '-%i_' % change_half_t in fn])== 1
+                assert len([fn for fn in candidate_filenames if '-%i_' % change_end_t in fn])== 1
                 # sort files by timestep
                 candidate_filenames = [*np.sort(candidate_filenames)]
                 filenames[dirname] = candidate_filenames
@@ -138,9 +144,9 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
     gs = fig.add_gridspec(nrows=1, ncols=2, width_ratios=[1,1])#0.95, 1.15])
 
     # loop through the three time steps to be analyzed
-    time_steps = {'before': 2499,
-                  #'during': 2624,
-                  'after': 2749}
+    time_steps = {'before': change_start_t,
+                  #'during': change_half_t,
+                  'after': change_end_t}
     for time_step_n, time_step_info in enumerate(time_steps.items()):
         title, time_step = time_step_info
 
@@ -169,7 +175,7 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
             ys.extend(curr_ys)
 
             # TODO: get polygon area for this iteration
-            if time_step > 2700:
+            if time_step > change_half+2:
                 if not fix_ur_corner:
                     X = sm.add_constant(np.vstack(curr_xs))
                     y = np.vstack(curr_ys)
@@ -215,7 +221,7 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
                        edgecolors='none')
 
         # fit linear regression, if in second or third time point
-        if time_step > 2500:
+        if time_step > change_start_t+2:
             if not fix_ur_corner:
                 X = sm.add_constant(np.vstack(xs))
                 y = np.vstack(ys)
@@ -239,7 +245,7 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
                     linewidth=linewidth)
 
         # add expectation and trend lines, as needed
-        if time_step > 2500:
+        if time_step > change_start_t+2:
             # calculate area between trend line and expectation line
             # (i.e. 'phenotypic undershoot')
             poly_xs = [*pred_xs, expec_lines[time_step][0][0], pred_xs[0]]
@@ -257,7 +263,7 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
             ax.plot(*expec_lines[time_step], '-k', alpha=linealpha,
                     linewidth=linewidth)
         # expectation line
-        ax.plot(*expec_lines[2499], '-k', alpha=linealpha, linewidth=linewidth)
+        ax.plot(*expec_lines[change_start_t], '-k', alpha=linealpha, linewidth=linewidth)
 
 
         # set ticks and ticklabels and axis labels
