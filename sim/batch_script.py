@@ -654,25 +654,16 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
             # store the fitness value
             fit_data.append(np.mean(mod.comm[0]._get_fit()))
 
-        # run the model for another 250 time steps after the climate change
-        # period, just to see if/where impacts are lagged and/or persistent
-        for t in range(T, T+deltaT_env_change):
+        # record the Nt, mean fit, and mean z
+        Nt_list.append(mod.comm[0].Nt[-1])
+        mean_fit_list.append(np.mean(mod.comm[0]._get_fit()))
+        mean_z_list.append(np.mean(mod.comm[0]._get_z()[:,0]))
 
-            # record the Nt, mean fit, and mean z
-            Nt_list.append(mod.comm[0].Nt[-1])
-            mean_fit_list.append(np.mean(mod.comm[0]._get_fit()))
-            mean_z_list.append(np.mean(mod.comm[0]._get_z()[:,0]))
-
-            # calculate and store delta_Nt and delta_fit
-            # on the first timestep after the environmental change period
-            if t == T:
-                mean_Nt_af = np.mean(mod.comm[0].Nt[-deltaT_env_change:])
-                mean_fit_af = np.mean(fit_data[-deltaT_env_change:])
-                delta_Nt.append(mean_Nt_af - mean_Nt_b4)
-                delta_fit.append(mean_fit_af - mean_fit_b4)
-
-            # walk 1 step
-            mod.walk(1, mode='main', verbose=mod_verbose)
+        # calculate and store delta_Nt and delta_fit
+        mean_Nt_af = np.mean(mod.comm[0].Nt[-deltaT_env_change:])
+        mean_fit_af = np.mean(fit_data[-deltaT_env_change:])
+        delta_Nt.append(mean_Nt_af - mean_Nt_b4)
+        delta_fit.append(mean_fit_af - mean_fit_b4)
 
         # calculate the min and max x and y coords of the population again
         af_xs = mod.comm[0]._get_x()
@@ -682,12 +673,7 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
                                                                   min(af_ys),
                                                                   max(af_ys)]
 
-        # record the Nt, mean fit, and mean z
-        Nt_list.append(mod.comm[0].Nt[-1])
-        mean_fit_list.append(np.mean(mod.comm[0]._get_fit()))
-        mean_z_list.append(np.mean(mod.comm[0]._get_z()[:,0]))
-
-                # store the data
+        # store the data
         stats_output = store_data(nullness, genicity, linkage, n_it,
                                   mod, output, deltaT_env_change, fit_data)
 
@@ -800,6 +786,18 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         print(cts_table % tuple([str(n) + " " * (max_len_it_str -
                                         len(str(n))) for n in cts_table_list]))
 
+        # run the model for another 250 time steps after the climate change
+        # period, just to see if/where impacts on Nt, mean_fit, and mean_z
+        # are lagged and/or persistent
+        for t in range(T, T+deltaT_env_change):
+
+            # record the Nt, mean fit, and mean z
+            Nt_list.append(mod.comm[0].Nt[-1])
+            mean_fit_list.append(np.mean(mod.comm[0]._get_fit()))
+            mean_z_list.append(np.mean(mod.comm[0]._get_z()[:,0]))
+
+            # walk 1 step
+            mod.walk(1, mode='main', verbose=mod_verbose)
     return (delta_Nt, delta_fit,
             #neut_nonneut_dirtest_pval,neut_nonneut_disttest_pval,
             #mean_dist_neut,
