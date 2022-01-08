@@ -30,8 +30,14 @@ if os.getcwd().split('/')[1] == 'home':
     analysis_dir = ('/home/deth/Desktop/CAL/research/projects/sim/ch2/'
                     'climate_change_adaptation_and_genomic_arch/analysis')
 else:
-    datadir = '/global/scratch/users/drewhart/ch2/output/output'
-    analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
+    with open(('/global/scratch/users/drewhart/ch2/climate_change_adaptation_'
+               'and_genomic_arch/analysis/outputdir.txt'), 'f') as f:
+        datadir = f.read().strip()
+    with open(('/global/scratch/users/drewhart/ch2/climate_change_adaptation_'
+               'and_genomic_arch/analysis/analysisdir.txt'), 'f') as f:
+        analysis_dir = f.read().strip()
+    #datadir = '/global/scratch/users/drewhart/ch2/output/output'
+    #analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
 filename_patt = 'output_PID-.*_TS_DATA.csv'
 
 # list of files to plot

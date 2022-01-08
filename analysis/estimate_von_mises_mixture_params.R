@@ -6,9 +6,18 @@ plot.circ = F # include circular plots? (BROKEN FOR NOW, SO FALSE!)
 plot.examp = F # whether or not to plot the random example hists
 
 # establish data.dir and analysis.dir strings (INCLUDING THEIR SLASHES ON EITHER SIDE!)
-datadir.str = '/output/'
-datadir.str = '/analysis/'
-
+if (strsplit(getwd(), '/')[[1]][2] == 'home'){
+   datadir.str = '/output/output_PID'
+   analysisdir.str = '/analysis/output_PID'
+} else {
+   datadir.file = '/global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/outputdir.txt'
+   datadir = readChar(datadir.file, file.info(datadir.file)$size-1)
+   datadir.str = paste0('/', tail(strsplit(datadir, '/')[[1]], n=1), '/output_PID')
+   
+   analysisdir.file = '/global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/analysisdir.txt'
+   analysisdir = readChar(analysisdir.file, file.info(analysisdir.file)$size-1)
+   analysisdir.str = paste0('/', tail(strsplit(analysisdir, '/')[[1]], n=1), '/output_PID')
+}
 
 if (plot.examp){
     par(mfrow=c(3,2))

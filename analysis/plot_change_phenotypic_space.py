@@ -46,8 +46,14 @@ if os.getcwd().split('/')[1] == 'home':
     datadir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
     analysis_dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
 else:
-    datadir = '/global/scratch/users/drewhart/ch2/output/output'
-    analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
+    with open(('/global/scratch/users/drewhart/ch2/climate_change_adaptation_'
+               'and_genomic_arch/analysis/outputdir.txt'), 'f') as f:
+        datadir = f.read().strip()
+    with open(('/global/scratch/users/drewhart/ch2/climate_change_adaptation_'
+               'and_genomic_arch/analysis/analysisdir.txt'), 'f') as f:
+        analysis_dir = f.read().strip()
+    #datadir = '/global/scratch/users/drewhart/ch2/output/output'
+    #analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
 
 # get arg determining whether to plot null or non-null sims
 nullness = sys.argv[1].lower()
@@ -333,7 +339,7 @@ linkage_dict = {'independent': 0.5, 'weak': 0.05, 'strong': 0.005}
 pheno_undershoot_df = pd.DataFrame.from_dict(pheno_undershoot_dict).replace(
     {'linkage': linkage_dict})
 print(pheno_undershoot_df)
-pheno_undershoot_df.to_csv(os.path.join(datadir,
+pheno_undershoot_df.to_csv(os.path.join(analysis_dir,
            'phenotypic_shift_undershoot%s.csv' % ('_NULL' * (nullness=='null'))),
                            index=False)
 #pheno_undershoot_df['intxn'] = (pheno_undershoot_df.linkage *

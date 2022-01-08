@@ -6,7 +6,10 @@ from estimate_von_mises_mixture_params import estimate_von_mises_mixture_params
 if os.getcwd().split('/')[1] == 'home':
     datadir = '/home/deth/Desktop/CAL/research/projects/sim/ch2/climate_change_adaptation_and_genomic_arch/analysis'
 else:
-    datadir = '/global/scratch/users/drewhart/ch2/output/output'
+    with open(('/global/scratch/users/drewhart/ch2/climate_change_adaptation_'
+               'and_genomic_arch/analysis/outputdir.txt'), 'f') as f:
+        datadir = f.read().strip()
+    #datadir = '/global/scratch/users/drewhart/ch2/output/output'
 
 if __name__ == '__main__':
     # get all valid files to be processed

@@ -21,7 +21,10 @@ Image.MAX_IMAGE_PIXELS = None
 if os.getcwd().split('/')[1] == 'home':
     analysis_dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev'
 else:
-    analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
+    with open(('/global/scratch/users/drewhart/ch2/climate_change_adaptation_'
+               'and_genomic_arch/analysis/analysisdir.txt'), 'f') as f:
+        analysis_dir = f.read().strip()
+    #analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
 
 if plot_type == 'DENS':
     im_files = [f for f in os.listdir(analysis_dir) if re.search(

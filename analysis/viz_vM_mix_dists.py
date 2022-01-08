@@ -25,7 +25,10 @@ if os.getcwd().split('/')[1] == 'home':
     analysis_dir = ('/home/deth/Desktop/CAL/research/projects/sim/'
                'ch2/climate_change_adaptation_and_genomic_arch/analysis')
 else:
-    analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
+    with open(('/global/scratch/users/drewhart/ch2/climate_change_adaptation_'
+               'and_genomic_arch/analysis/analysisdir.txt'), 'f') as f:
+        analysis_dir = f.read().strip()
+    #analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
 
 # TODO:
 

@@ -19,8 +19,12 @@ if (strsplit(getwd(), '/')[[1]][2] == 'home'){
     data.dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
     analysis.dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
 } else {
-    data.dir = '/global/scratch/users/drewhart/ch2/output/output/'
-    analysis.dir = '/global/scratch/users/drewhart/ch2/output/analysis/'
+    datadir.file = '/global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/outputdir.txt'
+    data.dir = readChar(datadir.file, file.info(datadir.file)$size-1)
+    analysisdir.file = '/global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/analysisdir.txt'
+    analysis.dir = readChar(analysisdir.file, file.info(analysisdir.file)$size-1)
+    #data.dir = '/global/scratch/users/drewhart/ch2/output/output/'
+    #analysis.dir = '/global/scratch/users/drewhart/ch2/output/analysis/'
 }
 
 # gather all summary-output files into one
