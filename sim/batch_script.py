@@ -663,31 +663,33 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
             mean_fit_list.append(np.mean(mod.comm[0]._get_fit()))
             mean_z_list.append(np.mean(mod.comm[0]._get_z()[:,0]))
 
+            # calculate and store delta_Nt and delta_fit
+            # on the first timestep after the environmental change period
+            if t == T:
+                mean_Nt_af = np.mean(mod.comm[0].Nt[-deltaT_env_change:])
+                mean_fit_af = np.mean(fit_data[-deltaT_env_change:])
+                delta_Nt.append(mean_Nt_af - mean_Nt_b4)
+                delta_fit.append(mean_fit_af - mean_fit_b4)
+
             # walk 1 step
             mod.walk(1, mode='main', verbose=mod_verbose)
 
         # calculate the min and max x and y coords of the population again
         af_xs = mod.comm[0]._get_x()
         af_ys = mod.comm[0]._get_y()
-        min_x_af_val, max_x_af_val, min_y_af_val, max_y_af_val = [min(af_xs), max(af_xs),
-                                                  min(af_ys), max(af_ys)]
+        min_x_af_val, max_x_af_val, min_y_af_val, max_y_af_val = [min(af_xs),
+                                                                  max(af_xs),
+                                                                  min(af_ys),
+                                                                  max(af_ys)]
 
         # record the Nt, mean fit, and mean z
         Nt_list.append(mod.comm[0].Nt[-1])
         mean_fit_list.append(np.mean(mod.comm[0]._get_fit()))
         mean_z_list.append(np.mean(mod.comm[0]._get_z()[:,0]))
 
-
-
-        # calculate the mean vars after the shift, then the diffs
-        mean_Nt_af = np.mean(mod.comm[0].Nt[-deltaT_env_change:])
-        mean_fit_af = np.mean(fit_data[-deltaT_env_change:])
-        delta_Nt.append(mean_Nt_af - mean_Nt_b4)
-        delta_fit.append(mean_fit_af - mean_fit_b4)
-
-        # store the data
-        stats_output = store_data(nullness, genicity, linkage, n_it, mod, output,
-                                 deltaT_env_change, fit_data)
+                # store the data
+        stats_output = store_data(nullness, genicity, linkage, n_it,
+                                  mod, output, deltaT_env_change, fit_data)
 
         # store the summary-stats output
         dir_stats = stats_output['dir']
