@@ -38,10 +38,10 @@ if os.getcwd().split('/')[1] == 'home':
     analysis_dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
 else:
     with open(('/global/scratch/users/drewhart/ch2/climate_change_adaptation_'
-               'and_genomic_arch/analysis/outputdir.txt'), 'f') as f:
+               'and_genomic_arch/analysis/outputdir.txt'), 'r') as f:
         datadir = f.read().strip()
     with open(('/global/scratch/users/drewhart/ch2/climate_change_adaptation_'
-               'and_genomic_arch/analysis/analysisdir.txt'), 'f') as f:
+               'and_genomic_arch/analysis/analysisdir.txt'), 'r') as f:
         analysis_dir = f.read().strip()
     #datadir = '/global/scratch/users/drewhart/ch2/output/output'
     #analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'

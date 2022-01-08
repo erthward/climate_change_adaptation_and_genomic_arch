@@ -7,7 +7,7 @@ if os.getcwd().split('/')[1] == 'home':
     datadir = '/home/deth/Desktop/CAL/research/projects/sim/ch2/climate_change_adaptation_and_genomic_arch/analysis'
 else:
     with open(('/global/scratch/users/drewhart/ch2/climate_change_adaptation_'
-               'and_genomic_arch/analysis/analysisdir.txt'), 'f') as f:
+               'and_genomic_arch/analysis/analysisdir.txt'), 'r') as f:
         datadir = f.read().strip()
     #datadir = '/global/scratch/users/drewhart/ch2/output/analysis'
 
