@@ -487,7 +487,7 @@ params = {
                 #collection radius around points, for point & transect sampling
                 'radius':               None,
                 #when to collect data
-                'when':                 [2499, 2624, 2749],
+                'when':                 [999, 1124, 1249],
                 #whether to save current Layers when data is collected
                 'include_landscape':    False,
                 #whether to include fixed loci in VCF files
