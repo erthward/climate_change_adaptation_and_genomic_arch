@@ -3,13 +3,13 @@
 
 # set up the landscape
 import numpy as np
-b4 = np.vstack([np.linspace(1, 0, 50) for _ in range(50)])
-af = np.vstack([np.linspace(1, 0.5, 50) for _ in range(50)])
+b4 = np.vstack([np.linspace(0.75, 0, 50) for _ in range(50)])
+af = np.vstack([np.linspace(1, 0.25, 50) for _ in range(50)])
 stable = np.vstack([np.linspace(1, 0, 50) for _ in range(50)])
 K = np.ones((50,50))
 
 # show the landscape, for debugging, if requested
-debug_landscape = True
+debug_landscape = False
 if debug_landscape:
     import matplotlib.pyplot as plt
     fig = plt.figure()
