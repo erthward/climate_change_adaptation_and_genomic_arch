@@ -121,7 +121,7 @@ else:
     params_filepath=(('/global/scratch/users/drewhart/ch2/'
                       'climate_change_adaptation_and_genomic_arch/sim/template_params.py'))
     # path to dir for output CSVs
-    output_path = '/global/scratch/users/drewhart/ch2/output/output_homo_change_rate'
+    output_path = '/global/scratch/users/drewhart/ch2/output/output'
 
 # make sure job is running in the right directory
 #os.chdir(output_path)
