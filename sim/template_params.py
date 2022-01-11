@@ -447,7 +447,7 @@ params = {
 ###############
     'model': {
         #total Model runtime (in timesteps)
-        'T':            1500,
+        'T':            1250,
         #min burn-in runtime (in timesteps)
         'burn_T':       30,
         #seed number

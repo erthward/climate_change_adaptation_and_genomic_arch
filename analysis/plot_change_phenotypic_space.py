@@ -106,7 +106,7 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
     # get candidate filenames for change-start-time-step files
     dirname_patt = 'mod-%s_L%s_G%i_its0_' % (nullness, linkage, genicity)
     filename_patt = ('mod-%s_L%s_G%i_its0_randID\d{7}PID-'
-                     '\d{5,6}_it--1_t-2\d{3}_spp-spp_0.csv') % (nullness,
+                     '\d{5,6}_it--1_t-\d{3,4}_spp-spp_0.csv') % (nullness,
                                                                 linkage,
                                                                 genicity)
 
@@ -120,6 +120,9 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
             # drop the middle-timestep files
             candidate_filenames = [fn for fn in candidate_filenames if not
                                    re.search('%i' % change_half_t, fn)]
+            candidate_filenames = [fn for fn in candidate_filenames if (
+                                   re.search('%i' % change_start_t, fn) or
+                                   re.search('%i' % change_end_t, fn))]
             candidate_filenames = [os.path.join(datadir, dirname, 'it--1', 'spp-spp_0',
                                             fn) for fn in candidate_filenames]
             # only add this directory and its files to the analysis if I got all 3 timeteps,
@@ -175,7 +178,7 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
             ys.extend(curr_ys)
 
             # TODO: get polygon area for this iteration
-            if time_step > change_half+2:
+            if time_step > change_half_t+2:
                 if not fix_ur_corner:
                     X = sm.add_constant(np.vstack(curr_xs))
                     y = np.vstack(curr_ys)
