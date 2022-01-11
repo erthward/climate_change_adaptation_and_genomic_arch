@@ -77,6 +77,9 @@ def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
             # drop the middle-timestep files
             candidate_filenames = [fn for fn in candidate_filenames if not
                                    re.search('%i' % change_half_t, fn)]
+            candidate_filenames = [fn for fn in candidate_filenames if (
+                                   re.search('%i' % change_start_t, fn) or
+                                   re.search('%i' % change_end_t, fn))]
             candidate_filenames = [os.path.join(datadir, dirname, 'it--1', 'spp-spp_0',
                                             fn) for fn in candidate_filenames]
             # only add this directory and its files to the analysis if I got all 3 timeteps,
