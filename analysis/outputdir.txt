@@ -1,1 +1,1 @@
-/global/scratch/users/drewhart/ch2/output/output_homo_change_rate/
+/global/scratch/users/drewhart/ch2/output/output/

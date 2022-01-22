@@ -63,9 +63,9 @@ cts_table_list = [0] * (2 * len(linkages) * len(genicities))
 # params to reduce runtime for debugging/development
 #---------------------------------------------------
 # set time when environmental change begins
-change_T = 1000
+change_T = 1500
 # set total time over which environmental change takes place
-T = 1250
+T = 1750
 # calc length of environmental change period
 deltaT_env_change = T - change_T
 # calc time prior to climate change to start storing Nt, mean fitness, and mean
