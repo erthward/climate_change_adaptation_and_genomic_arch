@@ -52,9 +52,9 @@ else:
     #analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
 
 # environmental change time steps
-change_start_t = 1499
-change_half_t = 1624
-change_end_t = 1749
+change_start_t = 1999
+change_half_t = 2124
+change_end_t = 2249
 change_len = change_end_t - change_start_t
 
 # get arg determining whether to plot null or non-null sims

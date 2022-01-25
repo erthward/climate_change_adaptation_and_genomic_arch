@@ -116,9 +116,9 @@ params = {
                         #of files for each stepwise change in event
                         'change_rast':              af,
                         #starting timestep of event
-                        'start_t':          1500,
+                        'start_t':          2000,
                         #ending timestep of event
-                        'end_t':            1750,
+                        'end_t':            2250,
                         #number of stepwise changes in event
                         'n_steps':          250,
                         }, # <END> event 0
@@ -487,7 +487,7 @@ params = {
                 #collection radius around points, for point & transect sampling
                 'radius':               None,
                 #when to collect data
-                'when':                 [1499, 1624, 1749],
+                'when':                 [1999, 2124, 2249],
                 #whether to save current Layers when data is collected
                 'include_landscape':    False,
                 #whether to include fixed loci in VCF files

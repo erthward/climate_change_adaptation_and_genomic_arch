@@ -47,9 +47,9 @@ linkages = ['independent', 'weak', 'strong']
 genicities =  [2, 4, 10, 20, 50, 100]
 
 # environmental change time steps
-change_start_t = 1499
-change_half_t = 1624
-change_end_t = 1749
+change_start_t = 1999
+change_half_t = 2124
+change_end_t = 2249
 
 
 def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
