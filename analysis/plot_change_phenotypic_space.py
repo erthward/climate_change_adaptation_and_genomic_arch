@@ -12,10 +12,6 @@ import sys
 import re
 import os
 
-# TODO:
-    # figure out why expectation line and heatmap grid uneven when run on Savio
-    # get rid of right-hand black strip in panelled plot output
-
 
 # plot params
 suptitle_fontsize = 50

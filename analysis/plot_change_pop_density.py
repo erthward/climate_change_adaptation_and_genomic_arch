@@ -12,10 +12,6 @@ import sys
 import re
 import os
 
-# TODO:
-    # figure out why expectation line and heatmap grid uneven when run on Savio
-    # get rid of right-hand black strip in panelled plot output
-
 
 # plot params
 suptitle_fontsize = 50
@@ -65,7 +61,7 @@ def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
     # get candidate filenames for change-start-time-step files
     dirname_patt = 'mod-non-null_L%s_G%i_its0_' % (linkage, genicity)
     filename_patt = ('mod-non-null_L%s_G%i_its0_randID\d{7}PID-'
-                     '\d{5,6}_it--1_t-2\d{3}_spp-spp_0.csv') % (linkage, genicity)
+                     '\d{5,6}_it--1_t-\d{4}_spp-spp_0.csv') % (linkage, genicity)
 
     filenames = {}
     for dirname in os.listdir(datadir):
