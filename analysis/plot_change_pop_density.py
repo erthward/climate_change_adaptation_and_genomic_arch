@@ -51,9 +51,9 @@ linkages = ['independent', 'weak', 'strong']
 genicities =  [2, 4, 10, 20, 50, 100]
 
 # environmental change time steps
-change_start_t = 999
-change_half_t = 1124
-change_end_t = 1249
+change_start_t = 1499
+change_half_t = 1624
+change_end_t = 1749
 
 
 def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
@@ -150,7 +150,7 @@ def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
                        vmax=overall_max_dens_per_run,
                       )
         # add colorbar to rightmost plot
-        if time_step > change_half+2:
+        if time_step > change_half_t+2:
             plt.colorbar(im)
 
         # set ticks and ticklabels and axis labels
