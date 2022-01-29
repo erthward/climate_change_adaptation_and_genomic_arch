@@ -61,13 +61,14 @@ for pid in all_pids_in_dir:
                     timesteps_this_dir = set([int(re.search(timestep_patt,
                                                        f).group()) for f in files])
                     if run_asserts:
-                    	assert len(timesteps_this_dir) == 3
+                        assert len(timesteps_this_dir) == 3
                     # add to overall set
- for ts in timesteps_this_dir:
+                    for ts in timesteps_this_dir:
                         all_timesteps.add(ts)
 
                     # add 1 to this scenario-nullness combination's count
-                    cts.loc[dict(nullness=nullness,
+                    if len(timesteps_this_dir) == 3:
+                        cts.loc[dict(nullness=nullness,
                                  linkage=linkage,
                                  genicity=genicity)] += 1
 
@@ -78,7 +79,8 @@ for pid in all_pids_in_dir:
         assert len(summary_csvs) == 4, ('Did not find exactly 4 summary '
                                     'CSVs for PID %s\n\nCSVs: '
                                    '%s') % (pid, ', '.join(summary_csvs))
-    pids_complete[pid] += 1
+    if len(summary_csvs) == 4:
+        pids_complete[pid] += 1
 
 
 # make sure only 3 timesteps covered across all files
@@ -101,5 +103,6 @@ if run_asserts:
     print(('\n\n\tAll clean! %i complete datasets '
            'available.\n\n') % np.unique(cts.values)[0])
 else:
+    print('\n\ntimesteps with data files:/n%s/n/n' % str(all_timesteps))
     print('\n\ndataset counts:\n%s\n\n' % str(cts))
     print('\n\nPID completeness:\n%s\n\n' % str(pids_complete))
