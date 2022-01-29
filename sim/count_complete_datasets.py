@@ -53,7 +53,7 @@ for pid in all_pids_in_dir:
                 curr_dir_patt = dir_patt % (nullness, linkage, genicity, pid)
                 dirs = [f for f in os.listdir(datadir) if re.search(curr_dir_patt,
                                                                     f)]
-                assert(len(dirs)==1)
+                assert len(dirs)==1, ('%s' % str(dirs))
 
                 # check that the dir has a complete dataset
                 for d in dirs:
