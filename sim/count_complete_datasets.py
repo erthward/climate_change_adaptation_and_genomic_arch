@@ -13,7 +13,7 @@ else:
     run_asserts = False
 
 # regex patts
-dir_patt = 'GNX_mod-%s_L%s_G%i_its0_randID\d+PID-\d{6}'
+dir_patt = 'GNX_mod-%s_L%s_G%i_its0_randID\d+PID-%s'
 timestep_patt = '(?<=t-)\d+(?=_spp)'
 summary_csv_patt = 'output_PID-%s\w{0,8}\.csv'
 pid_patt = '(?<=PID-)\d{6}'
@@ -44,14 +44,16 @@ pids_complete = {pid: 0 for pid in all_pids_in_dir}
 
 # for each PID
 for pid in all_pids_in_dir:
+    dataset_count = 0
     # for each nullness and scenario
     for nullness in cts.indexes['nullness']:
         for linkage in cts.indexes['linkage']:
             for genicity in cts.indexes['genicity']:
                 # get all model-generated dirs
-                curr_dir_patt = dir_patt % (nullness, linkage, genicity)
+                curr_dir_patt = dir_patt % (nullness, linkage, genicity, pid)
                 dirs = [f for f in os.listdir(datadir) if re.search(curr_dir_patt,
                                                                     f)]
+                assert(len(dirs)==1)
 
                 # check that the dir has a complete dataset
                 for d in dirs:
@@ -66,20 +68,23 @@ for pid in all_pids_in_dir:
                     for ts in timesteps_this_dir:
                         all_timesteps.add(ts)
 
-                    # add 1 to this scenario-nullness combination's count
+                    # add 1 to dataset_count
                     if len(timesteps_this_dir) == 3:
-                        cts.loc[dict(nullness=nullness,
+                        dataset_count += 1
+
+                    # add to the dataset counts
+                    cts.loc[dict(nullness=nullness,
                                  linkage=linkage,
                                  genicity=genicity)] += 1
 
-    # check there's exactly one set of 4 CSV files for this PID
+    # check that there's exactly one set of 4 CSV files for this PID
     summary_csvs = [f for f in os.listdir(datadir) if
                     re.search(summary_csv_patt % pid, f)]
     if run_asserts:
         assert len(summary_csvs) == 4, ('Did not find exactly 4 summary '
                                     'CSVs for PID %s\n\nCSVs: '
                                    '%s') % (pid, ', '.join(summary_csvs))
-    if len(summary_csvs) == 4:
+    if dataset_count == 18 and len(summary_csvs) == 4:
         pids_complete[pid] += 1
 
 
@@ -90,8 +95,8 @@ if run_asserts:
 
     # make sure no summary CSV files found for PIDS not covered by data dirs
     assert (len(np.unique([*pids_complete.values()])) == 1
-        and np.unique([*pids_complete.values()]) == np.array(18)), ("Some PIDs do "
-        "not have a full complement of 18 complete data dirs. Identify, cull "
+        and np.unique([*pids_complete.values()]) == np.array(1)), ("Some PIDs do "
+        "not have a full complement of 18 complete data dirs. Cull those PIDs"
         " then rerun!\n\nPID complete dir counts\n%s\n\n") % (str(pids_complete))
 
     # make sure that the same number of iterations is available for all scenarios
@@ -103,6 +108,6 @@ if run_asserts:
     print(('\n\n\tAll clean! %i complete datasets '
            'available.\n\n') % np.unique(cts.values)[0])
 else:
-    print('\n\ntimesteps with data files:/n%s/n/n' % str(all_timesteps))
-    print('\n\ndataset counts:\n%s\n\n' % str(cts))
+    print('\n\ntimesteps that have saved data files:\n%s\n\n' % str(all_timesteps))
+    print('\n\ndataset counts:\n%s\n\n' % str(cts.values))
     print('\n\nPID completeness:\n%s\n\n' % str(pids_complete))
