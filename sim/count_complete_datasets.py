@@ -57,8 +57,6 @@ for nullness in cts.indexes['nullness']:
                 pid = re.search(pid_patt, d).group()
                 summary_csvs = [f for f in os.listdir(datadir) if
                                 re.search(summary_csv_patt % pid, f)]
-                print(datadir)
-                print(summary_csvs)
                 assert len(summary_csvs) == 4, ('Did not find exactly 4 summary '
                                                 'CSVs for PID %s\n\nCSVs: '
                                                '%s') % (pid, ', '.join(summary_csvs))
