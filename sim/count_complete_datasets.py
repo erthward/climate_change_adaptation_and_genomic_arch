@@ -43,7 +43,7 @@ for nullness in cts.indexes['nullness']:
 
             # check that the dir has a complete dataset
             for d in dirs:
-                d = os.path.join(d, 'it--1', 'spp-spp_0')
+                d = os.path.join(datadir, d, 'it--1', 'spp-spp_0')
                 files = os.listdir(d)
                 # get the distinct timesteps
                 timesteps_this_dir = set([int(re.search(timestep_patt,
@@ -82,3 +82,6 @@ assert np.all(cts.values == np.max(cts.values)), ("Not equal coverage across "
                                                   "all combinations of nullness"
                                                   " and scenario!\n\ncounts:\n"
                             "%s\n\n") % str(cts.values)
+
+print(('\n\n\tAll clean! %i complete datasets '
+       'available.\n\n') % np.unique(cts.values)[0])
