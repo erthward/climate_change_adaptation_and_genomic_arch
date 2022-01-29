@@ -191,6 +191,8 @@ def viz_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None,
         else:
             # plot the resulting density on top of mean-scaled reference circle
             ax.plot(ref_xs, ref_ys, ':', color='gray', alpha=0.5)
+            ax.plot([0,0], [-1,1], ':', color='gray', linewidth=0.5, alpha=0.5)
+            ax.plot([-1,1], [0,0], ':', color='gray', linewidth=0.5, alpha=0.5)
             ax.add_collection(pc)
             #ax.plot(xs, ys, color=col)
         lim_val = 1.1*np.max(np.abs(np.concatenate((xs, ys, ref_xs, ref_ys))))
@@ -205,10 +207,10 @@ def viz_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None,
         xlims = ax.get_xlim()
         ylims = ax.get_ylim()
         if not on_curr_ax or plot_dirlabels:
-            plt.text(0+0.03*xlims[0], 1.05*ylims[1], 'N', size=18, color='gray')
-            plt.text(1.05*xlims[1], 0+0.05*ylims[0], 'E', size=18, color='gray')
-            plt.text(0+0.03*xlims[0], 1.13*ylims[0], 'S', size=18, color='gray')
-            plt.text(1.15*xlims[0], 0+0.05*ylims[0], 'W', size=18, color='gray')
+            plt.text(0, 1, 'N', size=18, color='gray')
+            plt.text(1, 0, 'E', size=18, color='gray')
+            plt.text(0, -1, 'S', size=18, color='gray')
+            plt.text(-1, 0, 'W', size=18, color='gray')
 
     # make sure the E-facing and N/S-facing density data are equal in length
     assert len(E_densities) == len(NS_densities)
@@ -308,11 +310,12 @@ def make_vM_mix_dist_comparison_grid(df, it=None,
             # dir labels 
             # NOTE: for now, just adjusting labels a 'smidge' to approx. center
             #       them with the ref circle, but this will easily break
-            smidge = univ_axlims[1]*0.1
-            ax.text(0-smidge, univ_axlims[1]*0.5-smidge, 'N', size=14, color='gray')
-            ax.text(univ_axlims[1]*0.5-smidge, 0-smidge, 'E', size=14, color='gray')
-            ax.text(0-smidge, univ_axlims[0]*0.5-smidge, 'S', size=14, color='gray')
-            ax.text(univ_axlims[0]*0.5-smidge, 0-smidge, 'W', size=14, color='gray')
+            smidge = univ_axlims[1]*0.05
+            edge = univ_axlims[1] - smidge
+            ax.text(0-smidge, edge-smidge, 'N', size=10, color='gray', alpha=0.8)
+            ax.text(edge-smidge, 0-smidge, 'E', size=10, color='gray', alpha=0.8)
+            ax.text(0-smidge, -edge, 'S', size=10, color='gray', alpha=0.8)
+            ax.text(-edge, 0-smidge, 'W', size=10, color='gray', alpha=0.8)
             # 1/1 aspect ratio
             ax.set_aspect('equal')
 

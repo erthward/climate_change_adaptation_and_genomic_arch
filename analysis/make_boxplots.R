@@ -99,13 +99,17 @@ theme_set(theme_linedraw(base_size=20))
 jpeg(paste0(analysis.dir, 'boxplot_delta_Nt.jpg'), width=5000, height=2500, res=300)
 boxnull = ggplot(df.null) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
     geom_hline(yintercept=0) +
-    scale_fill_manual(values = plot_cols[6:4], labels=c('strong', 'weak', 'independent')) +
+    scale_fill_manual(values = plot_cols[6:4],
+                      labels=c('strong', 'weak', 'independent'),
+                      name='linkage') +
     scale_y_continuous(limits = c(-750, 250)) +
     labs(y=TeX('$\\Delta$ population size'), x='number of loci per trait')
 
 boxnonull = ggplot(df.nonull) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
     geom_hline(yintercept=0) +
-    scale_fill_manual(values = plot_cols[3:1], labels=c('strong', 'weak', 'independent')) +
+    scale_fill_manual(values = plot_cols[3:1],
+                      labels=c('strong', 'weak', 'independent'),
+                      name='linkage') +
     scale_y_continuous(limits = c(-750, 250)) +
     labs(y=TeX('$\\Delta$ population size'), x='number of loci per trait')
 cowplot::plot_grid(boxnull, boxnonull) 
@@ -115,12 +119,16 @@ dev.off()
 jpeg(paste0(analysis.dir, 'boxplot_delta_fit.jpg'), width=5000, height=2500, res=300)
 boxnull = ggplot(df.null) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
     geom_hline(yintercept=0) +
-    scale_fill_manual(values = plot_cols[6:4], labels=c('strong', 'weak', 'independent')) +
+    scale_fill_manual(values = plot_cols[6:4],
+                      labels=c('strong', 'weak', 'independent'),
+                      name='linkage') +
     scale_y_continuous(limits = c(-0.03, 0.015)) +
     labs(y=TeX('$\\Delta$ fitness'), x='number of loci per trait')
 boxnonull = ggplot(df.nonull) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
     geom_hline(yintercept=0) +
-    scale_fill_manual(values = plot_cols[3:1], labels=c('strong', 'weak', 'independent')) +
+    scale_fill_manual(values = plot_cols[3:1],
+                      labels=c('strong', 'weak', 'independent'),
+                      name='linkage') +
     scale_y_continuous(limits = c(-0.03, 0.015)) +
     labs(y=TeX('$\\Delta$ fitness'), x='number of loci per trait')
 cowplot::plot_grid(boxnull, boxnonull)
