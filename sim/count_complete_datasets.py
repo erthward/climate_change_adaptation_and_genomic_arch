@@ -58,8 +58,8 @@ for nullness in cts.indexes['nullness']:
                 summary_csvs = [f for f in os.listdir(datadir) if
                                 re.search(summary_csv_patt % pid, f)]
                 assert len(summary_csvs) == 4, ('Did not find exactly 4 summary '
-                                                'CSVs for PID %s}n}ncsvs: '
-                                               '%s') % (', '.join(summary_csvs))
+                                                'CSVs for PID %s\n\nCSVs: '
+                                               '%s') % (pid, ', '.join(summary_csvs))
                 pids_complete[pid] += 1
 
                 # add 1 to this scenario-nullness combination's count
