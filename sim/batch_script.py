@@ -111,8 +111,8 @@ ticklabel_size = 6
 #--------------------------
 # get filepaths on my laptop
 if os.getcwd().split('/')[1] == 'home':
-    params_filepath=('/home/drew/Desktop/stuff/berk/research/projects/sim/'
-              'ch2_adapt_clim_chng_genarch/template_params.py')
+    params_filepath=('/home/deth/Desktop/CAL/research/projects/sim/'
+              'ch2/climate_change_adaptation_and_genomic_arch/sim/template_params.py')
     # path to dir for output CSVs
     output_path = ('/home/drew/Desktop/stuff/berk/research/projects/sim/'
                'ch2_adapt_clim_chng_genarch')
