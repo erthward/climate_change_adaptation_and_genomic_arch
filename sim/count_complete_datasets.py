@@ -117,21 +117,27 @@ else:
     print('\n\ntimesteps that have saved data files:\n%s\n\n' % str(all_timesteps))
     print('\n\ndataset counts:\n%s\n\n' % str(cts.values))
     print('\n\nPID completeness:\n%s\n\n' % str(pids_complete))
-    print('Recommended to delete all data for the following PIDs:')
-    for pid, ct in pids_complete.items():
-        if ct != 1:
-            print(pid)
-    print('\n\n')
-
-    delete_incomplete = input(('Would you like to delete all affiliated data now? '
-                               '(Y to delete)\n'))
-    if delete_incomplete.lower() == 'y':
+    if 0 in [*pids_complete.values()]:
+        print('Recommended to delete all data for the following PIDs:')
         for pid, ct in pids_complete.items():
             if ct != 1:
-                print('Deleting data for PID %s...\n' % pid)
-                cmd = 'rm -rf %s/*%s*' % (datadir, pid)
-                os.system(cmd)
+                print(pid)
+        print('\n\n')
 
+        delete_incomplete = input(('Would you like to delete all affiliated data now? '
+                                   '(Y to delete)\n'))
+        if delete_incomplete.lower() == 'y':
+            for pid, ct in pids_complete.items():
+                if ct != 1:
+                    print('Deleting data for PID %s...\n' % pid)
+                    cmd = 'rm -rf %s/*%s*' % (datadir, pid)
+                    os.system(cmd)
+
+        else:
+            print(('\nOkay! Please delete manually, then rerun with \'t\' flag to '
+                  'run assert statements and check that data is ready for analysis\n\n'))
     else:
-        print(('\nOkay! Please delete manually, then rerun with \'t\' flag to '
-              'run assert statements and check that data is ready for analysis\n\n'))
+        print(('\n\nNo incomplete datasets found! Rerun with \'t\' flag to '
+               'to run assert statements and double-check that data is ready '
+               'for analysis.\n\n'))
+               
