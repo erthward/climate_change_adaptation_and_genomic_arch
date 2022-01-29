@@ -117,3 +117,7 @@ else:
     print('\n\ntimesteps that have saved data files:\n%s\n\n' % str(all_timesteps))
     print('\n\ndataset counts:\n%s\n\n' % str(cts.values))
     print('\n\nPID completeness:\n%s\n\n' % str(pids_complete))
+    print('Recommended to delete all data for the following PIDs:')
+    for pid, ct in pids_complete.items():
+        if ct != 1:
+            print(pid)
