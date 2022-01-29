@@ -5,7 +5,7 @@ import os, re, sys
 # CLI arg determine whether or not to run asserts
 # (run without asserts to determine PIDs to drop;
 #  run with asserts to make sure clean prior to running analysis)
-run_asserts = sys.argv[1]A
+run_asserts = sys.argv[1]
 assert run_asserts.lower() in ['t', 'f']
 if run_asserts.lower() == 't':
     run_asserts = True
@@ -60,9 +60,10 @@ for pid in all_pids_in_dir:
                     # get the distinct timesteps
                     timesteps_this_dir = set([int(re.search(timestep_patt,
                                                        f).group()) for f in files])
-                    assert len(timesteps_this_dir) == 3
+                    if run_asserts:
+                    	assert len(timesteps_this_dir) == 3
                     # add to overall set
-                    for ts in timesteps_this_dir:
+ for ts in timesteps_this_dir:
                         all_timesteps.add(ts)
 
                     # add 1 to this scenario-nullness combination's count
