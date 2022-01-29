@@ -121,3 +121,17 @@ else:
     for pid, ct in pids_complete.items():
         if ct != 1:
             print(pid)
+    print('\n\n')
+
+    delete_incomplete = input(('Would you like to delete all affiliated data now? '
+                               '(Y to delete)\n'))
+    if delete_incomplete.lower() == 'y':
+        for pid, ct in pids_complete.items():
+            if ct != 1:
+                print('Deleting data for PID %s...\n' % pid)
+                cmd = 'rm -rf %s/*%s*' % (datadir, pid)
+                os.system(cmd)
+
+    else:
+        print(('\nOkay! Please delete manually, then rerun with \'t\' flag to '
+              'run assert statements and check that data is ready for analysis\n\n'))
