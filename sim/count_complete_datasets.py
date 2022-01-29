@@ -8,6 +8,14 @@ timestep_patt = '(?<=t-)\d+(?=_spp)'
 summary_csv_patt = 'output_PID-%s\w{0,8}\.csv'
 pid_patt = '(?<=PID-)\d{6}'
 
+# ouput directory
+if os.getcwd().split('/')[1] == 'home':
+    datadir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
+else:
+    with open(('/global/scratch/users/drewhart/ch2/climate_change_adaptation_'
+               'and_genomic_arch/analysis/outputdir.txt'), 'r') as f:
+        datadir = f.read().strip()
+
 # store iteration counts
 cts = xr.DataArray(np.zeros((2, 3, 3)),
                    {'nullness': ['null', 'non-null'],
@@ -19,8 +27,8 @@ cts = xr.DataArray(np.zeros((2, 3, 3)),
 all_timesteps = set()
 
 # get all unique PIDs in dir
-all_pids_in_dir = set([re.search(pid_patt, f).group() for f in os.listdir() if
-                       re.search(pid_patt, f)])
+all_pids_in_dir = set([re.search(pid_patt,
+            f).group() for f in os.listdir(datadir) if re.search(pid_patt, f)])
 # track which PIDs have complete datasets
 pids_complete = {pid: 0 for pid in all_pids_in_dir}
 
@@ -30,7 +38,8 @@ for nullness in cts.indexes['nullness']:
         for genicity in cts.indexes['genicity']:
             # get all model-generated dirs
             curr_dir_patt = dir_patt % (nullness, linkage, genicity)
-            dirs = [f for f in os.listdir() if re.search(curr_dir_patt, f)]
+            dirs = [f for f in os.listdir(datadir) if re.search(curr_dir_patt,
+                                                                f)]
 
             # check that the dir has a complete dataset
             for d in dirs:
@@ -46,7 +55,7 @@ for nullness in cts.indexes['nullness']:
 
                 # check there's exactly one set of 4 CSV files for this PID
                 pid = re.search(pid_patt, d).group()
-                summary_csvs = [f for f in os.listdir() if
+                summary_csvs = [f for f in os.listdir(datadir) if
                                 re.search(summary_csv_patt % pid, f)]
                 assert len(summary_csvs) == 4, ('Did not find exactly 4 summary '
                                                 'CSVs for PID %s}n}ncsvs: '
