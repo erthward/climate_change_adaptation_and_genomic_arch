@@ -56,8 +56,10 @@ for pid in all_pids_in_dir:
                 if run_asserts:
                     assert len(dirs)==1, ('Did not find exactly 1 dir for '
                                           '%s, %s linkage, % genes/trait.\n\n'
-                                          'Instead, found:\n%s\n\n') %
-                                          (nullness, linkage, genicity, str(dirs))
+                                          'Instead, found:\n%s\n\n') % (nullness,
+                                                                        linkage,
+                                                                        genicity,
+                                                                        str(dirs))
 
                 # check that the dir has a complete dataset
                 for d in dirs:
