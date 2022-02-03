@@ -435,7 +435,10 @@ def set_params(params, linkage, genicity, nullness):
     copy_params['comm']['species']['spp_0']['gen_arch']['L'] = 2 * genicity
     for trt in copy_params['comm']['species']['spp_0']['gen_arch']['traits'].values():
         trt['n_loci'] = genicity
-        trt['alpha_distr_mu'] = 1/genicity
+        # DETH: 2022-02-02: checking what results look like with greater
+        # genetic redundancy
+        trt['alpha_distr_mu'] = 1/(genicity/2)
+        #trt['alpha_distr_mu'] = 1/genicity
 
     # if this is a null sim, edit the params so that
     # no env change occurs 
