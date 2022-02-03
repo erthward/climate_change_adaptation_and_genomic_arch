@@ -28,7 +28,7 @@
 \correspondingauthor{\textsuperscript{1}To whom correspondence should be addressed. E-mail: drew.hart@berkeley.edu}
 
 % At least three keywords are required at submission. Please provide three to five keywords, separated by the pipe symbol.
-\keywords{adaptation $|$ climate change $|$ $|$ landscape genetics $|$ spatial simulation $|$ Python} 
+\keywords{adaptation $|$ climate change $|$ $|$ landscape genomics $|$ spatial simulation $|$ gene flow} 
 
 \begin{abstract}
 Please provide an abstract of no more than 250 words in a single paragraph. Abstracts should explain to the general reader the major contributions of the article. References in the abstract must be cited in full within the abstract itself and cited in the text.
@@ -50,7 +50,7 @@ Please provide an abstract of no more than 250 words in a single paragraph. Abst
 Given the limited long-term importance of plasticity to survival \cite{chevin},
 a species’ persistence within its current range will depend largely on its ability to
 adapt to climate change through natural selection - a concept frequently referred to 
-as `adaptive capacity’ (or `adaptive potential’, or `evolutionary potential’; 
+as `adaptive capacity’ (or `adaptive potential’ or `evolutionary potential’; 
 \cite{chevin,harrisson,nicotra,vilas,wade}.
 Gene flow exerts a large influence over the nature and rate of natural selection. 
 Theory presents numerous models
@@ -84,40 +84,7 @@ for adaptation to climate change.
 However, its applicability may be modulated by biological complications
 that can alter real-world evolutionary outcomes, and
 so require focused research. 
-The first of these derives from the gradual convergence of molecular population genetics
-and quantitative genetics \cite{barghi_polygenic,barton,pritchard_human_adaptation,pritchard_sweeps_alone},
-leading to the insight that the genetic architecture of
-climate-adapted traits, is a central determinant
-of evolutionary dynamics in locally adapted populations \cite{yeaman_review}. 
-One aspect of genetic architecture is the number of loci 
-underlying the trait (henceforth, 'locus count'). 
-Large-effect genes are certainly known \cite{martin,rees},
-and small locus-count systems have a stronger foundation
-of theoretical study,
-but given extensive empirical evidence for the high polygenicity \cite{boyle,rockman,savolainen,sella}
-of complex traits, the
-quantitative traits often responsible for adaptation to climate could easily be 
-underlain by hundreds or even thousands of loci of non-negligible effect.
-Another aspect of genetic architecture, the degree of linkage between underlying loci
-(i.e., the reduction of their rate of recombination),
-increases the likelihood that adaptive alleles cluster together,
-effectively forming larger-effect alleles that are more 
-effective targets of natural selection and more resistant
-to swamping by gene flow \cite{yeaman_whitlock}.
-For this reason, strong linkage (low recombination)
-is expected to facilitate
-adaptation with gene flow in heterogeneous environments \cite{tigano}.
-
-Just as both locus count and linkage
-are key determinants of the nature of adaptation of a 
-on environmental gradients \cite{barton,yeaman_whitlock,yeaman_review},
-they are also certain to influence evolutionary
-outcomes when environmental gradients are perturbed.
-
-SAY SOMETHING ABOUT EXPECTATIONS UNDER DIFF ARCHS?
-
-
-The second complication derives from the correspondence between 
+The first of these derives from the correspondence between 
 multivariate selective environments and multivariate whole-organism phenotypes. 
 Even when gene 
 flow during climate change comes from a source population whose current climate is a 
@@ -152,6 +119,38 @@ may determine whether adaptation to climate change happens
 \textit{in situ} or by gene flow --- or indeed,
 whether adaptive capacity is adequate for adaptation to happen at all.
 
+The second complication derives from the gradual convergence of molecular population genetics
+and quantitative genetics \cite{barghi_polygenic,barton,pritchard_human_adaptation,pritchard_sweeps_alone},
+leading to the insight that the genetic architecture of
+clinal traits is a central determinant
+of evolutionary dynamics in locally adapted populations \cite{yeaman_review}. 
+One aspect of genetic architecture is the number of loci 
+underlying the trait (henceforth, 'polygenicity'). 
+Large-effect genes are certainly documented \cite{martin,rees},
+and low-polygenicity systems have a stronger foundation
+of theoretical study,
+but mounting empirical evidence points to the high polygenicity 
+of many complex traits\cite{boyle,rockman,savolainen,sella,barghi_polygenic}.
+Thus, the quantitative traits often responsible for adaptation to climate could reasonably be 
+underlain by hundreds or even thousands of loci of non-negligible effect.
+Another aspect of genetic architecture, the degree of linkage between underlying loci
+(i.e., the reduction of their rate of recombination),
+increases the likelihood that adaptive alleles cluster together,
+effectively forming larger-effect alleles that are more 
+effective targets of natural selection and more resistant
+to swamping by gene flow \cite{yeaman_whitlock}.
+For this reason, strong linkage (low recombination)
+is expected to facilitate
+adaptation with gene flow in heterogeneous environments \cite{tigano}.
+Just as both polygenicity and linkage
+are key determinants of the nature of adaptation of a 
+on environmental gradients \cite{barton,yeaman_whitlock,yeaman_review},
+they are also certain to influence evolutionary
+outcomes when environmental gradients are perturbed.
+
+SAY SOMETHING ABOUT OUR EXPECTATIONS UNDER DIFF ARCHS?
+
+
 
 \begin{figure}%[tbhp]
 \centering
@@ -169,22 +168,22 @@ In this study, we use individual-based, spatially explicit landscape genetic sim
 explore these key aspects of adaptation under climate change. We first simulate 
 adaptation of a population to a bivariate environment composed of two horizontal 
 environmental gradients, each exerting selection on a separate trait.
-Individuals' trait phenotypes are determined by the additive effects of numerous loci ---
+Individuals' phenotypes are determined by the additive effects of numerous loci ---
 a reasonable approximation of many traits of interest in real populations \cite{sella} ---
 and traits have moderate genetic redundancy 
 (i.e., mid-range phenotypic values
 can be generated by numerous distinct genotypes, while extreme phenotypic
 values can be produced by single, extreme genotypes) and have no pleiotropy.
 In our main models, we then simulate climate change on that landscape by holding one gradient 
-constant while shifting the other gradient to the right, creating a situation in which
+constant while shifting the other gradient horizontally, creating a situation in which
 a decoupling environment drives heterogeneous natural selection toward a novel region 
 of bivariate trait space. Our null models are run likewise, but without environmental 
 change. We run many pairs of main and null simulations for each of nine scenarios, 
-resulting from the full factorial crossing of three levels of linkage (unlinked, weak 
+resulting from the full factorial crossing of three levels of linkage (no linkage, weak 
 linkage, strong linkage) and three values for the number of genes underlying each 
-trait (henceforth, ‘locus-count’; 4, 20, 100). We test a set of hypotheses, detailed 
+trait (4, 20, 100). We test a set of hypotheses, detailed 
 in Table \ref{tab:hypotheses}, about the effects of linkage,
-locus-count, and their interaction on key 
+polygenicity, and their interaction on key 
 dynamics of the process of adaptation under climate change, including changes in 
 population size and in average fitness, phenotypic shifts and the degree of 
 maladaptation, and the predominant directions of gene-flow (parallel to or 
@@ -201,7 +200,7 @@ Population size declined during climate change across all scenarios, (GIVE ANOVA
 RESULTS) \ref{fig:Nt_over_time}, \ref{fig:Nt_boxplot}, as did mean fitness (GIVE ANOVA 
 RESULTS) \ref{fig:fit_over_time}, \ref{fig:fit_boxplot}. The extent of decline was 
 positively correlated with the strength of linkage, (GIVE HSD RESULTS), and 
-displayed a non-linear relationship with locus count. The 100-locus scenarios showed 
+displayed a non-linear relationship with polygenicity. The 100-locus scenarios showed 
 extreme reductions (HSD RESULTS), with population size in the strong-linkage scenario
 declining by 19\% on average (from ~10,500 to ~8000 individuals).
 Notably, the population and fitness declines in the 100-locus scenarios
@@ -215,7 +214,7 @@ Interestingly, declines were uniformly more pronounced in the 4-locus scenarios
 when compared to equivalent-linkage 20-locus scenarios. DISCUSS THE 'BUMPINESS' OF THE 4-LOCUS SCENARIOS?? 
  
 As expected, null simulations showed no change in population size or mean fitness. The only difference between null simulations across scenarios was a difference in the 
-equilibrium mean fitness value, which is a function of locus count because locus count 
+equilibrium mean fitness value, which is a function of polygenicity because polygenicity 
 and effect size covary, and effect size dictates the proximity to which individuals can 
 match the finely varying values of the continuous environmental gradients.
 
@@ -277,70 +276,126 @@ In our null simulations, gene flow distributions varied across scenarios in a sy
 
 
 \section*{Discussion}
-The generalized pattern of population and fitness decline under climate change match the
-overall trend expected under our hypotheses and under first-order theory of
-the evolutionary impact of climate change \cite{aitken_whitlock}.
 
+The generalized pattern of population and fitness decline under 
+climate change match the
+trend expected under our hypotheses and under theory 
+\cite{aitken_whitlock}.
 The trends of these declines across also generally matched our hypotheses,
-with the degree of decline being positively correlated with linkage and with locus-count.
+with the degree of decline being positively correlated with both linkage and with polygenicity.
 
 Similarly, the trends in phenotypic shift and maladaptation
 across the scenarios generally matched our hypotheses,
-but the degree of maladaptation was much more sensitive to
-locus-count than to linkage.
+although the degree of maladaptation was much more sensitive to
+polygenicity than to linkage.
 The time courses in Figures \ref{fig:Nt_over_time} and \ref{fig:fit_over_time} help explain this: declines
-are stronger with stronger linkage, but evolutionary
-rescue is still successful, such that our metric of maladaptation,
-measured at the end of the climate change period,
-fails to reflect this dynamic.
+are indeed stronger with stronger linkage, but evolutionary
+rescue occurs, such that our metric of maladaptation,
+calculated as an instantaneous value 
+at the end of the climate change period,
+fails to capture this.
 To the contrary, the 100-locus scenarios,
 in which adaptive capacity is outstripped,
-show substantial maladaptation at the end of the climate
+still exhibit substantial maladaptation at the end of the climate
 change period, to such an extent that the fastest-changing
-eastern section experiences local extinction.
+eastern section of the landscape experiences local extinction.
 
-However, the dramatic degree of population decline observed in the 100-locus scenarios was unexpected,
+
+SAY SOMETHING ABOUT DIRECTIONAL GENE FLOW RESULTS. I'M NOT SURE WHERE TO TAKE THIS BECAUSE
+I'M NOT SURE NOW THAT MY ORIGINAL HYPOTHESIS MADE MUCH SENSE...
+
+Importantly, up-gradient gene flow increases under climate change in all scenarios,
+indicating that even if it is maladaptive it is less so than only \textit{in situ} evolution.
+This lends strong support to the foundational logic of AGF.
+
+
+Our findings contravene previous theoretical expectations in
+three major ways.
+First, the dramatic degree of population decline observed in the 100-locus scenarios was unexpected,
 especially given that adaptive capacity was outstripped in all scenarios, irrespective of 
 linkage.
+Previous work has found that genetic architectures composed
+of many genes of small effect produce stable, resilient phenotypic clines dspite transient genotypic composition \cite{yeaman_amnat,yeaman_review},
+leading to the expectation that species with highly polygenic climate-adaptative architectures 
+may experience rapid local adaptation \cite{aitken_yeaman}. 
+Despite that, we expected evolutionary responses to environmental change
+to be slower these architectures
+because natural selection is less effective on smaller-effect alleles
+and because, in the linked scenarios,
+expected wait times until recombination produced allelic clusters are long.
+Nonetheless, we did not expect these scenarios to show a complete failure to adapt.
+Given the polygenic nature of many complex ecological traits \cite{barghi_polygenic,boyle,rockman,savolainen,sella},
+it is likely that these are our most genetically realistic scenarios.
+This raises important questions for further research:
+Are these findings robust to variation in other parameters
+not explored here (e.g., effective population size, migration rate, rate of climate change)? 
+And if so,
+given the difficulty and expense of obtaining functional genetic
+information in most study systems,
+can future work identify indicators of species whose
+climate-adaptive architecture is highly polygenic
+and thus makes them especially vulnerable to climate change?
+Empirical work already indicates
+that forest trees may fall within this group
+\cite{lind,aitken_yeaman}.
 
-We expected evolutionary responses to be slower for higher locus-count architectures
-because of the smaller effect size of individual loci and, in the linked scenarios,
-the long expected wait times
-until recombination produced adaptive clusters with larger effective effect sizes.
-But we did not expect a complete failure to adapt.
 
-Our work makes significant contributions to the theoretical understanding of 
-adaptation to complex and changing environments.
-Theory indicates that recombination can be deleterious
-in situations of adaptation with gene flow
-along a gradient, because it disrupts the association between adaptive loci 
-underlying a single trait \cite{tigano}.
-Our results highlight an interesting interesting and important context for that expectation:
-It applies in the special case of a single-trait adapted to a single gradient,
-but may change under other realizations of the
-a generalized $n$-trait, $m$-gradient model.
+Second, theory indicates that recombination can be deleterious
+in situations of clinal adaptation
+with gene flow, because it disrupts the association between adaptive loci 
+underlying a single trait \cite{tigano},
+but our results highlight an interesting and important caveat.
+While that expectation applies in the special case of a single-trait 
+adapted to a single gradient,
+it may change under other realizations of the 
+generalized $n$ trait adapted to $\leq n$ gradients.
 In our two-trait, two-gradient model, given that the gradients decouple
-and novel environmental space emerges,
-recombination proves to be net-advantageous.
-This is because, although recombination does disrupt the association between
+and novel environments emerge,
+recombination is net-advantageous.
+This is because, despite the fact that recombination disrupts the association between
 adaptive loci for the shifting gradient's trait, preventing the
 generation of larger-effect gene clusters,
-it simultaneously dissociates those loci from the loci underlying
+it simultaneously disassociates those loci from the loci underlying
 the stable gradient's trait, for which gene flow would be maladaptive.
 In other words, recombination facilitates adaptation by gene flow
 by precluding interference between two complex genetic architectures.
+  
    
-Our work also has important management implications.   
-
-Given that our 20-locus scenarios showed little to no decline in population size and mean fitness, our results seem to contradict previous findings that adaptation on a cline tends to occur either by few genes of large effect or by many genes of small effect \cite{yeaman_amnat}. This apparent contradiction may be partly explained by a difference in timeframes between adaptation to a static environmental gradient and adaptation to an ongoing shift in a multivariate gradient. Adaptation to a single, static gradient can proceed gradually, and may favor large-effect alleles or, large-effect clusters of small-effect alleles, once they arise by mutation, recombination, gene flow, or some combination. To the contrary, the sudden onset of persistent environmental perturbation in a population that is already locally adapted initiates a 'race against time', and it may be the case that 'middle of the road' genetic architectures --- those composed of freely recombining loci with small-enough effect sizes to escape large sudden declines in fitness, but with large enough effect sizes to avoid the long wait times necessary for recombination to cluster many adaptive loci into larger-effect haplotypes  -- will fair best. In theoretical models, local adaptation with migration along static gradients tends to favor concentrated genetic architectures featuring linked clusters of large-effect alleles. To the contrary, there is some indication that temporally fluctuating environments favor dispersed genetic architectures with higher rates of recombination \cite{burger,kondrashov,yeaman_review,yeaman_whitlock}. This suggests an inherent tension between the architectures that might arise in natural populations and the architectures likely to facilitate adaptation of those populations to rapid environmental change --- though it remains to be determined how often and when concentrated genetic architectures actually occur in real-world systems \cite{laruson}.  This suggests a mechanism by which species living in climates with less interannual fluctuation and longer-term stationarity could have higher intrinsic vulnerability to maladaptation under climate change, all else equal.
+Third, given that our mid-range 20-locus scenarios
+showed the least fitness and demographic impact of climate change,
+and the quick ability to adapt,
+our results seem to contradict previous findings that adaptation on a cline tends to 
+occur either by few genes of large effect or by many genes of small effect 
+\cite{yeaman_amnat,yeaman_review}. 
+This apparent contradiction may be partly explained by a 
+difference in timeframes between adaptation to a static environmental gradient
+and adaptation to a gradient subject to persistent environmental change. 
+Adaptation to a single, static gradient can proceed gradually,
+and may favor large-effect alleles or, large-effect clusters of alleles,
+once they arise by mutation, recombination, gene flow, or some combination thereof. 
+To the contrary, the sudden onset of persistent environmental perturbation 
+in a population that is already locally adapted initiates a 'race against time', 
+and it may be that 'middle of the road' genetic architectures will fair 
+best --- those composed of freely recombining loci with small-enough effect sizes to escape large
+sudden declines in fitness, but with large enough effect sizes to avoid the long wait times necessary for recombination to cluster many adaptive loci into larger-effect haplotypes.
+In theoretical models, local adaptation with migration along static 
+gradients tends to favor concentrated genetic architectures ---
+those featuring linked allelic clusters with concomitantly larger effect sizes.
+However, there is some evidence that in temporally fluctuating environments the opposite may be true:
+adaptation may favor dispersed genetic architectures with higher rates of recombination
+\cite{burger,kondrashov,yeaman_review,yeaman_whitlock}.
+This suggests an inherent tension between the architectures that
+might be expected to evolve in locally adapted populations prior to climate change
+and the architectures most likely to facilitate adaptation to climate change --- though it remains to be determined how 
+often and when concentrated genetic architectures actually occur in 
+real-world systems \cite{laruson}).
+It also suggests a mechanism by which species living in climates with 
+less interannual fluctuation and longer-term stationarity could have
+higher intrinsic vulnerability to maladaptation under climate 
+change. Empirical and more theoretical research
+would help determine if such phenomena are real, and if so,
+if they can help prioritize efforts to enhance species' adaptive capacity to climate change.
    
-
-   \begin{enumerate}
-        \item in all scenarios, up-gradient gene flow increases because of climate change --> suggests that even if maladaptive, less so than only \textit{in situ} evolution --> supports the concept of AGF
-        \item Adaptive capacity was outstripped in the 100-locus scenarios, even when recombination was free. These are likely to be the most realistic scenarios, given the polygenic nature of many complex ecological traits \cite{barghi_polygenic}. What does this suggest for conservation concerns? what future research would be necessary to inform them? how realistic these parameterizations are? and to the extent they are, given the difficulty and expense of obtaining functional genetic information in most wild study systems, what are possible indicators of study systems under such circumstances? --> those systems would be major candidates for AGF --> could be trees and other long-lived, foundational species, as previously suggested \cite{aitken_whitlock, aitken_bemmels}
-        \item many ecological traits of interest are polygenic, and it is a reasonable default assumption that all environments are multivariate, with traits adapted to multiple aspects of the environment that are differentially distributed in space and that change differentially over time
-        \item While it is exceedingly hard to document and understand the nature of adaptation to a multivariate environment in a wild study system, and thus to make management decisions on such a basis, it is nonetheless important to keep in mind the caveat that not all adaptation climate change is bound to look like upslope gene flow, and conversely, that not all upslope gene flow is bound to facilitate adaptation to climate change.
-    \end{enumerate}
 
 The major challenge in simulation-based research is the complexity of the high-dimensional 
 parameter space that can be explored. Informative studies can be constructed by focusing on a 
@@ -355,9 +410,19 @@ which are areas ripe for future research, are:
         \item \textit{migration} (as either a fixed distance or a distribution \cite{paulose}), a key factor embedded in the rudimentary migration-selection dynamics that lie at the heart of models like ours \cite{wright,haldane,barton}, and the fundamental process motivating the practice of AGF;
         \item \textit{genetic redundancy} \cite{barghi_redundancy,barghi_polygenic,laruson} , both of which could be varied in order to investigate the evolution of complex genetic architectures and convergent adaptation, and their effects on adaptive capacity to environmental change.
     \end{enumerate}
-    A variety of other facets of spatiotemporal evolution could also be explored through a similar modeling framework, including fixed versus distributed allelic effect sizes \cite{orr} and genomic positions; plasticity \cite{chevin} and heritable epigenetic variation; pleiotropy \cite{thompson}; more complex spatial arrangements \cite{benes}; and mutation (although the relevance of \textit{de novo} mutation to climate change adaptation in many of the relatively long-lived and long-generation-time species of conservation concern is an open question).
-    Finally, important, conservation-relevant insight could emerge from the integration of other dimensions climate change ecology, including range shifts \cite{weiss-lehman}, variable distributions of population density \cite{aitken_whitlock}, and comparisons between variably steep climatic gradients, variable rates of climatic change, and between scenarios in which rates of climate change are spatially stationary or variable. 
-
+A variety of other facets of spatiotemporal evolution could also be explored 
+through a similar modeling framework, including fixed versus distributed allelic 
+effect sizes \cite{orr} and genomic positions; plasticity \cite{chevin} and 
+heritable epigenetic variation; pleiotropy \cite{thompson}; more complex spatial 
+arrangements \cite{benes}; and mutation (although the relevance of \textit{de 
+novo} mutation to climate change adaptation in many of the relatively long-lived 
+and long-generation-time species of conservation concern is an open question).
+Finally, important, conservation-relevant insight could emerge from the 
+integration of other dimensions climate change ecology, including range shifts 
+\cite{weiss-lehman}, variable distributions of population density 
+\cite{aitken_whitlock}, and comparisons between variably steep climatic 
+gradients, variable rates of climatic change, and between scenarios in which 
+rates of climate change are spatially stationary or variable. 
 
 
 
