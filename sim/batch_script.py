@@ -437,7 +437,7 @@ def set_params(params, linkage, genicity, nullness):
         trt['n_loci'] = genicity
         # DETH: 2022-02-02: checking what results look like with greater
         # genetic redundancy
-        trt['alpha_distr_mu'] = 1/(genicity/2)
+        trt['alpha_distr_mu'] = 2*(1/genicity)
         #trt['alpha_distr_mu'] = 1/genicity
 
     # if this is a null sim, edit the params so that
@@ -527,6 +527,10 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
 
         print("AFTER MAKING MODEL WD IS ", os.getcwd())
 
+        print("\n\n\nALPHAS: %s\n\n\n%s\n\n\n" % (
+            str(mod.comm[0].gen_arch.traits[0].alpha),
+            str(mod.comm[0].gen_arch.traits[1].alpha)))
+
         # delete the temporary genarch file
         os.remove(genarch_filename)
 
@@ -579,6 +583,11 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
 
         # run the model up to the env change event
         for t in range(change_T):
+            print('\n\n\n\t'+'-' * 20)
+            print('\tMIN AND MAX Z VALS!')
+            print(np.min(mod.comm[0]._get_z(0)), np.max(mod.comm[0]._get_z(1)))
+            print(np.min(mod.comm[0]._get_z(1)), np.max(mod.comm[0]._get_z(1)))
+            print('\t'+'-' * 20)
 
             # record the Nt, mean fit, and mean z, if <= deltaT_env_change
             # prior to climate change
