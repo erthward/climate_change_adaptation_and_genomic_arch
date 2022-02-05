@@ -270,7 +270,8 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
         ticklabels = np.linspace(0, 1, n_ticklabels)
         ax.set_xticks(ticks)
         ax.set_xticklabels(ticklabels, fontdict={'fontsize':ticklab_fontsize})
-        ax.set_xlim([0,1])
+        ax.invert_xaxis()
+        ax.set_xlim([1,0])
         ax.set_ylim([0,1])
         for tick in ax.get_xticklabels():
             tick.set_rotation(0)
