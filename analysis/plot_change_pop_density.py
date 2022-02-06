@@ -44,7 +44,7 @@ else:
 
 # lists of all possible linkage and genicity values
 linkages = ['independent', 'weak', 'strong']
-genicities =  [2, 4, 10, 20, 50, 100]
+genicities =  [2, 4, 8, 10, 20, 40, 50, 100, 200]
 
 # environmental change time steps
 change_start_t = 1999

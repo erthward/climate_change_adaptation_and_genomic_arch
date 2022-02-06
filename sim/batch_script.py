@@ -26,8 +26,9 @@ import os
 # set number of iterations for each sim
 n_its = 1
 # set the different numbers of loci to use
-genicities = [4, 20, 100]
-#genicities = [4, 20, 50]
+genicities = [8, 40, 200]
+# factor to multiply effect size by to implement genetic redundancy
+alpha_factor = 2
 # set the different linkage levels to use
 linkages = ['independent', 'weak', 'strong']
 linkages_dict = {'independent': {'r_distr_alpha': 0.5,
@@ -397,7 +398,9 @@ def make_custom_genarch_file(genicity, recomb_rate, pid, write=True):
     alpha = [1/genicity,
              1/genicity,
              -1/genicity,
-             -1/genicity]*int(L/4) # alpha of 1/genicity --> can reach all phenotypes [0,1]
+             -1/genicity]*int(L/4) # alpha=1/genicity reaches all phenotypes [0,1] precisely
+                                   # (greater than than = redundancy @ extremes)
+    alpha = [alpha_factor*n for n in alpha]
     df = pd.DataFrame.from_dict(dict(zip(cols, [locus, p, dom, r, trait, alpha])))
     if write:
         tmp_filename = 'tmp_genarch_%s.csv' % pid
@@ -437,7 +440,7 @@ def set_params(params, linkage, genicity, nullness):
         trt['n_loci'] = genicity
         # DETH: 2022-02-02: checking what results look like with greater
         # genetic redundancy
-        trt['alpha_distr_mu'] = 2*(1/genicity)
+        trt['alpha_distr_mu'] = alpha_factor*(1/genicity)
         #trt['alpha_distr_mu'] = 1/genicity
 
     # if this is a null sim, edit the params so that

@@ -63,7 +63,7 @@ def add_margin(pil_img, left, top, right, bottom, color='white'):
 
 # fill the output image with the input images
 for i, linkage in enumerate(['independent', 'weak', 'strong']):
-    for j, genicity in enumerate([4, 20, 100]):
+    for j, genicity in enumerate([8, 40, 200]):
 
         # get the current image
         if plot_type == 'DENS':
