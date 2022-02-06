@@ -50,23 +50,14 @@ Please provide an abstract of no more than 250 words in a single paragraph. Abst
 Given the limited long-term importance of plasticity to survival \cite{chevin},
 a species’ persistence within its current range will depend largely on its ability to
 adapt to climate change through natural selection - a concept frequently referred to 
-as `adaptive capacity’ (or `adaptive potential’ or `evolutionary potential’; 
+as `adaptive capacity’ (or `adaptive potential’, or `evolutionary potential’; 
 \cite{chevin,harrisson,nicotra,vilas,wade}.
-Gene flow exerts a large influence over the nature and rate of natural selection. 
-Theory presents numerous models
-in which gene flow can constrain or be constrained by
-local adaptation \cite{wang,lenormand,slatkin,haldane,wright,felsenstein},
-but also recognizes that gene flow can be adaptive when it 
-either introduces or increases the frequency of alleles 
-that push trait values toward
-the recipient population's fitness peak \cite{aitken_whitlock,slatkin,tigano},
-a process with strong empirical support \cite{feder}. 
-As climate change progresses,
-and local fitness peaks shift in response, 
-the directional movement of climatic gradients across space (e.g., the vector
-direction of climate velocity; \cite{ackerly}) provides a reasonable first 
-approximation of the most likely direction of adaptive gene flow. The premise of this 
-assumption, cast generically, is that gene flow from warmer places to 
+It is frequently assumed that this adaptation will be facilitated
+by gene flow parallel to the shift of climatic gradients
+(e.g., in the vector
+direction of climate velocity; \cite{ackerly}).
+The premise of this 
+assumption, cast generically, is that gene flow from warmer places to
 cooler places will provide populations in cooler places with warm-adapted alleles,
 thus facilitating adaptation to a warming climate. 
 Indeed, managers are increasingly relying on that assumption
@@ -79,12 +70,67 @@ climates are more similar to the projected climate of the focal population
 in hopes of enhancing the focal population's adaptive capacity to climate change.
 
 This is a reasonable first-order conceptual model
-for adaptation to climate change.
-However, its applicability may be modulated by biological complications
-that can alter real-world evolutionary outcomes, and
-so require focused research. 
-The first of these derives from the correspondence between 
-multivariate selective environments and multivariate whole-organism phenotypes. 
+for adaptation to climate change,
+as there are both theoretical
+\cite{aitken_whitlock,slatkin,tigano}
+and real-world conditions under which \cite{feder}
+gene flow can facilitate local adaptation,
+by introducing or increasing the frequency of alleles 
+that push trait values toward
+the recipient population's fitness peak.
+However, theory also provides numerous models
+in which gene flow constrains or is constrained by
+local adaptation
+\cite{wang,lenormand,slatkin,haldane,wright,felsenstein}.
+In recent decades, work has been done to bridge the fields
+of molecular population genetics
+(the study of allele-frequency shifts
+in traits underlain by one or a few genes)
+and quantitative genetics
+(the study of phenotypic shifts in
+traits underlain by infinitely many alleles)
+\cite{barghi_polygenic,barton,pritchard_human_adaptation,pritchard_sweeps_alone}.
+One of the insights arising from this work is that
+the genetic architecture of a trait
+is a core determinant of
+whether and how that trait
+becomes locally adapted along a cline \cite{yeaman_review}. 
+
+One aspect of genetic architecture is the number of loci 
+underlying the trait (henceforth, 'polygenicity'). 
+Large-effect genes are certainly documented \cite{martin,rees},
+and low-polygenicity systems have a stronger foundation
+of theoretical study,
+but mounting empirical evidence points to the high polygenicity 
+of many complex traits\cite{boyle,rockman,savolainen,sella,barghi_polygenic}.
+Thus, the quantitative traits often responsible for adaptation to climate could reasonably be 
+underlain by hundreds or even thousands of loci of non-negligible effect.
+Another aspect of genetic architecture, the degree of linkage between underlying loci
+(i.e., the reduction of their rate of recombination),
+increases the likelihood that adaptive alleles cluster together,
+essentially forming larger-effect-size alleles that are more 
+effective targets of natural selection and more resistant
+to swamping by gene flow \cite{yeaman_whitlock}.
+For this reason, strong linkage (low recombination)
+is expected to facilitate
+adaptation with gene flow in heterogeneous environments \cite{tigano}.
+
+Just as both polygenicity and linkage
+are key determinants of the nature of adaptation of a 
+on environmental gradients \cite{barton,yeaman_whitlock,yeaman_review,lecorre},
+they are also certain to influence evolutionary
+outcomes when environmental gradients are perturbed.
+This has been studied to some extent,
+but almost exclusively using univariate
+models of the selective environment
+that are too simplistic to
+shed light on the likelihood of
+real-world evolutionary outcomes
+under climate change.
+(I BELIEVE THIS TO BE TRUE, BUT IS IT REALLY?? IF SO, CITE!!
+SCHIFFERS ET AL SIMULATE ADAPTATION ON A BIVARIATE LANDSCAPE UNDER CLIMATE CHANGE;
+ASIDE FROM THAT, DO NOT REMEMBER ANY CLIMATE CHANGE
+SIM STUDIES OFF TOP OF MY HEAD)
 Even when gene 
 flow during climate change comes from a source population whose current climate is a 
 good approximation of the recipient population’s future climate, the adaptive nature 
@@ -110,7 +156,7 @@ adapted to decoupling gradients
 because of linkage between loci underlying each of those traits \cite{aitken_whitlock,schiffers},
 a multi-trait analogue of the single-trait Hill-Robertson effect \cite{hill_robertson}. 
 In such circumstances, the degree to which gene flow is maladaptive will depend
-upon the genetic architectures of the multiple traits involved,
+upon the genetic architectures of each the multiple traits involved,
 and upon the degree of physical linkage between those architectures.
 Moreover, comparsion between the maladaptive nature of gene flow
 and the maladaptation operating in the recipient population
@@ -123,73 +169,52 @@ whether adaptive capacity is adequate for adaptation to happen at all.
 \begin{figure}%[tbhp]
 \centering
 \includegraphics[width=.8\linewidth]{conceptual_fig/ch2_conceptual_fig}
-\caption{DRAFT OF CONCEPTUAL FIG.}
-\label{tab:conceptual}
+\caption{Conceptual model of adaptation climate change. Above: Stacked, horizontal cross-sections of our square simulation landscape, shown for both the shifting environmental gradient (blue-red color ramp) and the stable gradient (white-black color ramp), and both before climate change ($t_{1}$, above thick black line) and after ($t_{2}$). Below: Bivariate fitness landscape of the traits adapted to the shifting and stable gradients (on color-matched axes). Three example positions along the bivariate gradient ($x_{1}$, $x_{2}$, $x_{3}$) are delineated by thin vertical boxes on the physical landscape, both before climate change (gray) and after (yellow), and their corresponding fitness peaks are shown as color-matched kernels located along color-matched lines of the fitness optima that exist on the physical landscape before ($t_{1}$) and after ($t_{2}$) climate change. Local fitness peak shifts are shown as labeled arrows ($x_{2}$, $x_{3}$); the environment the far left of the physical landscape does not change, so $x_{1}$'s fitness are overlapping and have no shift. does Note that fitness peaks are stylized and truncated for ease of depiction; fitness in our models decreases linearly with an individual's distance from its phenotypic optimum, not as a Gaussian function.}
+\label{fig:conceptual}
 \end{figure}
-
-
-
-The second complication derives from the gradual convergence of molecular population genetics
-and quantitative genetics \cite{barghi_polygenic,barton,pritchard_human_adaptation,pritchard_sweeps_alone},
-leading to the insight that the genetic architecture of
-clinal traits is a central determinant
-of evolutionary dynamics in locally adapted populations \cite{yeaman_review}. 
-One aspect of genetic architecture is the number of loci 
-underlying the trait (henceforth, 'polygenicity'). 
-Large-effect genes are certainly documented \cite{martin,rees},
-and low-polygenicity systems have a stronger foundation
-of theoretical study,
-but mounting empirical evidence points to the high polygenicity 
-of many complex traits\cite{boyle,rockman,savolainen,sella,barghi_polygenic}.
-Thus, the quantitative traits often responsible for adaptation to climate could reasonably be 
-underlain by hundreds or even thousands of loci of non-negligible effect.
-Another aspect of genetic architecture, the degree of linkage between underlying loci
-(i.e., the reduction of their rate of recombination),
-increases the likelihood that adaptive alleles cluster together,
-effectively forming larger-effect alleles that are more 
-effective targets of natural selection and more resistant
-to swamping by gene flow \cite{yeaman_whitlock}.
-For this reason, strong linkage (low recombination)
-is expected to facilitate
-adaptation with gene flow in heterogeneous environments \cite{tigano}.
-Just as both polygenicity and linkage
-are key determinants of the nature of adaptation of a 
-on environmental gradients \cite{barton,yeaman_whitlock,yeaman_review},
-they are also certain to influence evolutionary
-outcomes when environmental gradients are perturbed.
-
-SAY SOMETHING ABOUT OUR EXPECTATIONS UNDER DIFF ARCHS?
-
 
 
 
 
 Spatially explicit simulation is one of the strongest available tools
 for improving our understanding of maladaptation and adaptive capacity
+in multivariate selective environments
 under climate change \cite{capblancq_review}.
-In this study, we use individual-based, spatially explicit landscape genetic simulations to
-explore these key aspects of adaptation under climate change. We first simulate 
+In this study, we use individual-based, spatially explicit simulations to test how genetic architecture influences multivariate adaptation to climate change.
+We first simulate 
 adaptation of a population to a bivariate environment composed of two horizontal 
 environmental gradients, each exerting selection on a separate trait.
+In our main models, we then simulate climate change on that landscape by holding one gradient 
+constant while shifting the other gradient horizontally, such that
+a decoupling environment pushes local fitness peaks toward novel regions 
+of bivariate trait space (see \ref{fig:conceptual}.
 Individuals' phenotypes are determined by the additive effects of numerous loci ---
 a reasonable approximation of many traits of interest in real populations \cite{sella} ---
 and traits have moderate genetic redundancy 
 (i.e., mid-range phenotypic values
 can be generated by numerous distinct genotypes, while extreme phenotypic
 values can be produced by single, extreme genotypes) and have no pleiotropy.
-In our main models, we then simulate climate change on that landscape by holding one gradient 
-constant while shifting the other gradient horizontally, creating a situation in which
-a decoupling environment drives heterogeneous natural selection toward a novel region 
-of bivariate trait space. Our null models are run likewise, but without environmental 
-change. We run many pairs of main and null simulations for each of nine scenarios, 
+ (Our null models are run likewise, but without environmental 
+change.) We run many pairs of main and null simulations for each of nine scenarios, 
 resulting from the full factorial crossing of three levels of linkage (no linkage, weak 
 linkage, strong linkage) and three values for the number of genes underlying each 
-trait (4, 20, 100). We test a set of hypotheses about the effects of linkage,
+trait (4, 20, 100). We test the hypotheses that:
+1) stronger linkage and higher polygenicity reduce adaptive capacity under sudden climate change; 
+
+
+HYPOTHESES HERE
+about the effects of linkage,
 polygenicity, and their interaction on key 
 dynamics of the process of adaptation under climate change, including changes in 
 population size and in average fitness, phenotypic shifts and the degree of 
 maladaptation, and the predominant directions of gene-flow (parallel to or 
-perpendicular to the direction of climatic shift). Our analysis points toward an area 
+perpendicular to the direction of climatic shift). 
+
+Our analysis provides important theoretical developments
+in a neglected area of research,
+revealing dynamics that would not be evident from the application
+of prior univariate clinal models under environmental change.
+It also points toward an area 
 of important applied research because, to the extent that landscape genetics can cast 
 light on the processes underlying maladaptation, adaptive capacity, and adaptive gene
 flow, it can help answer the fundamental question posed by climate-smart management 
