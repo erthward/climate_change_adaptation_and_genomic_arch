@@ -22,6 +22,9 @@ TODO:
 """
 
 
+save_it = True
+
+
 # plot params
 suptitle_fontsize = 50
 title_fontsize = 40
@@ -58,14 +61,14 @@ savefig=True
 fig = plt.figure(dpi=dpi,
                  figsize=(fig_width, fig_height))
 
-gs = fig.add_gridspec(nrows=8, ncols=3)
+gs = fig.add_gridspec(nrows=8, ncols=2)
 
 # functional form of fitness kernel (assumed isotropic in 2d space)
 # NOTE: NOT ACTUALLY THE FUNCTIONAL FORM USED IN THE MODEL,
 #       BECAUSE gamma=1 IN OUR SIMS, SO FITNESS DECREASES LINEARLY;
 #       JUST A CONCEPTUAL FRAMEWORK
 
-def get_fit(max_fit_z, actual_z, σ=0.025, c=3):
+def get_fit(max_fit_z, actual_z, σ=0.005, c=3):
     max_fit_z = np.array(max_fit_z).reshape((2,1))
     actual_z = np.array(actual_z).reshape((2,1))
     Σ = np.array([[σ, 0], [0, σ]])
@@ -81,7 +84,7 @@ def get_fit(max_fit_z, actual_z, σ=0.025, c=3):
 
 
 # figure to get surface values for a fitness peak centered on max_fit
-def get_fit_surf(max_fit, sigma=0.2):
+def get_fit_surf(max_fit, sigma=0.1):
     x = np.linspace(max_fit[0]-(2*sigma), max_fit[0]+(2*sigma))
     y = np.linspace(max_fit[1]-(2*sigma), max_fit[1]+(2*sigma))
     X, Y = np.meshgrid(x, y)
@@ -138,7 +141,7 @@ edgecolors = {'b4': 'gray',
 
 # PART I:
 # plot the before/after-split landscape at top
-ax = fig.add_subplot(gs[:3, :])
+ax = fig.add_subplot(gs[:4, :])
 im = ax.imshow(time_diff_landscape, cmap='gray')
 time_diff_landscape[:13, :] = np.nan
 time_diff_landscape[26:39, :] = np.nan
@@ -146,9 +149,19 @@ im = ax.imshow(time_diff_landscape, cmap='bwr')
 ax.plot([0,52], [26,26], '--k', linewidth=2)
 ax.plot([0,52], [13,13], '--k', linewidth=1)
 ax.plot([0,52], [39,39], '--k', linewidth=1)
-ax.plot([0.25,2,2,0.25,0.25], [0.25,0.25,49.75,49.75,0.25], ':r', linewidth=0.5)
-ax.plot([24,26,26,24,24], [0.25,0.25,49.75,49.75,0.25], ':r', linewidth=0.5)
-ax.plot([48,49.75,49.75,48,48], [0.25,0.25,49.75,49.75,0.25], ':r', linewidth=0.5)
+ax.plot([0.25,2,2,0.25,0.25], [26.25,26.25,49.75,49.75,26.25], '-',
+        color='gray', linewidth=0.5)
+ax.plot([24,26,26,24,24], [26.25,26.25,49.75,49.75,26.25], '-',
+        color='gray', linewidth=0.5)
+ax.plot([48,49.75,49.75,48,48], [26.25,26.25,49.75,49.75,26.25], '-',
+        color='gray', linewidth=0.5)
+ax.plot([0.25,2,2,0.25,0.25], [0.25,0.25,25.75,25.75,0.25], '-',
+        color=highlight_col, linewidth=0.5)
+ax.plot([24,26,26,24,24], [0.25,0.25,25.75,25.75,0.25], '-',
+        color=highlight_col, linewidth=0.5)
+ax.plot([48,49.75,49.75,48,48], [0.25,0.25,25.75,25.75,0.25], '-',
+        color=highlight_col, linewidth=0.5)
+
 ax.set_xlim([0,50])
 ax.set_ylim([0,50])
 #plt.colorbar(im)
@@ -167,42 +180,44 @@ positions_and_fits = {0.5:{'b4':(1,1),
                            },
                      }
 # plot before-after fitness landscapes at ends and middle of landscape
+ax = fig.add_subplot(gs[4:, :], projection='3d')
+#ax.set_aspect('equal')
+ax.invert_yaxis()
+#ax.invert_xaxis()
+ax._axis3don = False
+ax.set_zticks(())
+ax.set_zticklabels(())
+#ax.set_ylabel('shifting', fontdict={'fontsize': contour_axislab_fontsize})
+#ax.set_xlabel('stable', fontdict={'fontsize': contour_axislab_fontsize})
+#ax.set_xticks([0,0.25,0.5,0.75,1])
+#ax.set_yticks([0,0.25,0.5,0.75,1])
+ax.set_ylim([1,0])
+ax.set_xlim(contour_lims)
+ax.set_zlim(contour_lims)
+ax.grid(False)
+ax.view_init(75, 90)
+
+# plot manual gridding and axes
+ax.plot([0,1,1,0,0], [0,0,1,1,0], [0,0,0,0,0], 'k', linewidth=0.5)
+for grid_val in [0.25, 0.5, 0.75]:
+    ax.plot([grid_val, grid_val], [0,1], [0,0], ':', color='gray',
+            linewidth=0.1, alpha=0.65)
+    ax.plot([0,1], [grid_val, grid_val], [0,0], ':', color='gray',
+            linewidth=0.1, alpha=0.65)
+
+
 for ax_i, x_pos in enumerate([0.5, 24.5, 49.5]):
-    ax = fig.add_subplot(gs[3:5, ax_i], projection='3d')
-    #ax.set_aspect('equal')
-    ax.invert_yaxis()
-    #ax.invert_xaxis()
-    ax._axis3don = False
-    ax.set_zticks(())
-    ax.set_zticklabels(())
-    #ax.set_ylabel('shifting', fontdict={'fontsize': contour_axislab_fontsize})
-    #ax.set_xlabel('stable', fontdict={'fontsize': contour_axislab_fontsize})
-    #ax.set_xticks([0,0.25,0.5,0.75,1])
-    #ax.set_yticks([0,0.25,0.5,0.75,1])
-    ax.set_ylim([1,0])
-    ax.set_xlim(contour_lims)
-    ax.set_zlim(contour_lims)
-    ax.grid(False)
-    ax.view_init(60, 90)
 
     # get fitness values, based on landscape positions
     fits = positions_and_fits[x_pos]
 
-    # plot manual gridding and axes
-    ax.plot([0,1,1,0,0], [0,0,1,1,0], [0,0,0,0,0], 'k', linewidth=0.5)
+    # plot before- and after-climate change fitness surfs
+    b4_surf = get_fit_surf(fits['b4'])
+    af_surf = get_fit_surf(fits['af'])
     ax.plot([fits['b4'][0]]*2, [fits['b4'][1]]*2, [0,1], 'k',
             linewidth=vert_connector_linewidth)
     ax.plot([fits['af'][0]]*2, [fits['af'][1]]*2, [0,1], 'k',
             linewidth=vert_connector_linewidth)
-    for grid_val in [0.25, 0.5, 0.75]:
-        ax.plot([grid_val, grid_val], [0,1], [0,0], ':', color='gray',
-                linewidth=0.1, alpha=0.65)
-        ax.plot([0,1], [grid_val, grid_val], [0,0], ':', color='gray',
-                linewidth=0.1, alpha=0.65)
-
-    # plot before- and after-climate change fitness surfs
-    b4_surf = get_fit_surf(fits['b4'])
-    af_surf = get_fit_surf(fits['af'])
     ax.plot_surface(*b4_surf, color=contcolors['b4'],
                     edgecolor=edgecolors['b4'],
                     alpha=contalphas['b4'],
@@ -211,71 +226,10 @@ for ax_i, x_pos in enumerate([0.5, 24.5, 49.5]):
                     edgecolor=edgecolors['af'],
                     alpha=contalphas['af'],
                     linewidth=0.05)
-fig.show()
 
-
-# PART III:
-# plot before-after comparison of fitness 'ridge' across real landscape
-ax = fig.add_subplot(gs[5:,:], projection='3d')
-ax._axis3don = False
-ax.invert_yaxis()
-#ax.invert_xaxis()
-#ax.set_aspect('equal')
-ax.view_init(80, 90)
-#ax.set_ylabel('shifting', fontdict={'fontsize': contour_axislab_fontsize})
-#ax.set_xlabel('stable', fontdict={'fontsize': contour_axislab_fontsize})
-ax.set_ylim([1,0])
-ax.set_xlim(contour_lims)
-ax.set_zlim(contour_lims)
-b4_ys = np.stack([b4]*25)
-b4_xs = np.linspace(b4-0.05, b4+0.05, 25)
-af_xs = np.linspace(af-0.05, af+0.05, 25)
-b4_fits = np.ones(af_xs.shape)*np.nan
-af_fits = np.ones(af_xs.shape)*np.nan
-for i in range(b4_fits.shape[0]):
-    for j in range(b4_fits.shape[1]):
-        b4_fit = get_fit((b4_xs[13,j], b4_ys[i, j]),
-                         (b4_xs[i,j], b4_ys[i,j]),
-                         σ=0.01)
-        af_fit = get_fit((af_xs[13,j], b4_ys[i, j]),
-                         (af_xs[i,j], b4_ys[i,j]),
-                         σ=0.01)
-        b4_fits[i,j] = b4_fit
-        af_fits[i,j] = af_fit
-b4_fits = (b4_fits - np.min(b4_fits))/(np.max(b4_fits)-np.min(b4_fits))
-af_fits = (af_fits - np.min(af_fits))/(np.max(af_fits)-np.min(af_fits))
-
-
-# plot manual axes and grid and before and after lines, below the surfaces
-# axes
-ax.plot([0,1,1,0,0], [0,0,1,1,0], [0,0,0,0,0], 'k', linewidth=0.5)
 # before and after lines
 ax.plot([0,1], [0,1], [0,0], edgecolors['b4'], linewidth=1)
 ax.plot([0.5,1], [0,1], [0,0], edgecolors['af'], linewidth=1)
-# vertical connectors
-ax.plot([0,0], [0,0], [0,1], 'k', linewidth=vert_connector_linewidth, alpha=0.5)
-ax.plot([0.5,0.5], [0.5,0.5], [0,1], 'k', linewidth=vert_connector_linewidth, alpha=0.5)
-ax.plot([1,1], [1,1], [0,1], 'k', linewidth=vert_connector_linewidth, alpha=0.5)
-ax.plot([0,0], [0,0], [0,1], 'k', linewidth=vert_connector_linewidth, alpha=0.5)
-ax.plot([0.5,0.5], [0,0], [0,1], 'k', linewidth=vert_connector_linewidth, alpha=0.5)
-ax.plot([0.75,0.75], [0.5,0.5], [0,1], 'k', linewidth=vert_connector_linewidth, alpha=0.5)
-# grid lines
-for grid_val in [0.25, 0.5, 0.75]:
-        ax.plot([grid_val, grid_val], [0,1], [0,0], color='gray',
-                linewidth=0.1, alpha=0.65)
-        ax.plot([0,1], [grid_val, grid_val], [0,0], color='gray',
-                linewidth=0.1, alpha=0.65)
-
-ax.plot_surface(b4_xs, b4_ys, b4_fits, color=contcolors['b4'],
-                edgecolor=edgecolors['b4'],
-                linewidth=0.05,
-                alpha=contalphas['b4'])
-ax.plot_surface(af_xs, b4_ys, af_fits, color=contcolors['af'],
-                edgecolor=edgecolors['af'],
-                linewidth=0.05,
-                 alpha=contalphas['af'])
-
-
 plt.subplots_adjust(left=subplots_adj_left,
                     bottom=subplots_adj_bottom,
                     right=subplots_adj_right,
@@ -283,6 +237,8 @@ plt.subplots_adjust(left=subplots_adj_left,
                     wspace=subplots_adj_wspace,
                     hspace=subplots_adj_hspace)
 
+fig.show()
 
-fig.savefig('ch2_conceptual_fig_raw.png',
-            dpi=dpi, orientation='portrait')
+if save_it:
+    fig.savefig('ch2_conceptual_fig_raw.png',
+                dpi=dpi, orientation='portrait')
