@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
+from matplotlib.patches import FancyArrowPatch
 from matplotlib.patches import Polygon as mplPolygon
 from collections import Counter as C
 from palettable.cartocolors.sequential import PinkYl_7
@@ -46,7 +47,7 @@ subplots_adj_bottom=0.01
 subplots_adj_right=0.99
 subplots_adj_top=0.99
 subplots_adj_wspace=0.01
-subplots_adj_hspace=0.15
+subplots_adj_hspace=0.01
 min_x=0
 max_x=1
 min_y=0
@@ -56,6 +57,21 @@ savefig=True
 x_buff=max_x/20
 orientation='landscape'
 savefig=True
+
+
+# some 3D arrow code stolen from:
+    #https://stackoverflow.com/questions/22867620/putting-arrowheads-on-vectors-in-matplotlibs-3d-plot
+class Arrow3D(FancyArrowPatch):
+
+    def __init__(self, xs, ys, zs, *args, **kwargs):
+        FancyArrowPatch.__init__(self, (0,0), (0,0), *args, **kwargs)
+        self._verts3d = xs, ys, zs
+
+    def draw(self, renderer):
+        xs3d, ys3d, zs3d = self._verts3d
+        xs, ys, zs = mplot3d.proj3d.proj_transform(xs3d, ys3d, zs3d, renderer.M)
+        self.set_positions((xs[0],ys[0]),(xs[1],ys[1]))
+        FancyArrowPatch.draw(self, renderer)
 
 
 # functional form of fitness kernel (assumed isotropic in 2d space)
@@ -113,7 +129,8 @@ def delete_ticks(ax):
 fig = plt.figure(dpi=dpi,
                  figsize=(fig_width, fig_height))
 
-gs = fig.add_gridspec(nrows=8, ncols=5)
+gs = fig.add_gridspec(nrows=9, ncols=5,
+                      height_ratios=[1,1,1,1,1.5,1,1,1,1])
 
 # get the horizontal values used in the non-shifting landscape layer
 # and in the before- and after-shifting shifting layer,
@@ -179,7 +196,7 @@ positions_and_fits = {0.5:{'b4':(1,1),
                            },
                      }
 # plot before-after fitness landscapes at ends and middle of landscape
-ax = fig.add_subplot(gs[4:, :], projection='3d')
+ax = fig.add_subplot(gs[5:, :], projection='3d')
 #ax.set_aspect('equal')
 ax.invert_yaxis()
 #ax.invert_xaxis()
@@ -245,16 +262,24 @@ for ax_i, x_pos in enumerate([0.5, 24.5, 49.5]):
                     edgecolor=edgecolors['af'],
                     alpha=contalphas['af'],
                     linewidth=0.05)
+    # plot change arrows
+    #if ax_i > 0:
+    #    arw = Arrow3D([np.mean(b4_surf[0]), np.mean(af_surf[0])],
+    #                [np.mean(b4_surf[1]), np.mean(af_surf[1])],
+    #                [1,1],
+    #                mutation_scale=20, lw=3, arrowstyle="-|>", color="k")
+    #    ax.add_artist(arw)
 
 # before and after lines
 ax.plot([0,1], [0,1], [0,0], '#555555', linewidth=1)
 ax.plot([0.5,1], [0,1], [0,0], edgecolors['af'], linewidth=1)
-plt.subplots_adjust(left=subplots_adj_left,
+fig.subplots_adjust(left=subplots_adj_left,
                     bottom=subplots_adj_bottom,
                     right=subplots_adj_right,
                     top=subplots_adj_top,
                     wspace=subplots_adj_wspace,
                     hspace=subplots_adj_hspace)
+
 
 fig.show()
 
