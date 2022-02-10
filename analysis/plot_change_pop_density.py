@@ -196,7 +196,7 @@ overall_max_dens_per_run = np.max(all_max_dens_per_run)
 dens_change_dict = {'linkage': [], 'genicity': [], 'dens_change': []}
 # produce plots for all scenarios
 for linkage in ['independent', 'weak', 'strong']:
-    for genicity in [2, 4, 10, 20, 50, 100]:
+    for genicity in [2, 4, 8, 10, 20, 40, 50, 100, 200]:
         print('\n\n======================\n\n')
         print('\tLINKAGE: %s' % linkage)
         print('\tGENICITY: %i' % genicity)

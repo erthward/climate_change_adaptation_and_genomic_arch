@@ -47,7 +47,7 @@ files = [os.path.join(datadir, f) for f in os.listdir(datadir) if re.search(
 # way to hard-code the vmax values for the scenarios, given that it would
 # be kind of a pain to write code to do just this
 linkages = ['independent', 'weak', 'strong']
-genicities =  [4, 20, 100]
+genicities =  [8, 40, 200]
 
 # just read in and concatenate all files at once, rather than writing a loop,
 # since even for 1000 its, each file should only be 100K and there should be
