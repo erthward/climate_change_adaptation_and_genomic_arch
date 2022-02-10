@@ -63,5 +63,5 @@ for f in `ls /global/scratch/users/drewhart/ch2/output/analysis/phenotypic_shift
 for f in `ls /global/scratch/users/drewhart/ch2/output/analysis/ch2_*_over_time.jpg`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
 for f in `ls /global/scratch/users/drewhart/ch2/output/analysis/boxplot*.jpg`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
 rclone copy /global/scratch/users/drewhart/ch2/output/analysis/ch2_gene_flow_dir_analysis.png bdrive:ch2_outputs/analysis/
-for f in `ls /global/scratch/users/drewhart/ch2/output/output/fig_time_*png`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
-for f in `ls /global/scratch/users/drewhart/ch2/output/output/fig_hist_*png`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
+#for f in `ls /global/scratch/users/drewhart/ch2/output/output/fig_time_*png`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
+#for f in `ls /global/scratch/users/drewhart/ch2/output/output/fig_hist_*png`; do rclone copy $f bdrive:ch2_outputs/analysis/; done
