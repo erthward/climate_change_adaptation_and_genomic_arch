@@ -56,7 +56,7 @@ def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
                            overall_max_dens_per_run=None):
 
     assert linkage in ['independent', 'weak', 'strong']
-    assert genicity in [2, 4, 10, 20, 50, 100]
+    assert genicity in [2, 4, 8, 10, 20, 40, 50, 100, 200]
 
     # get candidate filenames for change-start-time-step files
     dirname_patt = 'mod-non-null_L%s_G%i_its0_' % (linkage, genicity)
@@ -177,7 +177,7 @@ def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
 # first get max densities, to normalize plots against
 all_max_dens_per_run = []
 for linkage in ['independent', 'weak', 'strong']:
-    for genicity in [2, 4, 10, 20, 50, 100]:
+    for genicity in [2, 4, 8, 10, 20, 40, 50, 100, 200]:
         print('\n\n======================\n\n')
         print('\tLINKAGE: %s' % linkage)
         print('\tGENICITY: %i' % genicity)

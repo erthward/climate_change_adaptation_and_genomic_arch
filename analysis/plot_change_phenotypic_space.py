@@ -27,8 +27,11 @@ n_ticklabels = 5
 linewidth = 1
 linealpha = 0.8
 marker_sizes = {4: 500,
+                8: 500,
                 20: 40,
+                40: 40,
                 100: 3,
+                200: 3,
                }
 subplots_adj_left=0.08
 subplots_adj_bottom=0.13
@@ -97,7 +100,7 @@ def get_min_pw_diff(vals):
 def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
 
     assert linkage in ['independent', 'weak', 'strong']
-    assert genicity in [2, 4, 10, 20, 50, 100]
+    assert genicity in [2, 4, 8, 10, 20, 40, 50, 100, 200]
 
     # get candidate filenames for change-start-time-step files
     dirname_patt = 'mod-%s_L%s_G%i_its0_' % (nullness, linkage, genicity)
