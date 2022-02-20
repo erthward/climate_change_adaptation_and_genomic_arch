@@ -34,20 +34,20 @@ contour_ticklab_fontsize = 7
 annot_fontsize = 14
 cbar_fontsize = 14
 fig_width = 5
-fig_height = 5
+fig_height = 4
 dpi = 400
 n_ticklabels = 5
 contour_alpha = 0.5
 contour_linewidth = 0.1
 contour_linecolor = 'gray'
 contour_lims = [0,1]
-vert_connector_linewidth = 0.25
+vert_connector_linewidth = 0.5
 subplots_adj_left=0.01
 subplots_adj_bottom=0.01
 subplots_adj_right=0.99
 subplots_adj_top=0.99
 subplots_adj_wspace=0.01
-subplots_adj_hspace=0.01
+subplots_adj_hspace=0.2
 min_x=0
 max_x=1
 min_y=0
@@ -139,11 +139,11 @@ stable = np.linspace(1, 0, 52)
 b4 = np.linspace(1, 0, 52)
 af = np.linspace(1, 0.5, 52)
 # stack trt_1_b4, trt_2_b4, trt_1_af, trt_2_af
-time_diff_landscape = np.vstack([b4 for _ in range(13)] +
-                                [af for _ in range(13)] +
-                                [b4 for _ in range(26)])
+landscape_b4 = np.vstack([b4 for _ in range(26)])
+landscape_af = np.vstack([b4 for _ in range(13)] +
+                         [af for _ in range(13)])
 
-# colors for before- and after-climate change surfaces
+# colors for before- and after-climate change fitness surfaces
 highlight_col = '#ffe436'
 contcolors = {'b4': 'gray',
               'af': 'white',
@@ -157,31 +157,25 @@ edgecolors = {'b4': 'gray',
 
 # PART I:
 # plot the before/after-split landscape at top
-ax = fig.add_subplot(gs[:4, 1:4])
-im = ax.imshow(time_diff_landscape, cmap='gray')
-time_diff_landscape[:13, :] = np.nan
-time_diff_landscape[26:39, :] = np.nan
-im = ax.imshow(time_diff_landscape, cmap='bwr')
-#ax.plot([0,52], [26,26], '--k', linewidth=2)
-ax.plot([0,52], [12.5,12.5], '--k', linewidth=1)
-ax.plot([0,52], [38.5,38.5], '--k', linewidth=1)
-ax.plot([0.25,2,2,0.25,0.25], [26.25,26.25,49.75,49.75,26.25], '-',
-        color='#555555', linewidth=1)
-ax.plot([24,26,26,24,24], [26.25,26.25,49.75,49.75,26.25], '-',
-        color='#555555', linewidth=1)
-ax.plot([48,49.75,49.75,48,48], [26.25,26.25,49.75,49.75,26.25], '-',
-        color='#555555', linewidth=1)
-ax.plot([0.25,2,2,0.25,0.25], [0.25,0.25,24.75,24.75,0.25], '-',
-        color=highlight_col, linewidth=1)
-ax.plot([24,26,26,24,24], [0.25,0.25,24.75,24.75,0.25], '-',
-        color=highlight_col, linewidth=1)
-ax.plot([48,49.75,49.75,48,48], [0.25,0.25,24.75,24.75,0.25], '-',
-        color=highlight_col, linewidth=1)
+colors = ['#555555', highlight_col]
+for i, landscape in enumerate([landscape_b4, landscape_af]):
+    ax = fig.add_subplot(gs[i*2:(i*2)+2, 1:4])
+    im = ax.imshow(landscape, cmap='bwr')
+    landscape[13:, :] = np.nan
+    im = ax.imshow(landscape, cmap='gray')
+    #ax.plot([0,26], [26,26], '--k', linewidth=2)
+    # separate the two landscape layers with a dashed line
+    ax.plot([0,52], [12.5,12.5], '--k', linewidth=1)
+    ax.plot([0.25,2,2,0.25,0.25], [0.25,0.25,24.75,24.75,0.25], '-',
+            color=colors[i], linewidth=1)
+    ax.plot([24,25.75,25.75,24,24], [0.25,0.25,24.75,24.75,0.25], '-',
+            color=colors[i], linewidth=1)
+    ax.plot([49.5,51,51,49.5,49.5], [0.25,0.25,24.75,24.75,0.25], '-',
+            color=colors[i], linewidth=1)
 
-ax.set_xlim([-0.5, 50.5])
-ax.set_ylim([-0.5, 50.5])
-#plt.colorbar(im)
-delete_ticks(ax)
+    ax.set_xlim([-0.5, 51.75])
+    ax.set_ylim([-0.5, 25.5])
+    delete_ticks(ax)
 
 
 # PART II:
@@ -211,7 +205,7 @@ ax.set_ylim([1,0])
 ax.set_xlim(contour_lims)
 ax.set_zlim(contour_lims)
 ax.grid(False)
-ax.view_init(55, 90)
+ax.view_init(45, 90)
 
 # add manual colormaps along axes
 manual_cmap_arr_xs = np.linspace(0, 1+(15*(1/200)), 210)
@@ -219,18 +213,22 @@ manual_cmap_arr_ys = np.linspace(0-(20*(1/200)), 1, 210)
 manual_cmap_arr_X, manual_cmap_arr_Y = np.meshgrid(manual_cmap_arr_xs,
                                                    manual_cmap_arr_ys)
 manual_cmap_arr = np.ones((210,210))*np.nan
-manual_cmap_arr[0:10, :200] = np.linspace(0,1,200)
+manual_cmap_arr[15:25, :200] = np.linspace(0,1,200)
+# make y-axis manual colormap
 for j in range(200, 210):
     manual_cmap_arr[10:, j] = np.linspace(0,1,200)
 cmap_arr_img = np.ones((210,210,4))*np.nan
 
-for i in range(0, 10):
+# make x-axis manual colormap
+for i in range(15, 25):
     for j in range(0, 194):
         cmap_arr_img[i,j,:] = plt.cm.bwr(manual_cmap_arr[i,j])
+# make 
 for i in range(21, 210):
     for j in range(200, 210):
         cmap_arr_img[i,j,:] = plt.cm.gray(manual_cmap_arr[i,j])
-ax.plot_surface(manual_cmap_arr_X, manual_cmap_arr_Y, np.zeros((210, 210)),
+ax.plot_surface(manual_cmap_arr_X, manual_cmap_arr_Y,
+                np.zeros((210, 210))-0.1,
                 facecolors=cmap_arr_img, shade=False)
 
 # plot manual gridding and axes
@@ -250,9 +248,9 @@ for ax_i, x_pos in enumerate([0.5, 24.5, 49.5]):
     # plot before- and after-climate change fitness surfs
     b4_surf = get_fit_surf(fits['b4'])
     af_surf = get_fit_surf(fits['af'])
-    ax.plot([fits['b4'][0]]*2, [fits['b4'][1]]*2, [0,1], 'k',
+    ax.plot([fits['b4'][0]]*2, [fits['b4'][1]]*2, [0,1], '--k',
             linewidth=vert_connector_linewidth)
-    ax.plot([fits['af'][0]]*2, [fits['af'][1]]*2, [0,1], 'k',
+    ax.plot([fits['af'][0]]*2, [fits['af'][1]]*2, [0,1], '--k',
             linewidth=vert_connector_linewidth)
     ax.plot_surface(*b4_surf, color=contcolors['b4'],
                     edgecolor=edgecolors['b4'],
