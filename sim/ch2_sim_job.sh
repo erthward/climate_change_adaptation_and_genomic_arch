@@ -11,6 +11,9 @@
 # Wall clock limit:
 #SBATCH --time=72:00:00
 #
+# Set amount of memory per node (since OOM errors occurred)
+#SBATCH --mem-per-cpu=2500
+#
 # Email options
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=drew.hart@berkeley.edu
