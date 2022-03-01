@@ -16,7 +16,7 @@ else:
 dir_patt = 'GNX_mod-%s_L%s_G%i_its0_randID\d+PID-%s'
 timestep_patt = '(?<=t-)\d+(?=_spp)'
 summary_csv_patt = 'output_PID-%s\w{0,8}\.csv'
-pid_patt = '(?<=PID-)\d{6}'
+pid_patt = '(?<=PID-)\d{4,6}'
 
 # ouput directory
 if os.getcwd().split('/')[1] == 'home':
