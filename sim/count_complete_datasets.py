@@ -16,7 +16,7 @@ else:
 dir_patt = 'GNX_mod-%s_L%s_G%i_its0_randID\d+PID-%s'
 timestep_patt = '(?<=t-)\d+(?=_spp)'
 summary_csv_patt = 'output_PID-%s\w{0,8}\.csv'
-pid_patt = '(?<=PID-)\d{4,6}'
+pid_patt = '(?<=PID-)\d+'
 
 # ouput directory
 if os.getcwd().split('/')[1] == 'home':
@@ -55,7 +55,7 @@ for pid in all_pids_in_dir:
                                                                     f)]
                 if run_asserts:
                     assert len(dirs)==1, ('Did not find exactly 1 dir for '
-                                          '%s, %s linkage, % genes/trait.\n\n'
+                                          '%s, %s linkage, %i genes/trait.\n\n'
                                           'Instead, found:\n%s\n\n') % (nullness,
                                                                         linkage,
                                                                         genicity,
