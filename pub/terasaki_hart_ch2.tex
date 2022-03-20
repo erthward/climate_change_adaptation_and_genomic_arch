@@ -94,7 +94,7 @@ is a core determinant of
 whether and how that trait
 becomes locally adapted along a cline \cite{yeaman_review}. 
 
-One aspect of genetic architecture is the number of loci 
+One component of genetic architecture is the number of loci 
 underlying the trait (henceforth, 'polygenicity'). 
 Large-effect genes are certainly documented \cite{martin,rees},
 and low-polygenicity systems have a stronger foundation
@@ -103,7 +103,7 @@ but mounting empirical evidence points to the high polygenicity
 of many complex traits\cite{boyle,rockman,savolainen,sella,barghi_polygenic}.
 Thus, the quantitative traits often responsible for adaptation to climate could reasonably be 
 underlain by hundreds or even thousands of loci of non-negligible effect.
-Another aspect of genetic architecture, the degree of linkage between underlying loci
+A second component of genetic architecture, the degree of linkage between underlying loci
 (i.e., the reduction of their rate of recombination),
 increases the likelihood that adaptive alleles cluster together,
 essentially forming larger-effect-size alleles that are more 
@@ -112,11 +112,21 @@ to swamping by gene flow \cite{yeaman_whitlock}.
 For this reason, strong linkage (low recombination)
 is expected to facilitate
 adaptation with gene flow in heterogeneous environments \cite{tigano}.
+A third component of genetic architecture is
+genetic redundancy \cite{barghi_polygenic,laruson},
+which describes the number of different genotypes
+that can produce identical phenotypes \cite{yeaman_review,laruson,barghi_polygenic}.
+Research, both empirical \cite{barghi_redundancy,manceau} and theoretical \cite{yeaman_amnat},
+has found that redundancy can facilitate
+adaptation to heterogeneous environments, in part by
+allowing a stable phenotypic cline to exist as a dynamic equilibrium,
+underlain by transient genetic architectures, the result
+of continuous and concerted shifts in allele frequencies.
 
-Just as both polygenicity and linkage
+Given that polygenicity, linkage, and redundancy
 are key determinants of the nature of adaptation of a 
-on environmental gradients \cite{barton,yeaman_whitlock,yeaman_review,lecorre},
-they are also certain to influence evolutionary
+on static environmental gradients \cite{barton,yeaman_whitlock,yeaman_review,lecorre},
+they are also likely to influence evolutionary
 outcomes when environmental gradients are perturbed.
 This has been studied to some extent,
 but almost exclusively using univariate
@@ -166,8 +176,8 @@ whether adaptive capacity is adequate for adaptation to happen at all.
 
 \begin{figure}%[tbhp]
 \centering
-\includegraphics[width=.8\linewidth]{conceptual_fig/ch2_conceptual_fig}
-\caption{Conceptual model of adaptation climate change. Above: Stacked, horizontal cross-sections of our square simulation landscape, shown for both the shifting environmental gradient (blue-red color ramp) and the stable gradient (white-black color ramp), and both before climate change ($t_{1}$, above thick black line) and after ($t_{2}$). Below: Bivariate fitness landscape of the traits adapted to the shifting and stable gradients (on color-matched axes). Three example positions along the bivariate gradient ($x_{1}$, $x_{2}$, $x_{3}$) are delineated by thin vertical boxes on the physical landscape, both before climate change (gray) and after (yellow), and their corresponding fitness peaks are shown as color-matched kernels located along color-matched lines of the fitness optima that exist on the physical landscape before ($t_{1}$) and after ($t_{2}$) climate change. Local fitness peak shifts are shown as labeled arrows ($x_{2}$, $x_{3}$); the environment the far left of the physical landscape does not change, so $x_{1}$'s fitness are overlapping and have no shift. does Note that fitness peaks are stylized and truncated for ease of depiction; fitness in our models decreases linearly with an individual's distance from its phenotypic optimum, not as a Gaussian function.}
+\includegraphics[width=.8\linewidth]{conceptual_fig/ch2_conceptual_fig_crop}
+\caption{Conceptual model of adaptation climate change. Above: Stacked, horizontal cross-sections of our square simulation landscape, shown for both the shifting environmental gradient ($e_{1}$, blue-red color ramp) and the stable gradient ($e_{2}$, white-black color ramp), and both before climate change ($t_{1}$, above thick black line) and after ($t_{2}$). Below: Bivariate fitness landscape of the traits adapted to the shifting and stable gradients (on axes $e_{1}$ and $e_{2}$, respectively). Three example positions along the bivariate gradient ($x_{1}$, $x_{2}$, $x_{3}$) are delineated by thin vertical boxes on the physical landscape, both before climate change (gray) and after (yellow), and their corresponding fitness peaks are shown as color-matched kernels located along color-matched lines of the fitness optima that exist on the physical landscape before ($t_{1}$) and after ($t_{2}$) climate change. Shifts in local fitness peaks are shown as labeled arrows ($x_{2}$, $x_{3}$); the environment the far left of the physical landscape does not change, so $x_{1}$'s fitness are overlapping and have no shift. does Note that fitness peaks are stylized and truncated for ease of depiction; fitness in our models decreases linearly with an individual's distance from its phenotypic optimum, not as a Gaussian function.}
 \label{fig:conceptual}
 \end{figure}
 
@@ -187,27 +197,32 @@ constant while shifting the other gradient horizontally, such that
 a decoupling environment pushes local fitness peaks toward novel regions 
 of bivariate trait space (see \ref{fig:conceptual}.
 Individuals' phenotypes are determined by the additive effects of numerous loci ---
-a reasonable approximation of many traits of interest in real populations \cite{sella} ---
-and traits have moderate genetic redundancy 
-(i.e., mid-range phenotypic values
-can be generated by numerous distinct genotypes, while extreme phenotypic
-values can be produced by single, extreme genotypes) and have no pleiotropy.
+a reasonable approximation of many traits of interest in real populations \cite{sella}.
  (Our null models are run likewise, but without environmental 
-change.) We run many pairs of main and null simulations for each of nine scenarios, 
+change.) We run many pairs of main and null simulations for each of eighteen scenarios, 
 resulting from the full factorial crossing of three levels of linkage (no linkage, weak 
-linkage, strong linkage) and three values for the number of genes underlying each 
-trait (4, 20, 100). We test the following hypotheses
+linkage, strong linkage), three values for the number of genes underlying each 
+trait (4, 20, 100), and two values of redundancy
+(moderate, in which mid-range phenotypic values
+can be generated by numerous distinct genotypes while extreme phenotypic
+values can be produced by single, extreme genotypes; and high,
+in which all phenotypes can result from numerous genotypes). 
+We test the following hypotheses
 \begin{enumerate}
     \item Stronger linkage and higher polygenicity reduce adaptive capacity under sudden climate change, because both take longer to generate recombinant haplotypes that push trait values further from their pre-change optima.
     \item Stronger linkage and higher polygenicity thus result in greater reductions in population size and mean fitness during climate change, and greater maladaptation.
     \item Adaptation to gene flow involves more up-gradient gene flow in climate change scenarios than in all paired null scenarios, but up-gradient gene flow is less prominent in high-polygenicity scenarios where \textit{in situ} restructuring of allelic covariance among many small-effect alleles can lead to subtle phenotypic shifts that are not maladaptive with respect to the stable gradient.
+    \item High redundancy facilitates adaptation, resulting in smaller reductions in population size and mean fitness than in moderate-redundancy scenarios.
+    \item Greater redundancy increases the ability of populations to adapt \textit{in situ} by shifting allelic covariance, resulting in less pronouned up-gradient gene flow than in moderate-redundancy scenarios.
 \end{enumerate}
 
 
 Our analysis provides important theoretical developments
 in a neglected area of research,
-revealing dynamics that would not be evident from the application
-of prior univariate clinal models under environmental change.
+confirming that some principles derived from models of static environments
+also apply under environmental change, while simultaneously
+revealing dynamics that would not be evident on the basis of
+prior static-environment models.
 It also points toward an area 
 of important applied research because, to the extent that landscape genetics can cast 
 light on the processes underlying maladaptation, adaptive capacity, and adaptive gene
@@ -429,11 +444,10 @@ which are areas ripe for future research, are:
     \begin{enumerate}
         \item \textit{population size}, a key determinant of the relative strengths of drift and natural selection \cite{murray} and of the wait time to emergence of recombinant haploytpes \cite{christiansen}, among other important dynamics;
         \item \textit{migration} (as either a fixed distance or a distribution \cite{paulose}), a key factor embedded in the rudimentary migration-selection dynamics that lie at the heart of models like ours \cite{wright,haldane,barton}, and the fundamental process motivating the practice of AGF;
-        \item \textit{genetic redundancy} \cite{barghi_redundancy,barghi_polygenic,laruson} , both of which could be varied in order to investigate the evolution of complex genetic architectures and convergent adaptation, and their effects on adaptive capacity to environmental change.
+        \itm \textit{distributed allelic effect sizes} \cite{orr}, including whether clustered genetic architectures tend to emerge as a basis of local adaptation \cite{yeaman_whitlock} and, if so, what influence that has on the nature and likelihood of adaptation under rapid environmental change.
     \end{enumerate}
 A variety of other facets of spatiotemporal evolution could also be explored 
-through a similar modeling framework, including fixed versus distributed allelic 
-effect sizes \cite{orr} and genomic positions; plasticity \cite{chevin} and 
+through a similar modeling framework, including and genomic positions; plasticity \cite{chevin} and 
 heritable epigenetic variation; pleiotropy \cite{thompson}; more complex spatial 
 arrangements \cite{benes}; and mutation (although the relevance of \textit{de 
 novo} mutation to climate change adaptation in many of the relatively long-lived 
@@ -489,10 +503,14 @@ We then wrote a custom script in Python that reads that template \texttt{geonomi
 parameters file, 2.) edits any parameters that vary 
 across our scenarios, 3.) instantiates a model, 4.) runs a fixed number of iterations 
 of that model, and 5.) outputs custom data of interest. The parameters of interest, 
-and the values they were assigned, were: the number of loci underlying each trait 
-(parameter \texttt{n\_loci}: low = 5, moderate = 20, high = 100), and the linkage between 
+and the values they were assigned, are: the number of loci underlying each trait 
+(parameter \texttt{n\_loci}: low = 5, moderate = 20, high = 100), the linkage between 
 neighboring loci (i.e., the homogeneous recombination rate parameter, parameter \texttt{r}: unlinked = 
-0.5, weak linkage = 0.05, strong linkage = 0.005).
+0.5, weak linkage = 0.05, strong linkage = 0.005), and the amount of genetic redundancy
+(the \texttt{n\_loci} values specified above provide moderate redundancy that drops
+to a single genotype underlying each of the phenotypes matching extreme environmental
+values of 0 and 1, whereas doubling those values provides significant redundancy across
+all phenotypes 0 to 1; see Figure SXXXX).
 (We did not include neutral loci in the simulations because genetic
 hitchhiking would prevent them from providing unique information
 in all but the unliked scenarios.)
@@ -644,7 +662,7 @@ control.
 
 \showmatmethods{} % Display the Materials and Methods section
 
-\acknow{We thank A. Bishop, T. Dawson,  J. Frederick, N. Graham, M. Kelly, M. McElroy, E. Westeen, G. Wogan, and M. Yuan for feedback and guidance on various iterations of the simulations presented herein. We thank Berkeley Research Computing for providing access to the Savio computing cluster. We thank D. Ehrenfeld, N. Fefferman, M. Fitzpatrick, and L. Plough for cultivating an interest in conservation genetics. Lastly, we thank M. Terasaki Hart, C. Nemec-Hart, G. Hart, J. Hart, and M. Tylka for supporting and encouraging a lifetime of curiosity about nature, and C. S. aTunde Adjuah, B. Evans, R. Pérez Joglar, Y. Y. Ma, and J. Redman for the pleasant solitude. This work was supported by a Berkeley Fellowship (to D.E.T.H.) and National Science Foundation grant DEB1845682 (to I.J.W.).}
+\acknow{We thank A. Bishop, T. Dawson,  J. Frederick, N. Graham, M. Kelly, M. McElroy, E. Westeen, G. Wogan, and M. Yuan for feedback and guidance on various iterations of the simulations presented herein. We thank Berkeley Research Computing for providing access to the Savio computing cluster. We thank D. Ehrenfeld, N. Fefferman, M. Fitzpatrick, and L. Plough for cultivating an interest in conservation genetics. Lastly, we thank M. Terasaki Hart, C. Nemec-Hart, G. Hart, J. Hart, and M. Tylka for supporting and encouraging a lifetime of curiosity about nature, and C. S. aTunde Adjuah, B. Evans, R. Pérez Joglar, Y. Y. Ma, and J. Redman for the pleasant solitude. This work was supported by a Berkeley Fellowship (to D.E.T.H.) and by National Science Foundation grant DEB1845682 (to I.J.W.).}
 
 \showacknow{} % Display the acknowledgments section
 
