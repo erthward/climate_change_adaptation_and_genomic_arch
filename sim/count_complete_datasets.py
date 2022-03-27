@@ -30,7 +30,8 @@ else:
 cts = xr.DataArray(np.zeros((2, 3, 3)),
                    {'nullness': ['null', 'non-null'],
                    'linkage': ['independent', 'weak', 'strong'],
-                    'genicity': [4, 20, 100]
+                    #'genicity': [4, 20, 100]
+                    'genicity': [8, 40, 200]
                    })
 
 # store all the distinct timesteps for which data has been generated
