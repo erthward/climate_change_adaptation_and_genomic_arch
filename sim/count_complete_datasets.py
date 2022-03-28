@@ -12,6 +12,14 @@ if run_asserts.lower() == 't':
 else:
     run_asserts = False
 
+# set genicities based on redundancy
+redundant = sys.argv[2]
+if redundant.lower() == 't':
+    genicities = [8, 40, 200]
+else:
+    genicities = [4, 20, 100]
+
+
 # regex patts
 dir_patt = 'GNX_mod-%s_L%s_G%i_its0_randID\d+PID-%s'
 timestep_patt = '(?<=t-)\d+(?=_spp)'
@@ -30,8 +38,7 @@ else:
 cts = xr.DataArray(np.zeros((2, 3, 3)),
                    {'nullness': ['null', 'non-null'],
                    'linkage': ['independent', 'weak', 'strong'],
-                    #'genicity': [4, 20, 100]
-                    'genicity': [8, 40, 200]
+                    'genicity': genicities,
                    })
 
 # store all the distinct timesteps for which data has been generated

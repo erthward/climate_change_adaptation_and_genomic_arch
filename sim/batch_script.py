@@ -26,8 +26,8 @@ import os
 # set number of iterations for each sim
 n_its = 1
 # set the different numbers of loci to use
-#genicities = [4, 20, 100]
-genicities = [8, 40, 200]
+genicities = [4, 20, 100]
+#genicities = [8, 40, 200]
 # factor to multiply effect size by to implement genetic redundancy
 alpha_factor = 2
 # set the different linkage levels to use
