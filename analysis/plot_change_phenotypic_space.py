@@ -15,11 +15,9 @@ import os
 
 # plot params
 suptitle_fontsize = 50
-title_fontsize = 40
-axislab_fontsize = 20
-ticklab_fontsize = 14
-annot_fontsize = 14
-cbar_fontsize = 14
+title_fontsize = 36
+axislab_fontsize = 30
+ticklab_fontsize = 18
 fig_width = 10.5
 fig_height = 5.6
 dpi = 400
@@ -301,7 +299,7 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
         ax.tick_params(axis=u'both', which=u'both',length=0) # make ticks len==0
 
     # adjust colorbar label fontsize
-    fig.get_axes()[-1].tick_params(labelsize=cbar_fontsize)
+    fig.get_axes()[-1].tick_params(labelsize=ticklab_fontsize)
 
     # adjust suplot spacing
     plt.subplots_adjust(left=subplots_adj_left,

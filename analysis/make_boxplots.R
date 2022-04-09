@@ -7,8 +7,15 @@ library(latex2exp)
 library(ggsignif)
 
 
-# TODO
-# possible to add significance-testing stars above? that would be a lot of unnecessary pairwise comparisons though...
+
+########################
+# PLOT FORMATTING PARAMS
+########################
+
+legend.text.size = 17
+legend.title.size = 25
+axis.label.size = 25
+tick.label.size = 17
 
 
 ######################
@@ -94,7 +101,7 @@ ggplot.delta_Nt = ggplot() +
 ggplot.delta_Nt
 
 
-# boxplot instead
+# pop size boxplots
 theme_set(theme_linedraw(base_size=20))
 jpeg(paste0(analysis.dir, 'boxplot_delta_Nt.jpg'), width=5000, height=2500, res=300)
 boxnull = ggplot(df.null) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
@@ -103,7 +110,11 @@ boxnull = ggplot(df.null) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.li
                       labels=c('strong', 'weak', 'independent'),
                       name='linkage') +
     scale_y_continuous(limits = c(-750, 250)) +
-    labs(y=TeX('$\\Delta$ population size'), x='number of loci per trait')
+    labs(y=TeX('$\\Delta$ population size'), x='number of loci per trait') +
+    theme(legend.text=element_text(size=legend.text.size),
+          legend.title=element_text(size=legend.title.size),
+          axis.title=element_text(size=axis.label.size),
+          axis.text=element_text(size=tick.label.size))
 
 boxnonull = ggplot(df.nonull) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
     geom_hline(yintercept=0) +
@@ -111,11 +122,15 @@ boxnonull = ggplot(df.nonull) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=nu
                       labels=c('strong', 'weak', 'independent'),
                       name='linkage') +
     scale_y_continuous(limits = c(-750, 250)) +
-    labs(y=TeX('$\\Delta$ population size'), x='number of loci per trait')
+    labs(y=TeX('$\\Delta$ population size'), x='number of loci per trait') +
+    theme(legend.text=element_text(size=legend.text.size),
+          legend.title=element_text(size=legend.title.size),
+          axis.title=element_text(size=axis.label.size),
+          axis.text=element_text(size=tick.label.size))
 cowplot::plot_grid(boxnull, boxnonull) 
 dev.off()
 
-# boxplot instead
+# mean fitness boxplots
 jpeg(paste0(analysis.dir, 'boxplot_delta_fit.jpg'), width=5000, height=2500, res=300)
 boxnull = ggplot(df.null) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
     geom_hline(yintercept=0) +
@@ -123,13 +138,21 @@ boxnull = ggplot(df.null) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.l
                       labels=c('strong', 'weak', 'independent'),
                       name='linkage') +
     scale_y_continuous(limits = c(-0.03, 0.015)) +
-    labs(y=TeX('$\\Delta$ fitness'), x='number of loci per trait')
+    labs(y=TeX('$\\Delta$ fitness'), x='number of loci per trait') +
+    theme(legend.text=element_text(size=legend.text.size),
+          legend.title=element_text(size=legend.title.size),
+          axis.title=element_text(size=axis.label.size),
+          axis.text=element_text(size=tick.label.size))
 boxnonull = ggplot(df.nonull) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
     geom_hline(yintercept=0) +
     scale_fill_manual(values = plot_cols[3:1],
                       labels=c('strong', 'weak', 'independent'),
                       name='linkage') +
     scale_y_continuous(limits = c(-0.03, 0.015)) +
-    labs(y=TeX('$\\Delta$ fitness'), x='number of loci per trait')
+    labs(y=TeX('$\\Delta$ fitness'), x='number of loci per trait') +
+    theme(legend.text=element_text(size=legend.text.size),
+          legend.title=element_text(size=legend.title.size),
+          axis.title=element_text(size=axis.label.size),
+          axis.text=element_text(size=tick.label.size))
 cowplot::plot_grid(boxnull, boxnonull)
 dev.off()

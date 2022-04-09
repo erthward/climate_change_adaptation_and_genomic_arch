@@ -13,9 +13,10 @@ to the environmental change event until the end of the sim
 """
 
 # plot params
-title_fontsize = 17
-axislab_fontsize = 13
-ticklab_fontsize = 6
+title_fontsize = 18
+y_axislab_fontsize = 18
+x_axislab_fontsize = 15
+ticklab_fontsize = 12
 annot_fontsize = 8
 cbar_fontsize = 9
 fig_width = 9
@@ -132,10 +133,10 @@ def plot_ts_for_all_scenarios(df, var, show_plots=False):
                                  fontdict={'fontsize': title_fontsize})
                 if linkage_i == 2:
                     ax.set_xlabel('time step',
-                                  fontdict={'fontsize': axislab_fontsize})
+                                  fontdict={'fontsize': x_axislab_fontsize})
                 if genicity_j == 0:
                     ax.set_ylabel(linkage,
-                                  fontdict={'fontsize': axislab_fontsize})
+                                  fontdict={'fontsize': y_axislab_fontsize})
                 ax.tick_params(labelsize = ticklab_fontsize)
                 if linkage_i < 2:
                     ax.set_xticks([])

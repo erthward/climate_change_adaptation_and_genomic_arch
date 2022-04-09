@@ -11,14 +11,30 @@ from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import os
 
 
+
+# NOTE:
+    # I use N,E,W,S to talk about directions in this script, for var-naming
+    # purposes, but the directions simulated in the study do not truly
+    # correspond to N,E,W,S (especially in the sense that climate change
+    # simulation is meant to depict climate shifting upslope locally,
+    # not northward regionally!)
+
+
+# TODO:
+
+    # write linear model to look at multivariate response of dists to the
+    # scenarios?
+
+    # consider if/how to depict uncertainty envelopes on the dists?
+
+
+
 # plot params
-col_label_fontsize = 15
-row_label_fontsize = 13
-cbar_fontsize = 9
+col_label_fontsize = 10
+row_label_fontsize = 10
 fig_width = 13.8
 fig_height = 4.6
 dpi = 400
-n_ticklabels = 5
 
 # data directory
 if os.getcwd().split('/')[1] == 'home':
@@ -29,13 +45,6 @@ else:
                'and_genomic_arch/analysis/analysisdir.txt'), 'r') as f:
         analysis_dir = f.read().strip()
     #analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
-
-# TODO:
-
-    # write linear model to look at multivariate response of dists to the
-    # scenarios?
-
-    # consider if/how to depict uncertainty envelopes on the dists?
 
 
 def viz_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None,
@@ -189,7 +198,8 @@ def viz_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None,
             ax.add_collection(pc)
             #plt.plot(xs, ys, color=col)
         else:
-            # plot the resulting density on top of mean-scaled reference circle
+            # plot the resulting density on top of mean-scaled reference circle,
+            # with an arrow indicating the direction of climate shift
             ax.plot(ref_xs, ref_ys, ':', color='gray', alpha=0.5)
             ax.plot([0,0], [-1,1], ':', color='gray', linewidth=0.5, alpha=0.5)
             ax.plot([-1,1], [0,0], ':', color='gray', linewidth=0.5, alpha=0.5)
@@ -206,11 +216,6 @@ def viz_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None,
         ax.set_yticklabels([])
         xlims = ax.get_xlim()
         ylims = ax.get_ylim()
-        if not on_curr_ax or plot_dirlabels:
-            plt.text(0, 1, 'N', size=18, color='gray')
-            plt.text(1, 0, 'E', size=18, color='gray')
-            plt.text(0, -1, 'S', size=18, color='gray')
-            plt.text(-1, 0, 'W', size=18, color='gray')
 
     # make sure the E-facing and N/S-facing density data are equal in length
     assert len(E_densities) == len(NS_densities)
@@ -298,8 +303,7 @@ def make_vM_mix_dist_comparison_grid(df, it=None,
             # after overplotting null & non-null, increment to next plot number
             plt_num += 1
 
-    # get max axlims and set for all axes, and add direction labels, and fix
-    # aspect ratios
+    # get max axlims & set for all axes, add direction labels, fix aspect ratios
     if plot_type == 'circ':
         abs_axlim_vals = np.array([lims[1] for lims in axlims])
         max_axlims_idx = np.where(abs_axlim_vals == np.max(abs_axlim_vals))[0][0]
@@ -307,15 +311,14 @@ def make_vM_mix_dist_comparison_grid(df, it=None,
         for ax in fig.get_axes():
             ax.set_xlim(univ_axlims)
             ax.set_ylim(univ_axlims)
-            # dir labels 
-            # NOTE: for now, just adjusting labels a 'smidge' to approx. center
-            #       them with the ref circle, but this will easily break
+            # dir label
             smidge = univ_axlims[1]*0.05
             edge = univ_axlims[1] - smidge
-            ax.text(0-smidge, edge-smidge, 'N', size=10, color='gray', alpha=0.8)
-            ax.text(edge-smidge, 0-smidge, 'E', size=10, color='gray', alpha=0.8)
-            ax.text(0-smidge, -edge, 'S', size=10, color='gray', alpha=0.8)
-            ax.text(-edge, 0-smidge, 'W', size=10, color='gray', alpha=0.8)
+            arr_xs = [0.95*edge, edge, 0.95*edge]
+            arr_ys = [0.075*univ_axlims[0],
+                      np.mean(univ_axlims),
+                      0.075*univ_axlims[1]]
+            ax.plot(arr_xs, arr_ys, color='#a83644', alpha=0.7, linewidth=2)
             # 1/1 aspect ratio
             ax.set_aspect('equal')
 
