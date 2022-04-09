@@ -31,7 +31,8 @@ genicities = [4, 20, 100]
 # factor to multiply effect size by to implement genetic redundancy
 alpha_factor = 2
 # set the different linkage levels to use
-linkages = ['independent', 'weak', 'strong']
+#linkages = ['independent', 'weak', 'strong']
+linkages = ['strong', 'weak', 'independent']
 linkages_dict = {'independent': {'r_distr_alpha': 0.5,
                                  'r_distr_beta': None},
                  'weak': {'r_distr_alpha': 0.05,
