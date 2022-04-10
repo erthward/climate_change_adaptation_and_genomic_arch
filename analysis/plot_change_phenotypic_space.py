@@ -58,13 +58,19 @@ change_half_t = 2124
 change_end_t = 2249
 change_len = change_end_t - change_start_t
 
+# get arg determining whether to plot high- or low-redundancy scenarios
+redundancy = sys.argv[1].lower()
+assert redundancy in ['lo', 'hi']
+
 # get arg determining whether to plot null or non-null sims
-nullness = sys.argv[1].lower()
+nullness = sys.argv[2].lower()
 assert nullness in ['null', 'non-null']
 
-# lists of all possible linkage and genicity values
+# lists of all linkage and genicity values
 linkages = ['independent', 'weak', 'strong']
-genicities =  [2, 4, 8, 10, 20, 40, 50, 100, 200]
+genicities = [4, 20, 100]
+if redundancy == 'hi':
+    genicities = [g*2 for g in genicities]
 
 # get the horizontal values used in the non-shifting landscape layer
 # and in the before- and after-shifting shifting layer,
@@ -98,7 +104,7 @@ def get_min_pw_diff(vals):
 def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
 
     assert linkage in ['independent', 'weak', 'strong']
-    assert genicity in [2, 4, 8, 10, 20, 40, 50, 100, 200]
+    assert genicity in [4, 8, 20, 40, 100, 200]
 
     # get candidate filenames for change-start-time-step files
     dirname_patt = 'mod-%s_L%s_G%i_its0_' % (nullness, linkage, genicity)
@@ -317,7 +323,7 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
 pheno_undershoot_dict = {'linkage': [], 'genicity': [], 'undershoot': []}
 # produce plots for all scenarios
 for linkage in ['independent', 'weak', 'strong']:
-    for genicity in [2, 4, 8, 10, 20, 40, 50, 100, 200]:
+    for genicity in genicities:
         print('\n\n======================\n\n')
         print('\tLINKAGE: %s' % linkage)
         print('\tGENICITY: %i' % genicity)
@@ -329,10 +335,11 @@ for linkage in ['independent', 'weak', 'strong']:
             fig, undershoot = plot_phenotypic_shift(linkage, genicity)
             # save the fig
             fig.savefig(os.path.join(analysis_dir,
-                        'phenotypic_shift_L%s_G%s%s.png' % (
+                        'phenotypic_shift_L%s_G%s%s_%sREDUND.png' % (
                                 linkage,
                                 str(genicity).zfill(2),
-                                '_NULL'* (nullness == 'null'))),
+                                '_NULL'* (nullness == 'null'),
+                                redundancy)),
                         dpi=dpi,
                         orientation='landscape',
                        )
@@ -347,7 +354,8 @@ pheno_undershoot_df = pd.DataFrame.from_dict(pheno_undershoot_dict).replace(
     {'linkage': linkage_dict})
 print(pheno_undershoot_df)
 pheno_undershoot_df.to_csv(os.path.join(analysis_dir,
-           'phenotypic_shift_undershoot%s.csv' % ('_NULL' * (nullness=='null'))),
+           'phenotypic_shift_undershoot%s_%sREDUND.csv' % (
+                                '_NULL' * (nullness=='null'), redundancy)),
                            index=False)
 #pheno_undershoot_df['intxn'] = (pheno_undershoot_df.linkage *
 #                                pheno_undershoot_df.genicity)

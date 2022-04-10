@@ -44,7 +44,7 @@ else:
 
 # lists of all possible linkage and genicity values
 linkages = ['independent', 'weak', 'strong']
-genicities =  [2, 4, 8, 10, 20, 40, 50, 100, 200]
+genicities =  [4, 8, 20, 40, 100, 200]
 
 # environmental change time steps
 change_start_t = 1999
@@ -56,7 +56,7 @@ def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
                            overall_max_dens_per_run=None):
 
     assert linkage in ['independent', 'weak', 'strong']
-    assert genicity in [2, 4, 8, 10, 20, 40, 50, 100, 200]
+    assert genicity in [4, 8, 20, 40, 100, 200]
 
     # get candidate filenames for change-start-time-step files
     dirname_patt = 'mod-non-null_L%s_G%i_its0_' % (linkage, genicity)
@@ -177,7 +177,7 @@ def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
 # first get max densities, to normalize plots against
 all_max_dens_per_run = []
 for linkage in ['independent', 'weak', 'strong']:
-    for genicity in [2, 4, 8, 10, 20, 40, 50, 100, 200]:
+    for genicity in [4, 8, 20, 40, 100, 200]:
         print('\n\n======================\n\n')
         print('\tLINKAGE: %s' % linkage)
         print('\tGENICITY: %i' % genicity)
@@ -196,7 +196,13 @@ overall_max_dens_per_run = np.max(all_max_dens_per_run)
 dens_change_dict = {'linkage': [], 'genicity': [], 'dens_change': []}
 # produce plots for all scenarios
 for linkage in ['independent', 'weak', 'strong']:
-    for genicity in [2, 4, 8, 10, 20, 40, 50, 100, 200]:
+    for genicity in [4, 8, 20, 40, 100, 200]:
+        # get redundancy val
+        if genicity in [4, 20, 100]:
+            redundancy = 'lo'
+        else:
+            redundancy = 'hi'
+        assert redundancy in ['lo', 'hi']
         print('\n\n======================\n\n')
         print('\tLINKAGE: %s' % linkage)
         print('\tGENICITY: %i' % genicity)
@@ -209,8 +215,10 @@ for linkage in ['independent', 'weak', 'strong']:
                             overall_max_dens_per_run=overall_max_dens_per_run)
             # save the fig
             fig.savefig(os.path.join(analysis_dir,
-                        'pop_density_shift_L%s_G%s.png' % (linkage,
-                                                    str(genicity).zfill(2))),
+                        'pop_density_shift_L%s_G_%sREDUND.png' % (
+                                        linkage,
+                                        str(genicity).zfill(2),
+                                        redundancy)),
                         dpi=dpi,
                         orientation='landscape',
                        )

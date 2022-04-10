@@ -3,13 +3,23 @@ import numpy as np
 from PIL import Image
 import os, re, sys
 
+# get plot type
+# ('SCAT' = scatterplots of bivariate phenotypes; 'DENS' = population densities)
 plot_type = sys.argv[1].upper()
-assert plot_type.upper() in ['HEAT',
-                             'SCAT',
-                             'DENS'], ('Plot type can only be "HEAT", '
+assert plot_type.upper() in ['SCAT',
+                             'DENS'], ('Plot type can only be '
                                        '"SCAT", or "DENS".')
+
+# get redundancy
+redundancy = sys.argv[2].lower()
+assert redundancy.lower() in ['lo', 'hi']
+genicities = [4, 20, 100]
+if redundancy == 'hi':
+    genicities = [g*2 for g in genicities]
+
+# for phenotype scatterplots, get nullness
 if plot_type == 'SCAT':
-    nullness = sys.argv[2].lower()
+    nullness = sys.argv[3].lower()
     assert nullness in ['null', 'non-null']
 else:
     nullness = None
@@ -63,18 +73,21 @@ def add_margin(pil_img, left, top, right, bottom, color='white'):
 
 # fill the output image with the input images
 for i, linkage in enumerate(['independent', 'weak', 'strong']):
-    for j, genicity in enumerate([8, 40, 200]):
+    for j, genicity in enumerate(genicities):
 
         # get the current image
         if plot_type == 'DENS':
-            curr_im_filename_patt = '^pop_density_shift_L%s_G\d*%i\.png' % (
+            curr_im_filename_patt = '^pop_density_shift_L%s_G\d*%i_%sREDUND\.png' % (
                                                                     linkage,
-                                                                    genicity)
+                                                                    genicity,
+                                                                    redundancy)
         else:
-            curr_im_filename_patt = '^phenotypic_shift_L%s_G\d*%i%s\.png' % (
+            phenotypic_shift_L%s_G%s%s_%sREDUND.png
+            curr_im_filename_patt = '^phenotypic_shift_L%s_G\d*%i%s_%sREDUND\.png' % (
                         linkage,
                         genicity,
-                        '_NULL' * (nullness == 'null'))
+                        '_NULL' * (nullness == 'null'),
+                        redundancy)
         curr_im = [v for k, v in ims.items() if re.search(curr_im_filename_patt,
                                                           k)]
         assert len(curr_im) == 1
@@ -113,7 +126,10 @@ for i, linkage in enumerate(['independent', 'weak', 'strong']):
 
 # save image to file
 if plot_type == 'DENS':
-    out_im.save(os.path.join(analysis_dir, 'pop_density_shift_grid_fig.jpg'))
+    out_im.save(os.path.join(analysis_dir,
+                    'pop_density_shift_grid_fig_%sREDUND.jpg' % redundancy))
 else:
     out_im.save(os.path.join(analysis_dir,
-        'phenotypic_shift_grid_fig%s.jpg' % ('_NULL' * (nullness == 'null'))))
+        'phenotypic_shift_grid_fig%s_%sREDUND.jpg' % (
+                                            '_NULL' * (nullness == 'null'),
+                                            redundancy)))

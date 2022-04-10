@@ -45,10 +45,8 @@ filename_patt = 'output_PID-.*_TS_DATA.csv'
 files = [os.path.join(datadir, f) for f in os.listdir(datadir) if re.search(
                                                         filename_patt, f)]
 
-# way to hard-code the vmax values for the scenarios, given that it would
-# be kind of a pain to write code to do just this
+# set linkages
 linkages = ['independent', 'weak', 'strong']
-genicities =  [8, 40, 200]
 
 # just read in and concatenate all files at once, rather than writing a loop,
 # since even for 1000 its, each file should only be 100K and there should be
@@ -62,10 +60,16 @@ time_steps = [*range(env_change_start-len_env_change_event,
                      env_change_start+(2*len_env_change_event))]
 
 
-def plot_ts_for_all_scenarios(df, var, show_plots=False):
+def plot_ts_for_all_scenarios(df, redundancy, var, show_plots=False):
 
     assert var in ('Nt', 'mean_fit', 'mean_z'), ('var must be one of "Nt", '
                                                  '"mean_fit", or "mean_z"')
+
+    # set genicities, based on redundancy
+    assert redundancy in ['lo', 'hi']
+    genicities = [4, 20, 100]
+    if redundancy == 'hi':
+        genicities = [g*2 for g in genicities]
 
     # get min and max y values
     ymin = np.min(df[var])
@@ -158,9 +162,11 @@ def plot_ts_for_all_scenarios(df, var, show_plots=False):
                             wspace=0.1,
                             hspace=0.1)
         #fig.suptitle('%s' % var)
-        fig.savefig(os.path.join(analysis_dir, 'ch2_%s_over_time.jpg' % var),
+        fig.savefig(os.path.join(analysis_dir,
+                    'ch2_%s_%sREDUND_over_time.jpg' % (var, redundancy)),
                             dpi=dpi, orientation='landscape')
 
-plot_ts_for_all_scenarios(df, 'Nt')
-plot_ts_for_all_scenarios(df, 'mean_fit')
-plot_ts_for_all_scenarios(df, 'mean_z')
+for redundancy in ['lo', 'hi']:
+    plot_ts_for_all_scenarios(df, redundancy, 'Nt')
+    plot_ts_for_all_scenarios(df, redundancy, 'mean_fit')
+    plot_ts_for_all_scenarios(df, redundancy, 'mean_z')
