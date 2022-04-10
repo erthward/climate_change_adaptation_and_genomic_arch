@@ -5,14 +5,11 @@
 # Account:
 #SBATCH --account=fc_landgen
 #
-#QoS:
-#SBATCH --qos=savio_long
-#
 # Partition:
-#SBATCH --partition=savio2_htc
+#SBATCH --partition=savio3
 #
 # Wall clock limit:
-#SBATCH --time=7-00:00:00
+#SBATCH --time=72:00:00
 #
 # Set amount of memory per node (since OOM errors occurred)
 #SBATCH --mem-per-cpu=2500
