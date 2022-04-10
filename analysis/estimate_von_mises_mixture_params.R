@@ -30,6 +30,14 @@ datafile = args[1]
 # read data from some of my simulation output
 data <- read.csv(datafile)
 
+# determine whether this is a low- or high-redundancy set of scenarios
+if (setequal(unique(data$genicity), c(4, 20, 100))){
+   redundancy = 'loREDUND' 
+} else if (setequal(unique(data$genicity, c(8, 40, 200)))){
+   redundancy = 'hiREDUND'
+} 
+
+
 # fn to read the data for a given set of values of the columns
 get.subdf.data <- function(df, genicity, linkage, nullness, it){
     # make sure genicity is a numeric, not a string
@@ -232,6 +240,7 @@ for (genicity in uniques[['genicity']]){
 output.df = data.frame(output)
 
 # write output.df to disk
+gsub_outfile_substr = paste0('_DIR_FITTED_PARAMS_', redundancy)
 out.filename = gsub(datadir.str, analysisdir.str, 
-                    gsub('_DIR', '_DIR_FITTED_PARAMS', datafile))
+                    gsub('_DIR', gsub_outfile_substr, datafile))
 write.csv(output.df, out.filename, row.names=F)

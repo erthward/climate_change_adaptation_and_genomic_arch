@@ -43,6 +43,8 @@ for (csv in summary.csvs){
 summary.df = ldply(dfs, rbind)
 summary.df$size = 1+0.25*floor(log10(as.numeric(as.character(summary.df$genicity))))/2
 summary.df$genicity = as.factor(summary.df$genicity)
+# add row to indicate redundancy
+summary.df$redundancy = ifelse(summary.df$genicity %in% c(4, 20, 100), 'lo', 'hi')
 
 num.linkage = c()
 for (linkage in summary.df$linkage){
@@ -70,17 +72,17 @@ cols = c()
 for (i in seq(nrow(summary.df))){
     nullness = summary.df[i, 'nullness']
     genicity = summary.df[i, 'genicity']
-    if (genicity == 4){
+    if (genicity %in% c(4, 8)){
         if (nullness == 'null'){
             idx = 6}
         else {idx = 3}
     }
-    if (genicity == 20){
+    if (genicity %in% c(20, 40)){
         if (nullness == 'null'){
             idx = 5}
         else {idx = 2}
     }
-    if (genicity == 100){
+    if (genicity %in% c(100, 200)){
         if (nullness == 'null'){
             idx = 4}
         else {idx = 1}
@@ -94,65 +96,70 @@ df.nonull = summary.df[summary.df$nullness == 'non_null',]
 df.null = summary.df[summary.df$nullness == 'null',]
 
 # plot delta_Nt and delta_fit as function of genicity and linkage
-ggplot.delta_Nt = ggplot() + 
-    geom_point(aes(num.linkage, delta_Nt, col=color, size=size), data=df.nonull, position='jitter') +
-    geom_point(aes(num.linkage, delta_Nt, col=color, size=size), data=df.null, position='jitter') +
-    scale_colour_manual(values=plot_cols) 
-ggplot.delta_Nt
+#ggplot.delta_Nt = ggplot() + 
+#    geom_point(aes(num.linkage, delta_Nt, col=color, size=size), data=df.nonull, position='jitter') +
+#    geom_point(aes(num.linkage, delta_Nt, col=color, size=size), data=df.null, position='jitter') +
+#    scale_colour_manual(values=plot_cols) 
+#ggplot.delta_Nt
 
 
 # pop size boxplots
-theme_set(theme_linedraw(base_size=20))
-jpeg(paste0(analysis.dir, 'boxplot_delta_Nt.jpg'), width=5000, height=2500, res=300)
-boxnull = ggplot(df.null) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
-    geom_hline(yintercept=0) +
-    scale_fill_manual(values = plot_cols[6:4],
-                      labels=c('strong', 'weak', 'independent'),
-                      name='linkage') +
-    scale_y_continuous(limits = c(-750, 250)) +
-    labs(y=TeX('$\\Delta$ population size'), x='number of loci per trait') +
-    theme(legend.text=element_text(size=legend.text.size),
-          legend.title=element_text(size=legend.title.size),
-          axis.title=element_text(size=axis.label.size),
-          axis.text=element_text(size=tick.label.size))
+for (redundancy in c('lo', 'hi')){
 
-boxnonull = ggplot(df.nonull) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
-    geom_hline(yintercept=0) +
-    scale_fill_manual(values = plot_cols[3:1],
-                      labels=c('strong', 'weak', 'independent'),
-                      name='linkage') +
-    scale_y_continuous(limits = c(-750, 250)) +
-    labs(y=TeX('$\\Delta$ population size'), x='number of loci per trait') +
-    theme(legend.text=element_text(size=legend.text.size),
-          legend.title=element_text(size=legend.title.size),
-          axis.title=element_text(size=axis.label.size),
-          axis.text=element_text(size=tick.label.size))
-cowplot::plot_grid(boxnull, boxnonull) 
-dev.off()
+   subdf.null = df.null[df.null$redundancy == redundancy]
+   subdf.nonull = df.null[df.nonull$redundancy == redundancy]
 
-# mean fitness boxplots
-jpeg(paste0(analysis.dir, 'boxplot_delta_fit.jpg'), width=5000, height=2500, res=300)
-boxnull = ggplot(df.null) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
-    geom_hline(yintercept=0) +
-    scale_fill_manual(values = plot_cols[6:4],
-                      labels=c('strong', 'weak', 'independent'),
-                      name='linkage') +
-    scale_y_continuous(limits = c(-0.03, 0.015)) +
-    labs(y=TeX('$\\Delta$ fitness'), x='number of loci per trait') +
-    theme(legend.text=element_text(size=legend.text.size),
-          legend.title=element_text(size=legend.title.size),
-          axis.title=element_text(size=axis.label.size),
-          axis.text=element_text(size=tick.label.size))
-boxnonull = ggplot(df.nonull) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
-    geom_hline(yintercept=0) +
-    scale_fill_manual(values = plot_cols[3:1],
-                      labels=c('strong', 'weak', 'independent'),
-                      name='linkage') +
-    scale_y_continuous(limits = c(-0.03, 0.015)) +
-    labs(y=TeX('$\\Delta$ fitness'), x='number of loci per trait') +
-    theme(legend.text=element_text(size=legend.text.size),
-          legend.title=element_text(size=legend.title.size),
-          axis.title=element_text(size=axis.label.size),
-          axis.text=element_text(size=tick.label.size))
-cowplot::plot_grid(boxnull, boxnonull)
-dev.off()
+  theme_set(theme_linedraw(base_size=20))
+  jpeg(paste0(analysis.dir, 'boxplot_delta_Nt_', redundancy, 'REDUND.jpg'), width=5000, height=2500, res=300)
+  boxnull = ggplot(subdf.null) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
+      geom_hline(yintercept=0) +
+      scale_fill_manual(values = plot_cols[6:4],
+                        labels=c('strong', 'weak', 'independent'),
+                        name='linkage') +
+      scale_y_continuous(limits = c(-750, 250)) +
+      labs(y=TeX('$\\Delta$ population size'), x='number of loci per trait') +
+      theme(legend.text=element_text(size=legend.text.size),
+            legend.title=element_text(size=legend.title.size),
+            axis.title=element_text(size=axis.label.size),
+            axis.text=element_text(size=tick.label.size))
+  
+  boxnonull = ggplot(subdf.nonull) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
+      geom_hline(yintercept=0) +
+      scale_fill_manual(values = plot_cols[3:1],
+                        labels=c('strong', 'weak', 'independent'),
+                        name='linkage') +
+      scale_y_continuous(limits = c(-750, 250)) +
+      labs(y=TeX('$\\Delta$ population size'), x='number of loci per trait') +
+      theme(legend.text=element_text(size=legend.text.size),
+            legend.title=element_text(size=legend.title.size),
+            axis.title=element_text(size=axis.label.size),
+            axis.text=element_text(size=tick.label.size))
+  cowplot::plot_grid(boxnull, boxnonull) 
+  dev.off()
+  
+  # mean fitness boxplots
+  jpeg(paste0(analysis.dir, 'boxplot_delta_fit_', redundancy, 'REDUND.jpg'), width=5000, height=2500, res=300)
+  boxnull = ggplot(subdf.null) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
+      geom_hline(yintercept=0) +
+      scale_fill_manual(values = plot_cols[6:4],
+                        labels=c('strong', 'weak', 'independent'),
+                        name='linkage') +
+      scale_y_continuous(limits = c(-0.03, 0.015)) +
+      labs(y=TeX('$\\Delta$ fitness'), x='number of loci per trait') +
+      theme(legend.text=element_text(size=legend.text.size),
+            legend.title=element_text(size=legend.title.size),
+            axis.title=element_text(size=axis.label.size),
+            axis.text=element_text(size=tick.label.size))
+  boxnonull = ggplot(subdf.nonull) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
+      geom_hline(yintercept=0) +
+      scale_fill_manual(values = plot_cols[3:1],
+                        labels=c('strong', 'weak', 'independent'),
+                        name='linkage') +
+      scale_y_continuous(limits = c(-0.03, 0.015)) +
+      labs(y=TeX('$\\Delta$ fitness'), x='number of loci per trait') +
+      theme(legend.text=element_text(size=legend.text.size),
+            legend.title=element_text(size=legend.title.size),
+            axis.title=element_text(size=axis.label.size),
+            axis.text=element_text(size=tick.label.size))
+  cowplot::plot_grid(boxnull, boxnonull)
+  dev.off()
