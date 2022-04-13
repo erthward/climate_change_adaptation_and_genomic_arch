@@ -1,6 +1,6 @@
 import numpy as np
 import xarray as xr
-import os, re, sys
+import os, re, sys, shutil
 
 # CLI arg determine whether or not to run asserts
 # (run without asserts to determine PIDs to drop;
@@ -18,6 +18,17 @@ if redundant.lower() == 't':
     genicities = [8, 40, 200]
 else:
     genicities = [4, 20, 100]
+
+# copy 100 datasets to new dir?
+# (if a last argument is provided and it's an existing dir)
+if len(sys.argv) > 3:
+    if os.path.exists(sys.argv[3]) and os.path.isdir(sys.argv[4]):
+        copy_dir = sys.argv[3]
+    else:
+        raise Exception('copy_dir (last arg) must be an existing directory')
+else:
+    copy_dir = None
+n_copy_datasets = 100
 
 
 # regex patts
@@ -49,6 +60,10 @@ all_pids_in_dir = set([re.search(pid_patt,
             f).group() for f in os.listdir(datadir) if re.search(pid_patt, f)])
 # track which PIDs have complete datasets
 pids_complete = {pid: 0 for pid in all_pids_in_dir}
+
+# count copied data, if necessary
+if copy_dir is not None:
+    copy_ct = 0
 
 # for each PID
 for pid in all_pids_in_dir:
@@ -101,6 +116,19 @@ for pid in all_pids_in_dir:
     if dataset_count == 18 and len(summary_csvs) == 4:
         pids_complete[pid] += 1
 
+        # copy data for this complete PID, if requested and needed
+        if copy_dir is not None:
+            if copy_ct < n_copy_datasets:
+                for f in os.listdir(datadir):
+                    if re.search(('(?<=-)%s(_DIR)?(_DIST)?(_TS_DATA)?(\.csv)?'
+                                  '$') % str(pid), f):
+                        shutil.copy(os.path.join(datadir, f), copy_dir)
+                copy_ct += 1
+
+if copy_dir is not None:
+    print('\n\n\n' + '='*16 + '%i FILES COPIED' % copy_ct + '='*16 + '\n\n\n')
+    assert copy_ct == n_copy_datasets
+
 
 # make sure only 3 timesteps covered across all files
 if run_asserts:
@@ -148,4 +176,3 @@ else:
         print(('\n\nNo incomplete datasets found! Rerun with \'t\' flag to '
                'to run assert statements and double-check that data is ready '
                'for analysis.\n\n'))
-               
