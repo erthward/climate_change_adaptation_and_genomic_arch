@@ -122,8 +122,12 @@ for pid in all_pids_in_dir:
                 for f in os.listdir(datadir):
                     if re.search(('(?<=-)%s(_DIR)?(_DIST)?(_TS_DATA)?(\.csv)?'
                                   '$') % str(pid), f):
-                        print('\n\tcopying %s...\n\n' % f)
-                        shutil.copy(os.path.join(datadir, f), copy_dir)
+                        #print('\n\tcopying %s...\n\n' % f)
+                        #shutil.copy(os.path.join(datadir, f), copy_dir)
+                        cmd = 'cp -R %s %s' % (os.path.join(datadir, f),
+                                               copy_dir)
+                        print('\n\trunning command `%s` ...\n' % cmd)
+                        os.system(cmd)
                 copy_ct += 1
                 print('\n\n%i complete datasets copied thus far...\n\n' % copy_ct)
 
