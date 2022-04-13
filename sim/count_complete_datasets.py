@@ -22,7 +22,7 @@ else:
 # copy 100 datasets to new dir?
 # (if a last argument is provided and it's an existing dir)
 if len(sys.argv) > 3:
-    if os.path.exists(sys.argv[3]) and os.path.isdir(sys.argv[4]):
+    if os.path.exists(sys.argv[3]) and os.path.isdir(sys.argv[3]):
         copy_dir = sys.argv[3]
     else:
         raise Exception('copy_dir (last arg) must be an existing directory')
@@ -122,8 +122,10 @@ for pid in all_pids_in_dir:
                 for f in os.listdir(datadir):
                     if re.search(('(?<=-)%s(_DIR)?(_DIST)?(_TS_DATA)?(\.csv)?'
                                   '$') % str(pid), f):
+                        print('\n\tcopying %s...\n\n' % f)
                         shutil.copy(os.path.join(datadir, f), copy_dir)
                 copy_ct += 1
+                print('\n\n%i complete datasets copied thus far...\n\n' % copy_ct)
 
 if copy_dir is not None:
     print('\n\n\n' + '='*16 + '%i FILES COPIED' % copy_ct + '='*16 + '\n\n\n')
