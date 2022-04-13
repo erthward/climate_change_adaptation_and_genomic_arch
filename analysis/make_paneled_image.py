@@ -82,7 +82,6 @@ for i, linkage in enumerate(['independent', 'weak', 'strong']):
                                                                     genicity,
                                                                     redundancy)
         else:
-            phenotypic_shift_L%s_G%s%s_%sREDUND.png
             curr_im_filename_patt = '^phenotypic_shift_L%s_G\d*%i%s_%sREDUND\.png' % (
                         linkage,
                         genicity,
