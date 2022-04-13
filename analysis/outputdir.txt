@@ -1,1 +1,1 @@
-/global/scratch/users/drewhart/ch2/output/final_output/
+/global/scratch/users/drewhart/ch2/output/output_100_final_for_analysis/
