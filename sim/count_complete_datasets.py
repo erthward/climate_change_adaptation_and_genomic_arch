@@ -168,8 +168,8 @@ else:
         print('\n\n')
 
         #delete_incomplete = input(('Would you like to delete all affiliated data now? '
+                                   #'(Y to delete)\n'))
         delete_incomplete = 'n'
-                                   '(Y to delete)\n'))
         if delete_incomplete.lower() == 'y':
             for pid, ct in pids_complete.items():
                 if ct != 1:
