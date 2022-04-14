@@ -194,10 +194,10 @@ for (redundancy in c('lo', 'hi')){
 }
   
 
-###########################################################################
-# E- and N/S-densities
-  # 4 tests: by each nullness, and for both response vars (E, N/S),
+################################################################################
+# upslope and on-contour densities
+  # 4 tests: by each nullness, and for both response vars (upslope, on-contour),
   # with bonferroni-corrected alphas
-#--------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 
