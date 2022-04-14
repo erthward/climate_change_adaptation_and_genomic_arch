@@ -33,7 +33,7 @@ data <- read.csv(datafile)
 # determine whether this is a low- or high-redundancy set of scenarios
 if (setequal(unique(data$genicity), c(4, 20, 100))){
    redundancy = 'loREDUND' 
-} else if (setequal(unique(data$genicity, c(8, 40, 200)))){
+} else if (setequal(unique(data$genicity), c(8, 40, 200))){
    redundancy = 'hiREDUND'
 } 
 

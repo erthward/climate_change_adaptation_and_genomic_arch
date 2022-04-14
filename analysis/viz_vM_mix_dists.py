@@ -345,7 +345,7 @@ for redundancy in ['hi', 'lo']:
 
     print(('\n\n\n' +
            '~'*80 +
-           'PRODUCING VON MISES VIZ FOR %s-REDUNDANCY SCENARIOS...\n\n\n'))
+           'MAKING VON MISES VIZ FOR %s-REDUND SCENARIOS...\n\n' % redundancy))
 
     genicities = [4, 20, 100]
     if redundancy == 'hi':
