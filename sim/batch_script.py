@@ -25,12 +25,23 @@ import os
 #------------
 # set number of iterations for each sim
 n_its = 1
-# set the different numbers of loci to use
-#genicities = [4, 20, 100]
-#genicities = [8, 40, 200]
-genicities = [200, 40, 8]
-# factor to multiply effect size by to implement genetic redundancy
-alpha_factor = 2
+
+# set the different numbers of loci to use,
+# and the factor to multiply effect size by
+# to either implement high genetic redundancy or not
+#redundancy = 'hi'
+redundancy = 'lo'
+assert redundancy in ['lo', 'hi']
+if redundancy == 'lo':
+    genicities = [4, 20, 100]
+    alpha_factor = 1
+elif redundancy == 'hi':
+    genicities = [8, 40, 200]
+    alpha_factor = 2
+print('\n\n%s REDUND:\n\tGENICITIES: %s\nα FACTOR: %i\n\n' % (redundancy,
+                                                              str(genicities),
+                                                              alpha_factor))
+
 # set the different linkage levels to use
 #linkages = ['independent', 'weak', 'strong']
 linkages = ['strong', 'weak', 'independent']
@@ -402,7 +413,7 @@ def make_custom_genarch_file(genicity, recomb_rate, pid, write=True):
              1/genicity,
              -1/genicity,
              -1/genicity]*int(L/4) # alpha=1/genicity reaches all phenotypes [0,1] precisely
-                                   # (greater than than = redundancy @ extremes)
+                                   # (greater than = redundancy @ extremes)
     alpha = [alpha_factor*n for n in alpha]
     df = pd.DataFrame.from_dict(dict(zip(cols, [locus, p, dom, r, trait, alpha])))
     if write:
