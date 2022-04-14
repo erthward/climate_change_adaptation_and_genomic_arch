@@ -106,8 +106,8 @@ df.null = summary.df[summary.df$nullness == 'null',]
 # pop size boxplots
 for (redundancy in c('lo', 'hi')){
 
-   subdf.null = df.null[df.null$redundancy == redundancy]
-   subdf.nonull = df.null[df.nonull$redundancy == redundancy]
+   subdf.null = df.null[df.null$redundancy == redundancy, ]
+   subdf.nonull = df.null[df.nonull$redundancy == redundancy, ]
 
   theme_set(theme_linedraw(base_size=20))
   jpeg(paste0(analysis.dir, 'boxplot_delta_Nt_', redundancy, 'REDUND.jpg'), width=5000, height=2500, res=300)
