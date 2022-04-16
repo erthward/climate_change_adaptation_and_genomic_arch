@@ -155,7 +155,7 @@ def plot_ts_for_all_scenarios(df, redundancy, var, show_plots=False):
         plt.show()
     else:
         # adjust suplot spacing, and add suptitle
-        fig.subplots_adjust(left=0.08,
+        fig.subplots_adjust(left=0.13,
                             bottom=0.1,
                             right=0.99,
                             top=0.88,
