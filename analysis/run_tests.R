@@ -172,7 +172,7 @@ for (redundancy in c('lo', 'hi')){
                              redundancy,
                              'REDUND.csv'))
   jpeg(paste0(analysis.dir,
-              'pheno_undershoot_intxn_plot_'
+              'pheno_undershoot_intxn_plot_',
               redundancy,
               'REDUND.jpg'),
        width=5000, height=2500, res=300)
