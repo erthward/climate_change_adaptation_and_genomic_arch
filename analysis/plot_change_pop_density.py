@@ -215,7 +215,7 @@ for linkage in ['independent', 'weak', 'strong']:
                             overall_max_dens_per_run=overall_max_dens_per_run)
             # save the fig
             fig.savefig(os.path.join(analysis_dir,
-                        'pop_density_shift_L%s_G_%sREDUND.png' % (
+                        'pop_density_shift_L%s_G%s_%sREDUND.png' % (
                                         linkage,
                                         str(genicity).zfill(2),
                                         redundancy)),
