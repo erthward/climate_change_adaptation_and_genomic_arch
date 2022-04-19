@@ -168,7 +168,7 @@ for (redundancy in c('lo', 'hi')){
   cat(paste0(redundancy, ' redundancy'))
   cat('\n\n')
   pheno.df = read.csv(paste0(analysis.dir,
-                             'phenotypic_shift_undershoot_'
+                             'phenotypic_shift_undershoot_', 
                              redundancy,
                              'REDUND.csv'))
   jpeg(paste0(analysis.dir,
