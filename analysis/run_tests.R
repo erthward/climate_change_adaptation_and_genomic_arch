@@ -69,7 +69,7 @@ for (redundancy in c('lo', 'hi')){
   cat('.............................................................')
 
   subdf.nonull = df.nonull[df.nonull$redundancy == redundancy,]
-  subdf.null = df.null[df.null$redundancy == redundancy]
+  subdf.null = df.null[df.null$redundancy == redundancy, ]
 
   jpeg(paste0(analysis.dir, 'delta_Nt_intxn_plot_', redundancy, 'REDUND.jpg'),
        width=5000, height=2500, res=300)
