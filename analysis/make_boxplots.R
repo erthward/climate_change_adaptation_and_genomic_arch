@@ -23,8 +23,8 @@ tick.label.size = 17
 ######################
 
 if (strsplit(getwd(), '/')[[1]][2] == 'home'){
-    data.dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
-    analysis.dir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
+    data.dir = '/home/deth/Desktop/tmp_ch2_outputs/final_results/'
+    analysis.dir = '/home/deth/Desktop/tmp_ch2_outputs/final_results/'
 } else {
     datadir.file = '/global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/outputdir.txt'
     data.dir = readChar(datadir.file, file.info(datadir.file)$size-1)
@@ -110,7 +110,7 @@ for (redundancy in c('lo', 'hi')){
    subdf.nonull = df.null[df.nonull$redundancy == redundancy, ]
 
   theme_set(theme_linedraw(base_size=20))
-  jpeg(paste0(analysis.dir, 'boxplot_delta_Nt_', redundancy, 'REDUND.jpg'), width=5000, height=2500, res=300)
+  #jpeg(paste0(analysis.dir, 'boxplot_delta_Nt_', redundancy, 'REDUND.jpg'), width=5000, height=2500, res=300)
   boxnull = ggplot(subdf.null) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
       geom_hline(yintercept=0) +
       scale_fill_manual(values = plot_cols[6:4],
@@ -135,10 +135,11 @@ for (redundancy in c('lo', 'hi')){
             axis.title=element_text(size=axis.label.size),
             axis.text=element_text(size=tick.label.size))
   cowplot::plot_grid(boxnull, boxnonull) 
-  dev.off()
+  ggsave(paste0(analysis.dir, 'boxplot_delta_Nt_', redundancy, 'REDUND.jpg'), width=5000, height=2500, units='px', dpi=300)
+  #dev.off()
   
   # mean fitness boxplots
-  jpeg(paste0(analysis.dir, 'boxplot_delta_fit_', redundancy, 'REDUND.jpg'), width=5000, height=2500, res=300)
+  #jpeg(paste0(analysis.dir, 'boxplot_delta_fit_', redundancy, 'REDUND.jpg'), width=5000, height=2500, res=300)
   boxnull = ggplot(subdf.null) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
       geom_hline(yintercept=0) +
       scale_fill_manual(values = plot_cols[6:4],
@@ -162,5 +163,6 @@ for (redundancy in c('lo', 'hi')){
             axis.title=element_text(size=axis.label.size),
             axis.text=element_text(size=tick.label.size))
   cowplot::plot_grid(boxnull, boxnonull)
-  dev.off()
+  ggsave(paste0(analysis.dir, 'boxplot_delta_fit_', redundancy, 'REDUND.jpg'), width=5000, height=2500, units='px', dpi=300)
+  #dev.off()
 }
