@@ -30,4 +30,4 @@ python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_
 
 # copy all results to BDrive
 echo "NOW PUSHING EVERYTHING TO BDRIVE USING RCLONE"
-rclone copy /global/scratch/users/drewhart/ch2/output/analysis/ch2_gene_flow_dir_analysis*.png bdrive:ch2_outputs/analysis/
+rclone copy /global/scratch/users/drewhart/ch2/output/analysis/ --include  "ch2_gene_flow_dir_analysis*" bdrive:ch2_outputs/analysis
