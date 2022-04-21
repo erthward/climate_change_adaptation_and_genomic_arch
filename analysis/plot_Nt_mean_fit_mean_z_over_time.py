@@ -54,7 +54,7 @@ linkages = ['independent', 'weak', 'strong']
 df = pd.concat([pd.read_csv(f, na_filter=False) for f in files])
 
 # get list of the ordered time steps
-env_change_start = 2000
+env_change_start = 2500
 len_env_change_event = int(np.max(df.time_step)/3)
 time_steps = [*range(env_change_start-len_env_change_event,
                      env_change_start+(2*len_env_change_event))]

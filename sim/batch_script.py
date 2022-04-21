@@ -78,16 +78,16 @@ cts_table_list = [0] * (2 * len(linkages) * len(genicities))
 # params to reduce runtime for debugging/development
 #---------------------------------------------------
 # set time when environmental change begins
-change_T = 2000
+change_T = 2500
 # set time when environmental change ends
-T = 2250
+T = 2750
 # calc length of environmental change period
 deltaT_env_change = T - change_T
 # calc time prior to climate change to start storing Nt, mean fitness, and mean
 # phenotype
 t_record_data_b4_env_change = change_T - deltaT_env_change
 # reset the K_factor (if desired)
-K_factor = 4
+K_factor = 3
 # print out debugging info?
 debug_verbose = True
 
