@@ -166,7 +166,7 @@ def plot_ts_for_all_scenarios(df, redundancy, var, show_plots=False):
                     'ch2_%s_%sREDUND_over_time.jpg' % (var, redundancy)),
                             dpi=dpi, orientation='landscape')
 
-for redundancy in ['lo', 'hi']:
+for redundancy in ['hi', 'lo']:
     plot_ts_for_all_scenarios(df, redundancy, 'Nt')
     plot_ts_for_all_scenarios(df, redundancy, 'mean_fit')
     plot_ts_for_all_scenarios(df, redundancy, 'mean_z')

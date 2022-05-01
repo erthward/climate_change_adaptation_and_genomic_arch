@@ -104,7 +104,7 @@ df.null = summary.df[summary.df$nullness == 'null',]
 
 
 # pop size boxplots
-for (redundancy in c('lo', 'hi')){
+for (redundancy in c('hi', 'lo')){
 
    subdf.null = df.null[df.null$redundancy == redundancy, ]
    subdf.nonull = df.nonull[df.nonull$redundancy == redundancy, ]
