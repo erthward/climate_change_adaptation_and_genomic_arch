@@ -2,6 +2,9 @@ import numpy as np
 import xarray as xr
 import os, re, sys, shutil
 
+# TODO:
+    # CORRECT n_copy_datasets to 100, then rerun for final analysis
+
 # CLI arg determine whether or not to run asserts
 # (run without asserts to determine PIDs to drop;
 #  run with asserts to make sure clean prior to running analysis)
@@ -28,8 +31,8 @@ if len(sys.argv) > 3:
         raise Exception('copy_dir (last arg) must be an existing directory')
 else:
     copy_dir = None
-n_copy_datasets = 100
-
+#n_copy_datasets = 100
+n_copy_datasets = 48
 
 # regex patts
 dir_patt = 'GNX_mod-%s_L%s_G%i_its0_randID\d+PID-%s'
