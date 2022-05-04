@@ -77,10 +77,22 @@ cts_table_list = [0] * (2 * len(linkages) * len(genicities))
 #---------------------------------------------------
 # params to reduce runtime for debugging/development
 #---------------------------------------------------
+# get timesteps
+if os.getcwd().split('/')[1] == 'home':
+    steps = pd.read_csv(('/home/deth/Desktop/CAL/research/projects/sim/'
+                         'ch2/climate_change_adaptation_and_genomic_arch/sim/'
+                         'time_steps.csv'))
+# or else get filepaths on Savio
+else:
+    steps = pd.read_csv(('/global/scratch/users/drewhart/'
+                         'ch2/climate_change_adaptation_and_genomic_arch/sim/'
+                         'time_steps.csv'))
 # set time when environmental change begins
-change_T = 2500
+change_T = int(steps[steps['name']=='start']['num'].values[0])
 # set time when environmental change ends
-T = 2750
+T = int(steps[steps['name']=='end']['num'].values[0])
+print('climate change will start at time step %i' % change_T)
+print('simulation will end at time step %i' % T)
 # calc length of environmental change period
 deltaT_env_change = T - change_T
 # calc time prior to climate change to start storing Nt, mean fitness, and mean
@@ -150,6 +162,11 @@ else:
 #---------------------------------
 # create ParamsDict object
 params = gnx.read_parameters_file(filepath=params_filepath)
+data_times = params['model']['data']['sampling']['when']
+print('Data will collected at timesteps %i, %i, and %i' % (data_times[0],
+                                                           data_times[1],
+                                                           data_times[2],
+                                                          ))
 # tweak the carrying capacity, if requested
 if K_factor is not None:
     params['comm']['species']['spp_0']['init']['K_factor'] = K_factor

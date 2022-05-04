@@ -46,10 +46,26 @@ else:
 linkages = ['independent', 'weak', 'strong']
 genicities =  [4, 8, 20, 40, 100, 200]
 
+# get timesteps
+# get timesteps
+if os.getcwd().split('/')[1] == 'home':
+    steps = pd.read_csv(('/home/deth/Desktop/CAL/research/projects/sim/'
+                         'ch2/climate_change_adaptation_and_genomic_arch/sim/'
+                         'time_steps.csv'))
+# or else get filepaths on Savio
+else:
+    steps = pd.read_csv(('/global/scratch/users/drewhart/'
+                         'ch2/climate_change_adaptation_and_genomic_arch/sim/'
+                         'time_steps.csv'))
+# set time when environmental change begins
+change_T = int(steps[steps['name']=='start']['num'].values[0])
+# set time when environmental change ends
+T = int(steps[steps['name']=='end']['num'].values[0])
+
 # environmental change time steps
-change_start_t = 1999
-change_half_t = 2124
-change_end_t = 2249
+change_start_t = change_T-1
+change_end_t = T-1
+change_half_t = int((change_start_t + change_end_t)/2)
 
 
 def plot_pop_density_shift(linkage, genicity, just_get_max_dens_per_run=False,
@@ -222,3 +238,4 @@ for linkage in ['independent', 'weak', 'strong']:
                         dpi=dpi,
                         orientation='landscape',
                        )
+

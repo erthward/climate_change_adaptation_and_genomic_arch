@@ -8,6 +8,23 @@ af = np.vstack([np.linspace(1, 0.5, 50) for _ in range(50)])
 stable = np.vstack([np.linspace(1, 0, 50) for _ in range(50)])
 K = np.ones((50,50))
 
+import pandas as pd
+import os
+# get timesteps
+if os.getcwd().split('/')[1] == 'home':
+    steps = pd.read_csv(('/home/deth/Desktop/CAL/research/projects/sim/'
+                         'ch2/climate_change_adaptation_and_genomic_arch/sim/'
+                         'time_steps.csv'))
+# or else get filepaths on Savio
+else:
+    steps = pd.read_csv(('/global/scratch/users/drewhart/'
+                         'ch2/climate_change_adaptation_and_genomic_arch/sim/'
+                         'time_steps.csv'))
+# set time when environmental change begins
+change_T = int(steps[steps['name']=='start']['num'].values[0])
+# set time when environmental change ends
+T = int(steps[steps['name']=='end']['num'].values[0])
+
 # show the landscape, for debugging, if requested
 debug_landscape = False
 if debug_landscape:
@@ -116,11 +133,11 @@ params = {
                         #of files for each stepwise change in event
                         'change_rast':              af,
                         #starting timestep of event
-                        'start_t':          2500,
+                        'start_t':          change_T,
                         #ending timestep of event
-                        'end_t':            2750,
+                        'end_t':            T,
                         #number of stepwise changes in event
-                        'n_steps':          250,
+                        'n_steps':          T-change_T,
                         }, # <END> event 0
 
                     }, # <END> 'change'
@@ -487,8 +504,9 @@ params = {
                 #collection radius around points, for point & transect sampling
                 'radius':               None,
                 #when to collect data
-                'when':                [1999, 2124, 2249],
-                #'when':                 [*range(1999, 2251, 2)],
+                'when':                [change_T-1,
+                                        int((change_T-1+T-1)/2),
+                                        T-1],
                 #whether to save current Layers when data is collected
                 'include_landscape':    False,
                 #whether to include fixed loci in VCF files

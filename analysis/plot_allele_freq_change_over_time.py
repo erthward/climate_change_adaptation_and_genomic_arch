@@ -61,10 +61,23 @@ save_res = True
 # x-threshold of right side of landscape tracked for the analysis
 l_edge_of_r_side = 40
 
-# environmental change time steps
-change_start_t = 1999
-change_end_t = 2249
-change_len = change_end_t - change_start_t
+# get timesteps
+if os.getcwd().split('/')[1] == 'home':
+    steps = pd.read_csv(('/home/deth/Desktop/CAL/research/projects/sim/'
+                         'ch2/climate_change_adaptation_and_genomic_arch/sim/'
+                         'time_steps.csv'))
+# or else get filepaths on Savio
+else:
+    steps = pd.read_csv(('/global/scratch/users/drewhart/'
+                         'ch2/climate_change_adaptation_and_genomic_arch/sim/'
+                         'time_steps.csv'))
+# set time when environmental change begins
+change_T = int(steps[steps['name']=='start']['num'].values[0])
+# set time when environmental change ends
+T = int(steps[steps['name']=='end']['num'].values[0])
+change_start_t = change_T-1
+change_end_t = T-1
+change_half_t = int((change_start_t + change_end_t)/2)
 
 # lists of all possible linkage and genicity values
 linkages = ['independent', 'weak', 'strong']
@@ -84,7 +97,7 @@ filename_patt_template = ('mod-%s_L%s_G%i_its0_randID\d{7}PID-'
                           '\d{5,6}_it--1_t-\d{3,4}_spp-spp_0.csv')
 
 # number of time steps for which we should have files
-timesteps = [*range(1999, 2249, 2)]
+timesteps = [*range(change_start_t, change_end_change_end_t, 2)]
 n_timesteps = len(timesteps)
 
 # alpha factor multiplied by 1/genicity to derive effect sizes in sims
@@ -194,7 +207,7 @@ def plot_allele_freq_changes(linkage, genicity, ax):
 
         # if this is the first timestep, store these for comparison with all
         # later timesteps
-        if ts == 1999:
+        if ts == change_start_t:
             start_freqs = deepcopy(freqs)
             ds_arr[:,j] = 0
         # else, compare to first timestep and store 'divergence' contribution
@@ -279,4 +292,3 @@ if save_res:
     fig.savefig('allele_freq_changes_%s%s.png' % (nullness,
                                                   '_redundant' * redundant),
                 dpi=500)
-

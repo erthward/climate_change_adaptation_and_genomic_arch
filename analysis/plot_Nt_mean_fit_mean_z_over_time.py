@@ -54,7 +54,20 @@ linkages = ['independent', 'weak', 'strong']
 df = pd.concat([pd.read_csv(f, na_filter=False) for f in files])
 
 # get list of the ordered time steps
-env_change_start = 2500
+if os.getcwd().split('/')[1] == 'home':
+    steps = pd.read_csv(('/home/deth/Desktop/CAL/research/projects/sim/'
+                         'ch2/climate_change_adaptation_and_genomic_arch/sim/'
+                         'time_steps.csv'))
+# or else get filepaths on Savio
+else:
+    steps = pd.read_csv(('/global/scratch/users/drewhart/'
+                         'ch2/climate_change_adaptation_and_genomic_arch/sim/'
+                         'time_steps.csv'))
+# set time when environmental change begins
+change_T = int(steps[steps['name']=='start']['num'].values[0])
+# set time when environmental change ends
+T = int(steps[steps['name']=='end']['num'].values[0])
+env_change_start = change_T
 len_env_change_event = int(np.max(df.time_step)/3)
 time_steps = [*range(env_change_start-len_env_change_event,
                      env_change_start+(2*len_env_change_event))]
@@ -170,3 +183,19 @@ for redundancy in ['hi', 'lo']:
     plot_ts_for_all_scenarios(df, redundancy, 'Nt')
     plot_ts_for_all_scenarios(df, redundancy, 'mean_fit')
     plot_ts_for_all_scenarios(df, redundancy, 'mean_z')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
