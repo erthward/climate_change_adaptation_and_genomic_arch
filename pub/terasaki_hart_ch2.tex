@@ -51,15 +51,18 @@ research on climate change adaptation.
 \ifthenelse{\boolean{shortarticle}}{\ifthenelse{\boolean{singlecolumn}}{\abscontentformatted}{\abscontent}}{}
 
 
-#####################################################
-TODO:
-0. I bet the apparent inversion of gene flow results could have something to do with how I swapped the linkage and genicity orderds before running final batches of high-redundancy sims!! Look into this to confirm, but then I just need to figure out how to run the high-redund scenarios to completion without swapping the order (perhaps just hacky: add `if linkage != 'high': <SKIP>` statement?)
-1. code up redundancy plots
-2. run final set of sims after 05/31, then add final figures here
-3. write any final stats tests? (pheno-shift ANOVA using redund and non-redund combined? test for directions?)
-4. do once-over of methods and finalize
-5. mention 'transient architecture viz' thing and embed in SI, or just leave out?
-#####################################################
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%TODO:
+%0. I bet the apparent inversion of gene flow results could have something to do with how I swapped the linkage and genicity orderds before running final batches of high-redundancy sims!! Look into this to confirm, but then I just need to figure out how to run the high-redund scenarios to completion without swapping the order (perhaps just hacky: add `if linkage != 'high': <SKIP>` statement?)
+%1. finalize redundancy plots (change teal and red to some other colors not close to those used elsewhere in the study?)
+%2. check what's going on with extreme phenotypic values. ARE THEY BEING TRUNCATED TO 0 AND 1, OR ALLOWED TO EXCEED THEM? (the latter would be correct!)
+%2. run final set of sims after 05/31, then add final figures here
+%3. write any final stats tests? (pheno-shift ANOVA using redund and non-redund combined? test for directions?)
+%4. do once-over of methods and finalize
+%5. mention 'transient architecture viz' thing and embed in SI, or just leave out?
+%6. panel together population density plots for all scenarios, identically to panelled maladaptation plots
+%7. add and reference maladaptation plots for high-redundancy non-null sims and for null sims
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \dropcap{C}limate change is one of the foremost threats to biodiversity in the Anthropocene.
@@ -214,7 +217,7 @@ We run 100 pairs of main (changing-climate)
 and null (stable-climate) simulations, for each of eighteen scenarios
 resulting from the full factorial crossing of:
 \begin{enumerate}
-    \item two levels of redundancy (low: genotype-phenotype mapping is many-to-one for mid-range phenotypes, but reduces to one-to-one at extreme phenotypes; high: all phenotypes have many-to-one genotype-phenotype mappings; see \ref{fig:SUPP_redundancy});
+    \item two levels of redundancy (low: genotype-phenotype mapping is many-to-one for mid-range phenotypes, but reduces to one-to-one at extreme phenotypes; high: all phenotypes have many-to-one genotype-phenotype mappings; see Fig. S3); 
     \item three levels of polygenicity (low: 4 loci per trait for low-redundancy scenarios, 8 loci per trait for high; moderate: 20 and 40 loci per trait; and high: 100 and 200 loci per trait);
     \item three levels of linkage between all loci (independent: recombination rate ($r$) = 0.5; weak linkage: $r$ = 0.05; and strong linkage: $r$ = 0.005).
 \end{enumerate}
@@ -275,12 +278,6 @@ of environmental gradients
 (though further research would be needed to unequivocally confirm this).
 
 
-\begin{figure*}[\sidecaptionrelwidth][t]
-\centering
-\includegraphics[width=17.8cm]{Nt_time_series_and_boxplots.jpg}
-\caption{Left: Population size dynamics for all scenarios during the 250 time steps before the climate change period and the 250 time steps during it (with the two periods divided by a red, dashed vertical line marking the onset of the lcimate change period). Scenarios are organized as in Table 1, with rows for level of linkage and columns for number of loci per trait. Both means (black lines) and variability envelopes (5th percentile to 95th percentile) are shown, with scenario type depicted by color (main scenarios in red, null scenarios in blue). Right: Comparison of climate change-driven changes in mean population size across scenarios. Null scenarios are plotted on the left in blue, and main scenarios are plotted on the right, in red. Within each plot, scenarios are divided by the number of loci per trait (x-axis) and by the strength of linkage (shade, with darker hues representing stronger linkage). Asterisks above each box indicate level of significance (*=0.1, **=0.05, ***=0.005).}
-\label{fig:Nt_over_time_and_boxplots}
-\end{figure*}
 
 
 \begin{figure*}[\sidecaptionrelwidth][t]
@@ -554,7 +551,8 @@ neighboring loci (i.e., the homogeneous recombination rate parameter, parameter 
 (the \texttt{n\_loci} values specified above produce many-to-one genotype-phenotype mappings
 at intermediate phenotypes that decline to become one-to-one mappings at extreme phenotypes,
 whereas a doubling of those values produces many-to-one mappings across
-all phenotypes that match available environmental values (i.e., phenotypes between 0 and 1, inclusive); see Figure SXXXX).
+all phenotypes that match available environmental values (i.e., phenotypes between 0 and 1, inclusive); see Figure S3 ).
+
 (We did not include neutral loci in our simulations because genetic
 hitchhiking would preclude them providing unique information
 in all but the unliked scenarios. We also model strictly additive locus effects,
@@ -707,6 +705,7 @@ control.
 
 } % end matmethods
 
+
 \showmatmethods{} % Display the Materials and Methods section
 
 \acknow{We thank A. Bishop, T. Dawson,  J. Frederick, N. Graham, M. Kelly, M. McElroy, E. Westeen, G. Wogan, and M. Yuan for feedback and guidance on various iterations of the simulations presented herein. We thank Berkeley Research Computing for providing access to the Savio computing cluster. We thank D. Ehrenfeld, N. Fefferman, M. Fitzpatrick, and L. Plough for cultivating an interest in conservation genetics. Lastly, we thank M. Terasaki Hart, C. Nemec-Hart, G. Hart, J. Hart, and M. Tylka for supporting and encouraging a lifetime of curiosity about nature, and C. S. aTunde Adjuah, B. Evans, R. Pérez Joglar, Y. Y. Ma, and J. Redman for the pleasant solitude. This work was supported by a Berkeley Fellowship (to D.E.T.H.) and by National Science Foundation grant DEB1845682 (to I.J.W.).}
@@ -715,5 +714,37 @@ control.
 
 % Bibliography
 \bibliography{terasaki_hart_ch2}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TEMPORARY PLACE FOR SUPPLEMENTAL FIGS
+
+\textbf{SUPPLEMENTAL FIGS:}
+
+
+\begin{figure*}[\sidecaptionrelwidth][t]
+\centering
+\includegraphics[width=17.8cm]{Nt_time_series_and_boxplots.jpg}
+\caption{Left: Population size dynamics for all scenarios during the 250 time steps before the climate change period and the 250 time steps during it (with the two periods divided by a red, dashed vertical line marking the onset of the climate change period). Scenarios are organized as in Table 1, with rows for level of linkage and columns for number of loci per trait. Both means (black lines) and variability envelopes (5th percentile to 95th percentile) are shown, with scenario type depicted by color (main scenarios in red, null scenarios in blue). Right: Comparison of climate change-driven changes in mean population size across scenarios. Null scenarios are plotted on the left in blue, and main scenarios are plotted on the right, in red. Within each plot, scenarios are divided by the number of loci per trait (x-axis) and by the strength of linkage (shade, with darker hues representing stronger linkage). Asterisks above each box indicate level of significance (*=0.1, **=0.05, ***=0.005).}
+\label{fig:S1}
+\end{figure*}
+
+
+\begin{figure*}
+\centering
+\includegraphics[width=.8\linewidth]{pub/density_shift.jpg}
+\caption{Maps depicting shifts in population density during climate change for all scenarios.}
+\label{fig:S2}
+\end{figure*}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=.8\linewidth]{redundancy_fig.png}
+\caption{Depiction of redundancy for all simulated polygenicity values. Phenotypic values are plotted along the x-axis, and the natural log of the number of genotypes that yield each phenotypic value is plotted along the y-axis. Polygenicities corresponding to low-redundancy scenarios are plotted and labeled in light teal, and those corresponding to high-redundancy scenarios in dark teal. The minimum and maximum environmental values on the landscape are represented by dotted vertical lines. The number of genotypes corresponding to each phenotype is calculated using a custom adaptation of Eqxn. ii, Box 1 in \cite{laruson}, implemented for a diploid species and fitted to the numerical conventions used by Geonomics.
+}
+\label{fig:S3}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{document}
