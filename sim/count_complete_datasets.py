@@ -22,7 +22,7 @@ if redundant.lower() == 't':
 else:
     genicities = [4, 20, 100]
 
-# copy 100 datasets to new dir?
+# copy N datasets to new dir?
 # (if a last argument is provided and it's an existing dir)
 if len(sys.argv) > 3:
     if os.path.exists(sys.argv[3]) and os.path.isdir(sys.argv[3]):
