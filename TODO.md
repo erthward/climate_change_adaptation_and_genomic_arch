@@ -1,5 +1,11 @@
 # NEXT STEPS:
 
+## run final data:
+2. carefully review all code and make sure my sim-running workflow is correct
+3. double-check settings/etc.
+4. run all non-redundant sims
+5. permute linakge and genicity values and run a batch each time (8 batches total)
+
 ## SIMS
 - debug so that each iteration gets saved (rather than only 1 iteration from each scenario,PID combo!) (but not so important because I can just run a larger number of jobs to generate the full desired number of its)
 
