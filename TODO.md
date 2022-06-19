@@ -6,6 +6,16 @@
 4. run all non-redundant sims
 5. permute linakge and genicity values and run a batch each time (8 batches total)
 
+------------------------------------------------------------------------------
+#### steps:
+1. run test hi-redund batch and check results (just 8, 40, and 200 genicity; some complete)
+2. run test lo-redund batch and check results (adds 4, 20, and 100 genicity; many more complete, if not all)
+2.5 run analysis scripts and make sure all results look right based on that limited amount
+3. use amount of complete to run all remaining lo-redund sims
+4. use amount of complete hi-redund to estimate and run remaining hi-redund sims, permuting order of strong/weak/indep and 8/20/100 in batch_script.py each time
+5. check in, run more high-redund if necessary, and once I have everything then move to analysis dir, copy to cloud, and run analysis final time
+------------------------------------------------------------------------------
+
 ## SIMS
 - debug so that each iteration gets saved (rather than only 1 iteration from each scenario,PID combo!) (but not so important because I can just run a larger number of jobs to generate the full desired number of its)
 
