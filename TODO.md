@@ -1,6 +1,7 @@
 # NEXT STEPS:
 
 ## run final data:
+1. 
 2. carefully review all code and make sure my sim-running workflow is correct
 3. double-check settings/etc.
 4. run all non-redundant sims
@@ -8,8 +9,8 @@
 
 ------------------------------------------------------------------------------
 #### steps:
-1. run test hi-redund batch and check results (just 8, 40, and 200 genicity; some complete)
-2. run test lo-redund batch and check results (adds 4, 20, and 100 genicity; many more complete, if not all)
+1. run test hi-redund batch on savio2_htc and check results (just 8, 40, and 200 genicity; some complete)
+2. run test lo-redund batch on savio3 and check results (adds 4, 20, and 100 genicity; many more complete, if not all)
 2.5 run analysis scripts and make sure all results look right based on that limited amount
 3. use amount of complete to run all remaining lo-redund sims
 4. use amount of complete hi-redund to estimate and run remaining hi-redund sims, permuting order of strong/weak/indep and 8/20/100 in batch_script.py each time

@@ -16,9 +16,9 @@ import copy
 import time
 import os
 
-#/\/\/\/\/\/\/\/\
-# set main params
-#\/\/\/\/\/\/\/\/
+#/\/\//\/\/\
+# set params
+#\/\/\/\/\/\
 
 #------------
 # main params
@@ -26,11 +26,14 @@ import os
 # set number of iterations for each sim
 n_its = 1
 
+# reset the K_factor
+K_factor = 3
+
 # set the different numbers of loci to use,
 # and the factor to multiply effect size by
 # to either implement high genetic redundancy or not
-#redundancy = 'hi'
-redundancy = 'lo'
+redundancy = 'hi'
+#redundancy = 'lo'
 assert redundancy in ['lo', 'hi']
 if redundancy == 'lo':
     genicities = [4, 20, 100]
@@ -43,7 +46,6 @@ print('\n\n%s REDUND:\n\tGENICITIES: %s\nα FACTOR: %i\n\n' % (redundancy,
                                                               alpha_factor))
 
 # set the different linkage levels to use
-#linkages = ['independent', 'weak', 'strong']
 linkages = ['strong', 'weak', 'independent']
 linkages_dict = {'independent': {'r_distr_alpha': 0.5,
                                  'r_distr_beta': None},
@@ -52,6 +54,11 @@ linkages_dict = {'independent': {'r_distr_alpha': 0.5,
                  'strong': {'r_distr_alpha': 0.005,
                             'r_distr_beta': None}
            }
+
+
+#-------------------------------------
+# params and settings for data storage
+#-------------------------------------
 
 # get process ID as a string
 pid = str(os.getpid())
@@ -74,9 +81,11 @@ cts_table = (("\n"*3) + (border_patt*20) + ("\n"*3) + pid_header +
              cts_table + ("\n"*2))
 cts_table_list = [0] * (2 * len(linkages) * len(genicities))
 
-#---------------------------------------------------
-# params to reduce runtime for debugging/development
-#---------------------------------------------------
+
+#-----------------------------------------------------
+# params to reduce runtime/for debugging & development
+#-----------------------------------------------------
+
 # get timesteps
 if os.getcwd().split('/')[1] == 'home':
     steps = pd.read_csv(('/home/deth/Desktop/CAL/research/projects/sim/'
@@ -87,19 +96,22 @@ else:
     steps = pd.read_csv(('/global/scratch/users/drewhart/'
                          'ch2/climate_change_adaptation_and_genomic_arch/sim/'
                          'time_steps.csv'))
+
 # set time when environmental change begins
 change_T = int(steps[steps['name']=='start']['num'].values[0])
+
 # set time when environmental change ends
 T = int(steps[steps['name']=='end']['num'].values[0])
 print('climate change will start at time step %i' % change_T)
 print('simulation will end at time step %i' % T)
+
 # calc length of environmental change period
 deltaT_env_change = T - change_T
+
 # calc time prior to climate change to start storing Nt, mean fitness, and mean
 # phenotype
 t_record_data_b4_env_change = change_T - deltaT_env_change
-# reset the K_factor (if desired)
-K_factor = 3
+
 # print out debugging info?
 debug_verbose = True
 
