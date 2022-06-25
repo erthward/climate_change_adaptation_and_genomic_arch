@@ -113,7 +113,7 @@ deltaT_env_change = T - change_T
 t_record_data_b4_env_change = change_T - deltaT_env_change
 
 # print out debugging info?
-debug_verbose = True
+debug_verbose = False
 
 #--------------------------
 # params for stdout control
@@ -124,7 +124,7 @@ script_println_header = '=====>'
 #----------------------------------
 # params for stats to be calculated
 #----------------------------------
-gene_flow_stats = ['dir', 'dist', 'speed']
+gene_flow_stats = ['dir']
 other_stats = ['Nt', 'fit']
 stats = gene_flow_stats + other_stats
 use_individs_curr_pos=True
@@ -132,8 +132,8 @@ use_individs_curr_pos=True
 #-------------------
 # params for figures
 #-------------------
-# flag indicating whether or not to plot the lineage map
-map_gene_flow = True
+
+make_plots = False
 # set colors
 colors = {'null': {'nonneut': '#237ade',  # dark blue
                    'neut': '#94b3d6'},    # light blue
@@ -184,29 +184,6 @@ if K_factor is not None:
     params['comm']['species']['spp_0']['init']['K_factor'] = K_factor
 
 
-#/\/\/\/\/\/\/\
-# debugging fns
-#\/\/\/\/\/\/\/
-
-def check_recomb_rates(mod, print_it=False):
-    spp = mod.comm[0]
-    ga = spp.gen_arch
-    breakpoints = [np.array([*ga.recombinations._get_seg_info(
-        0, event_key, np.array([0,1]))])[:,1] for event_key in range(
-            ga.recombinations._n)]
-    observed_rates = {k:v/ga.recombinations._n for k,
-                      v in C(np.concatenate(breakpoints)).items()}
-    rates_arr = np.array([
-        observed_rates[loc-0.5] if loc-0.5 in observed_rates else 0 for loc in range(ga.L)])
-    assert np.allclose(ga.recombinations._rates, rates_arr, rtol=0.25), ("Not "
-        "all observed recomb rates are within 25pct of expected!\n\n%s\n\n%s") % (str(ga.recombinations._rates), str(rates_arr))
-    if print_it:
-        print("\n\n%s\n\nEXPECTED VS OBSERVED RATES\n\n%s\n\n" % (mod.name,
-        '\n'.join([str(n) for n in [*zip(ga.recombinations._rates, rates_arr,
-                                        ga.recombinations._rates-rates_arr)]])))
-
-
-
 #/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 # create output data structure
 #\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
@@ -233,82 +210,52 @@ for nullness in ['non-null', 'null']:
 # create figures
 #\/\/\/\/\/\/\/\
 
-#------------------
-# timecourse figure
-#------------------
-fig_time = {'non-null': plt.figure('time'),
-            'null': plt.figure('time, null')}
-[fig.suptitle(('example simulation time-courses, across linkage-genicity'
-               ' combinations; NULLNESS:'
-               ' %s' % nullness)) for nullness, fig in zip(['non-null', 'null'],
-                                                           fig_time.values())]
+if make_plots:
+    #------------------
+    # timecourse figure
+    #------------------
 
-gs_time = mpl.gridspec.GridSpec(2*len(linkages), 2*len(genicities))
-# use dicts to store the row and col indices in the gridspec that
-# correspond with each of the linkage-genicity combo scenarios
-gs_time_row_idxs = {linkage:i*2 for i, linkage in enumerate(linkages)}
-gs_time_col_idxs = {genicity:i*2 for i, genicity in enumerate(genicities)}
-# and use another dict to store the (row,col) offsets for each of the
-# 4 plots to be created for each linkage-genicity combo scenario
-gs_time_rowcol_idx_offsets = {'before': (0,0),
-                              'after': (0,1),
-                              'Nt': (1,0),
-                              'fit': (1,1)}
+    fig_time = {'non-null': plt.figure('time'),
+                'null': plt.figure('time, null')}
+    [fig.suptitle(('example simulation time-courses, across linkage-genicity'
+                   ' combinations; NULLNESS:'
+                   ' %s' % nullness)) for nullness, fig in zip(['non-null', 'null'],
+                                                               fig_time.values())]
 
-def get_fig_time_row_col_idxs(linkage, genicity, plot_type):
-    row_idx = gs_time_row_idxs[linkage]
-    col_idx = gs_time_col_idxs[genicity]
-    offsets = gs_time_rowcol_idx_offsets[plot_type]
-    row_idx += offsets[0]
-    col_idx += offsets[1]
-    return (row_idx, col_idx)
+    gs_time = mpl.gridspec.GridSpec(2*len(linkages), 2*len(genicities))
+    # use dicts to store the row and col indices in the gridspec that
+    # correspond with each of the linkage-genicity combo scenarios
+    gs_time_row_idxs = {linkage:i*2 for i, linkage in enumerate(linkages)}
+    gs_time_col_idxs = {genicity:i*2 for i, genicity in enumerate(genicities)}
+    # and use another dict to store the (row,col) offsets for each of the
+    # 4 plots to be created for each linkage-genicity combo scenario
+    gs_time_rowcol_idx_offsets = {'before': (0,0),
+                                  'after': (0,1),
+                                  'Nt': (1,0),
+                                  'fit': (1,1)}
 
-#------------
-# hist figure
-#------------
-fig_hist = plt.figure('hist')
-fig_hist.suptitle(('histograms of gene-flow direction, distance,'
-                  ' and speed, across linkage-genicity combinations'),
-                  fontsize=suptitle_size)
-# NOTE: extra column gives space for legend to live in; hacky, but works
-gs_hist = mpl.gridspec.GridSpec(len(linkages), 3*len(genicities)+1)
+    def get_fig_time_row_col_idxs(linkage, genicity, plot_type):
+        row_idx = gs_time_row_idxs[linkage]
+        col_idx = gs_time_col_idxs[genicity]
+        offsets = gs_time_rowcol_idx_offsets[plot_type]
+        row_idx += offsets[0]
+        col_idx += offsets[1]
+        return (row_idx, col_idx)
+
+    #------------
+    # hist figure
+    #------------
+    fig_hist = plt.figure('hist')
+    fig_hist.suptitle(('histograms of gene-flow direction, distance,'
+                      ' and speed, across linkage-genicity combinations'),
+                      fontsize=suptitle_size)
+    # NOTE: extra column gives space for legend to live in; hacky, but works
+    gs_hist = mpl.gridspec.GridSpec(len(linkages), 3*len(genicities)+1)
 
 
 #/\/\/\/\/\/\/\/\/
 # define functions
 #\/\/\/\/\/\/\/\/\
-
-def estimate_vonmises_params(angs, p=2, return_sigmahat=True):
-    """
-    Estimates the mu and kappa parameters of a von Mises-Fisher distribution
-    based on a sample of angular data. Also optionally estimates standard
-    deviation, for construction of confidence intervals.
-
-    Follows estimation as laid out on
-    [Wikipedia](https://en.wikipedia.org/wiki/Von_Mises%E2%80%93Fisher_distribution#Estimation_of_paramaters).
-    """
-    # drop all NaN angles
-    angs = [*np.array(angs)[~np.isnan(angs)]]
-    # decompose angles into a 2xN array of x and y unit-vector components
-    xi = np.stack((np.cos(angs), np.sin(angs)))
-    # calculate the x- and y-component means (as a length-2 1d array)
-    xbar = np.sum(xi, axis=1)/len(angs)
-    # calculate norm (Euclidean length) of that mean vector
-    Rbar = np.sqrt(np.sum([val**2 for val in xbar]))
-    # estimate mu as mean vector normed by its length
-    muhat = xbar/Rbar
-    # convert the muhat vector back to its angular equivalent, for return val
-    muhat_ang = np.arctan2(*muhat[::-1])
-    # estimate kappa
-    kappahat = (Rbar*(p-Rbar**2))/(1-Rbar**2)
-    # estimate standard deviation
-    if return_sigmahat:
-        d = 1 - np.sum([muhat.dot(xi[:,i]) for i in range(xi.shape[1])])/len(angs)
-        sigmahat = np.sqrt((d)/(len(angs)*(Rbar**2)))
-        return muhat_ang, kappahat, sigmahat
-    else:
-        return muhat_ang, kappahat
-
 
 def convert_compass_ang_2_quadrant_ang(ang, in_rads=True):
     out_ang = -ang+90
@@ -331,17 +278,11 @@ def calc_NSness_Eness(dirs):
 def store_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
               fit_data):
     '''
-    Store the current model's neutral and non-neutral locus data to its
+    Store the current model's non-neutral locus data to its
     appropriate spot in the output dict
     '''
     # output data structure for summary stats
-    stats_output = {'dist': {k: np.nan for k in ['mean_neut', 'mean_nonneut',
-                                                 'pval']},
-                    'dir': {k: np.nan for k in ['mu_neut', 'mu_nonneut',
-                                                'kappa_neut', 'kappa_nonneut',
-                                                'std_neut', 'std_nonneut',
-                                                'pval', 'NSness', 'Eness']}
-                   }
+    stats_output = {'dir': {k: np.nan for k in ['NSness', 'Eness']}}
 
     # grab the non-neutral loci
     nonneut_loci = mod.comm[0].gen_arch.traits[0].loci
@@ -353,73 +294,37 @@ def store_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
     sample_loci = mod.comm[0].gen_arch.traits[0].loci[
         np.random.choice(np.where(mod.comm[0].gen_arch.traits[0].alpha>0)[0],
                          size=2, replace=False)]
-    print('SAMPLE LOCI THIS TIME: ', str(sample_loci))
 
-    # grab random neutral loci eqaul in amt to the num of non-neutral loci
-    #neut_loci = np.random.choice(mod.comm[0].gen_arch.neut_loci, genicity,
-    #                             replace=False)
-
-    # calculate gene-flow stats for both the non-neutral and neutral loci
-    # NOTE: each one is structured as:
+    # calculate gene-flow stats for the non-neutral loci
+    # NOTE: each stat is structured as:
     # {'dir': {loc_0: [dir_ind0_chrom0, dir_ind0_chrom1,
     #                  dir_ind1_chrom0, ..., dir_indN_chrom1],
     #          loc_1:
     #          ...
     #          loc_n},
-    #  'dist': ...
-    #  'speed': ...
     # }
     # in other words, for each stat, for each locus, gene flow stats for all
     # chromosomes in current pop
-    nonneut_stats = mod.comm[0]._calc_lineage_stats(stats=['dir', 'dist',
-                                                           'speed'],
+    nonneut_stats = mod.comm[0]._calc_lineage_stats(stats=['dir'],
                                     use_individs_curr_pos=use_individs_curr_pos,
                                                     max_time_ago=max_time_ago,
                                                     loci=sample_loci)
                                                     #loci=nonneut_loci)
-    #neut_stats = mod.comm[0]._calc_lineage_stats(stats=['dir', 'dist', 'speed'],
-    #                                use_individs_curr_pos=use_individs_curr_pos,
-    #                                             max_time_ago=max_time_ago,
-    #                                             loci=neut_loci)
     # store the gene-flow data in the right places
     for stat, dataset in nonneut_stats.items():
-        #neut_data = []
         nonneut_data = []
         # add the non-neutral stats to their lists
         for data in dataset.values():
             stat_list=output[nullness][linkage][genicity][stat][n_it]['nonneut']
             stat_list.extend(data)
             nonneut_data.extend(data)
-        # add the neutral data too
-        #for data in neut_stats[stat].values():
-        #    stat_list = output[nullness][linkage][genicity][stat][n_it]['neut']
-        #    stat_list.extend(data)
-        #    neut_data.extend(data)
-        #run the F-test, store its results and the mean neut and nonneut vals
-        #neut_data = [val if val is not None else np.nan for val in neut_data]
+
         nonneut_data = [val if val is not None else np.nan for val in nonneut_data]
-        #if stat in ['dir', 'dist']:
-        #    f_test = scipy.stats.f_oneway(np.array(neut_data)[~np.isnan(
-        #                                                            neut_data)],
-        #                                np.array(nonneut_data)[~np.isnan(
-        #                                                        nonneut_data)])
-        #    stats_output[stat]['pval'] = f_test.pvalue
-        if stat == 'dist':
-            #stats_output[stat]['mean_neut'] = np.nanmean(neut_data)
-            stats_output[stat]['mean_nonneut'] = np.nanmean(nonneut_data)
-        elif stat == 'dir':
-            #neut_ests = estimate_vonmises_params(neut_data)
-            #stats_output[stat]['mu_neut'] = neut_ests[0]
-            #stats_output[stat]['kappa_neut'] = neut_ests[1]
-            #stats_output[stat]['std_neut'] = neut_ests[2]
-            nonneut_ests = estimate_vonmises_params(nonneut_data)
-            stats_output[stat]['mu_nonneut'] = nonneut_ests[0]
-            stats_output[stat]['kappa_nonneut'] = nonneut_ests[1]
-            stats_output[stat]['std_nonneut'] = nonneut_ests[2]
-            # calculate and store the 'north/southness' and 'eastness'
-            NSness, Eness = calc_NSness_Eness(nonneut_data)
-            stats_output[stat]['NSness'] = NSness
-            stats_output[stat]['Eness'] = Eness
+
+        # calculate and store the 'north/southness' and 'eastness'
+        NSness, Eness = calc_NSness_Eness(nonneut_data)
+        stats_output[stat]['NSness'] = NSness
+        stats_output[stat]['Eness'] = Eness
 
     # store the non-gene-flow data in the right places
     output[nullness][linkage][genicity]['Nt'][n_it].extend(mod.comm[0].Nt)
@@ -481,48 +386,20 @@ def set_params(params, linkage, genicity, nullness):
     copy_params['comm']['species']['spp_0']['gen_arch']['L'] = 2 * genicity
     for trt in copy_params['comm']['species']['spp_0']['gen_arch']['traits'].values():
         trt['n_loci'] = genicity
-        # DETH: 2022-02-02: checking what results look like with greater
-        # genetic redundancy
         trt['alpha_distr_mu'] = alpha_factor*(1/genicity)
-        #trt['alpha_distr_mu'] = 1/genicity
 
     # if this is a null sim, edit the params so that
     # no env change occurs 
     if nullness == 'null':
         copy_params['landscape']['layers']['shift'].pop('change');
-        # DETH: 2022-01-05: change the null to still have gradient but no shift
-        #copy_params['landscape']['layers']['shift']['init'][
-        #    'defined']['rast'] = np.ones((50, 50))*0.5
-        #lcopy_params['landscape']['layers']['stable']['init'][
-        #    'defined']['rast'] = np.ones((50, 50))*0.5
-        # DETH: 2022-01-04: and, experimentally, get rid of selection
-        # (without getting rid of fitness values)
-        #for trt_i in range(2):
-        #    copy_params['comm']['species']['spp_0'][
-        #        'gen_arch']['traits']['trait_%i' % trt_i]['phi'] = 0
-
 
     return copy_params, genarch_filename
 
 
-def calc_actual_recomb_rates(spp):
-    r = spp.gen_arch.recombinations
-    cts = {i:0 for i in range(len(spp.gen_arch.nonneut_loci))}
-    for k in r._subsetters.keys():
-        subsetter = r._get_subsetter(k)
-        binary = 1*np.array([*subsetter])
-        reshaped = binary.reshape((len(binary)//2, 2))
-        diffs = np.diff(np.diff(reshaped, axis=1), axis=0)
-        indices = np.argwhere(diffs!=0)[:,0]
-        for ind in indices:
-            cts[ind] += 1
-    ests = [v/len(r._subsetters) for v in cts.values()]
-    return ests
-
-
 def run_sim(nullness, linkage, genicity, n_its, params, output,
             cts_table_list, cts_table_list_idx):
-    '''Run the simulations for a given set of parameters and hyperparameters
+    '''
+    Run the simulations for a given set of parameters and hyperparameters
     '''
     # get the correct params for this sim
     copy_params, genarch_filename = set_params(params, linkage,
@@ -532,26 +409,8 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
     # set up stats lists to be returned
     delta_Nt = []
     delta_fit = []
-    neut_nonneut_dirtest_pval = []
-    #neut_nonneut_disttest_pval = []
-    mean_dist_neut = []
-    mean_dist_nonneut = []
-    #mu_dir_neut = []
-    mu_dir_nonneut = []
-    #kappa_dir_neut = []
-    kappa_dir_nonneut = []
-    #std_dir_neut = []
-    std_dir_nonneut = []
     NSness = []
     Eness = []
-    min_x_b4 = []
-    max_x_b4 = []
-    min_y_b4 = []
-    max_y_b4 = []
-    min_x_af = []
-    max_x_af = []
-    min_y_af = []
-    max_y_af = []
 
     # Nt, mean fitness, and mean phenotype
     # (to be recorded for each time step during climate change, and for an 
@@ -571,17 +430,8 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
                              name=copy_params['model']['name'])
         assert 'unnamed' not in mod.name, 'STILL UNNAMED!'
 
-        print("AFTER MAKING MODEL WD IS ", os.getcwd())
-
-        print("\n\n\nALPHAS: %s\n\n\n%s\n\n\n" % (
-            str(mod.comm[0].gen_arch.traits[0].alpha),
-            str(mod.comm[0].gen_arch.traits[1].alpha)))
-
         # delete the temporary genarch file
         os.remove(genarch_filename)
-
-        # check the recombination rates
-        check_recomb_rates(mod)
 
         # check that loci alternate between traits 0 and 1
         assert np.all(mod.comm[0].gen_arch.traits[1].loci ==
@@ -590,11 +440,9 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
                                                                'appear to be '
                                                                'intercalated!')
 
-        # coerce the iteration number to n_it (since we're using mod.walk instead of mod.run)
-        #mod.it = n_it
-
         # save the original carrying capacity raster (to use in plotting later)
-        orig_K = np.copy(mod.comm[0].K)
+        if make_plots:
+            orig_K = np.copy(mod.comm[0].K)
 
         # check that the number of trait 0 loci is correct
         assert len(mod.comm[0].gen_arch.traits[0].loci) == genicity, (
@@ -615,10 +463,6 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
 
             linkage_nums = [gen_arch_params['r_distr_alpha'],
                             gen_arch_params['r_distr_beta']]
-            print('\t\t\tLINKAGE: %s' % str(linkage_nums))
-            print(('\t\t\tRECOMB RATES: '
-                    '%s') % str(calc_actual_recomb_rates(mod.comm[0])))
-            print('\n\n')
 
         #print iteration number
         if debug_verbose:
@@ -642,7 +486,6 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
                 mean_fit_list.append(np.mean(mod.comm[0]._get_fit()))
                 mean_z_list.append(np.mean(mod.comm[0]._get_z()[:,0]))
 
-
             # keep printing the number of loci,
             # to help me track things while it's running
             n_loci = len(mod.comm[0].gen_arch.traits[0].loci)
@@ -660,15 +503,9 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         mean_Nt_b4 = np.mean(mod.comm[0].Nt[-deltaT_env_change:])
         mean_fit_b4 = np.mean(fit_data[-deltaT_env_change:])
 
-        # calculate the min and max x and y coords of the population again
-        b4_xs = mod.comm[0]._get_x()
-        b4_ys = mod.comm[0]._get_y()
-        min_x_b4_val, max_x_b4_val, min_y_b4_val, max_y_b4_val = [min(b4_xs), max(b4_xs),
-                                                  min(b4_ys), max(b4_ys)]
-
         # add the pre-change population to the fig,
-        # if this is the first iteration
-        if n_it == 0:
+        # if this is the first iteration and plots are requested
+        if make_plots and n_it == 0:
 
 
             # before-change phenotypic map
@@ -723,47 +560,18 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
         delta_Nt.append(mean_Nt_af - mean_Nt_b4)
         delta_fit.append(mean_fit_af - mean_fit_b4)
 
-        # calculate the min and max x and y coords of the population again
-        af_xs = mod.comm[0]._get_x()
-        af_ys = mod.comm[0]._get_y()
-        min_x_af_val, max_x_af_val, min_y_af_val, max_y_af_val = [min(af_xs),
-                                                                  max(af_xs),
-                                                                  min(af_ys),
-                                                                  max(af_ys)]
-
         # store the data
         stats_output = store_data(nullness, genicity, linkage, n_it,
                                   mod, output, deltaT_env_change, fit_data)
 
         # store the summary-stats output
         dir_stats = stats_output['dir']
-        #neut_nonneut_dirtest_pval.append(dir_stats['pval'])
-        #mu_dir_neut.append(dir_stats['mu_neut'])
-        mu_dir_nonneut.append(dir_stats['mu_nonneut'])
-        #kappa_dir_neut.append(dir_stats['kappa_neut'])
-        kappa_dir_nonneut.append(dir_stats['kappa_nonneut'])
-        #std_dir_neut.append(dir_stats['std_neut'])
-        std_dir_nonneut.append(dir_stats['std_nonneut'])
         NSness.append(dir_stats['NSness'])
         Eness.append(dir_stats['Eness'])
 
-        min_x_b4.append(min_x_b4_val)
-        max_x_b4.append(max_x_b4_val)
-        min_y_b4.append(min_y_b4_val)
-        max_y_b4.append(max_y_b4_val)
-        min_x_af.append(min_x_af_val)
-        max_x_af.append(max_x_af_val)
-        min_y_af.append(min_y_af_val)
-        max_y_af.append(max_y_af_val)
-
-        dist_stats = stats_output['dist']
-        #neut_nonneut_disttest_pval.append(dist_stats['pval'])
-        #mean_dist_neut.append(dist_stats['mean_neut'])
-        mean_dist_nonneut.append(dist_stats['mean_nonneut'])
-
         # add the post-change population and other plots to the fig,
-        # if this is the first iteration
-        if n_it == 0:
+        # if this is the first iteration and plots are requested
+        if make_plots and n_it == 0:
 
 
             # after-change phenotypic map
@@ -806,39 +614,9 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
             ax.plot(range(len(fit_data)), fit_data,
                     color=colors[nullness]['nonneut'])
             ax.plot([change_T]*2, [0, 1], ':k')
-            # TODO: perhaps change this to calculate the min y val in some way?
             ax.set_ylim([0.5, 1])
             ax.set_xlabel('t', size=8)
             ax.set_ylabel('mean fitness', size=8)
-
-            # TODO: calc and store neut vs. non-neut tests??
-
-            # TODO: still do something like this figure?
-            # make the gene-flow figure
-            #plt.figure('gene flow %i' % l)
-            #gf_ax1 = gf_fig.add_subplot(121)
-            #gf_ax1.set_title('Unlinked, trait 0', size=16)
-            ## define number of neutral and non-neutral loci to randomly draw
-            #n_locs=5
-            #nonneut_loci_to_plot = np.random.choice(
-            #            mod.comm[0].gen_arch.traits[0].loci, n_locs,
-            #            replace=False)
-
-            #neut_loci_to_plot = np.random.choice(
-            #            mod.comm[0].gen_arch.neut_loci, n_locs,
-            #            replace=False)
-            #nonneut_individs = np.random.choice([*mod.comm[0]], 10*n_locs,
-            #                                    replace=False)
-            #neut_individs = np.random.choice([*mod.comm[0]], 10*n_locs,
-            #                                 replace=False)
-            #for n, loc in enumerate(nonneut_loci_to_plot):
-            #    mod.comm[0]._plot_gene_flow(loc, 'vector', mod.land,
-            #            individs=nonneut_individs[n*n_locs:n*n_locs+n_locs],
-            #            color='#616161', phenotype=0, size=35)
-            #for n, loc in enumerate(neut_loci_to_plot):
-            #    mod.comm[0]._plot_gene_flow(loc, 'vector', mod.land,
-            #            individs=nonneut_individs[n*n_locs:n*n_locs+n_locs],
-            #            color='#f2f2f2', phenotype=0, size=35)
 
         cts_table_list[cts_table_list_idx] += 1
         print(cts_table % tuple([str(n) + " " * (max_len_it_str -
@@ -857,18 +635,7 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
             # walk 1 step
             mod.walk(1, mode='main', verbose=mod_verbose)
     return (delta_Nt, delta_fit,
-            #neut_nonneut_dirtest_pval,neut_nonneut_disttest_pval,
-            #mean_dist_neut,
-            mean_dist_nonneut,
-            #mu_dir_neut,
-            mu_dir_nonneut,
-            #kappa_dir_neut,
-            kappa_dir_nonneut,
-            #std_dir_neut,
-            std_dir_nonneut,
             NSness, Eness,
-            min_x_b4, max_x_b4, min_y_b4, max_y_b4,
-            min_x_af, max_x_af, min_y_af, max_y_af,
             Nt_list, mean_fit_list, mean_z_list)
 
 
@@ -918,26 +685,8 @@ genicity_col = []
 nullness_col = []
 delta_Nt_col = []
 delta_fit_col = []
-dir_pval_col = []
-dist_pval_col = []
-#mu_dir_neut_col = []
-mu_dir_nonneut_col = []
-#kappa_dir_neut_col = []
-kappa_dir_nonneut_col = []
-#std_dir_neut_col = []
-std_dir_nonneut_col = []
 NSness_col = []
 Eness_col = []
-#mean_dist_neut_col = []
-mean_dist_nonneut_col = []
-min_x_b4_col = []
-max_x_b4_col = []
-min_y_b4_col = []
-max_y_b4_col = []
-min_x_af_col = []
-max_x_af_col = []
-min_y_af_col = []
-max_y_af_col = []
 
 # dict to become dataframe for mean phenotype data
 ts_data_dict = {k:[] for k in ['time_step',
@@ -956,19 +705,7 @@ for genicity in genicities:
         #-----------------------------------------
         # run simulation with environmental change
         #-----------------------------------------
-        (delta_Nt, delta_fit, #dirtest_pval,
-         #disttest_pval,
-         #mean_dist_neut,
-         mean_dist_nonneut,
-         #mu_dir_neut,
-         mu_dir_nonneut,
-         #kappa_dir_neut,
-         kappa_dir_nonneut,
-         #std_dir_neut,
-         std_dir_nonneut,
-         NSness, Eness,
-         min_x_b4, max_x_b4, min_y_b4, max_y_b4,
-         min_x_af, max_x_af, min_y_af, max_y_af,
+        (delta_Nt, delta_fit, NSness, Eness,
          Nt_list, mean_fit_list, mean_z_list) = run_sim( 'non-null',
                                                         linkage,
                                                         genicity,
@@ -982,19 +719,7 @@ for genicity in genicities:
         #--------------------
         # run null simulation
         #--------------------
-        (delta_Nt_null, delta_fit_null, #dirtest_pval_null,
-         #disttest_pval_null,
-         #mean_dist_neut_null,
-         mean_dist_nonneut_null,
-         #mu_dir_neut_null,
-         mu_dir_nonneut_null,
-         #kappa_dir_neut_null,
-         kappa_dir_nonneut_null,
-         #std_dir_neut_null,
-         std_dir_nonneut_null,
-         NSness_null, Eness_null,
-         min_x_b4_null, max_x_b4_null, min_y_b4_null, max_y_b4_null,
-         min_x_af_null, max_x_af_null, min_y_af_null, max_y_af_null,
+        (delta_Nt_null, delta_fit_null, NSness_null, Eness_null,
          Nt_list_null, mean_fit_list_null, mean_z_list_null) = run_sim(
                                                         'null',
                                                          linkage,
@@ -1021,46 +746,10 @@ for genicity in genicities:
         delta_Nt_col.extend(delta_Nt_null)
         delta_fit_col.extend(delta_fit)
         delta_fit_col.extend(delta_fit_null)
-        #dir_pval_col.extend(dirtest_pval)
-        #dir_pval_col.extend(dirtest_pval_null)
-        #dist_pval_col.extend(disttest_pval)
-        #dist_pval_col.extend(disttest_pval_null)
-        #mu_dir_neut_col.extend(mu_dir_neut)
-        #mu_dir_neut_col.extend(mu_dir_neut_null)
-        mu_dir_nonneut_col.extend(mu_dir_nonneut)
-        mu_dir_nonneut_col.extend(mu_dir_nonneut_null)
-        #kappa_dir_neut_col.extend(kappa_dir_neut)
-        #kappa_dir_neut_col.extend(kappa_dir_neut_null)
-        kappa_dir_nonneut_col.extend(kappa_dir_nonneut)
-        kappa_dir_nonneut_col.extend(kappa_dir_nonneut_null)
-        #std_dir_neut_col.extend(std_dir_neut)
-        #std_dir_neut_col.extend(std_dir_neut_null)
-        std_dir_nonneut_col.extend(std_dir_nonneut)
-        std_dir_nonneut_col.extend(std_dir_nonneut_null)
         NSness_col.extend(NSness)
         NSness_col.extend(NSness_null)
         Eness_col.extend(Eness)
         Eness_col.extend(Eness_null)
-        #mean_dist_neut_col.extend(mean_dist_neut)
-        #mean_dist_neut_col.extend(mean_dist_neut_null)
-        mean_dist_nonneut_col.extend(mean_dist_nonneut)
-        mean_dist_nonneut_col.extend(mean_dist_nonneut_null)
-        min_x_b4_col.extend(min_x_b4)
-        min_x_b4_col.extend(min_x_b4_null)
-        min_y_b4_col.extend(min_y_b4)
-        min_y_b4_col.extend(min_y_b4_null)
-        max_x_b4_col.extend(max_x_b4)
-        max_x_b4_col.extend(max_x_b4_null)
-        max_y_b4_col.extend(max_y_b4)
-        max_y_b4_col.extend(max_y_b4_null)
-        min_x_af_col.extend(min_x_af)
-        min_x_af_col.extend(min_x_af_null)
-        min_y_af_col.extend(min_y_af)
-        min_y_af_col.extend(min_y_af_null)
-        max_x_af_col.extend(max_x_af)
-        max_x_af_col.extend(max_x_af_null)
-        max_y_af_col.extend(max_y_af)
-        max_y_af_col.extend(max_y_af_null)
 
         # store mean phenotype data
         ts_data_dict['time_step'].extend([*range(len(mean_z_list))]*2)
@@ -1087,118 +776,96 @@ df = pd.DataFrame({'linkage': linkage_col,
                    'nullness': nullness_col,
                    'delta_Nt': delta_Nt_col,
                    'delta_fit': delta_fit_col,
-                   #'mu_dir_neut': mu_dir_neut_col,
-                   'mu_dir_nonneut': mu_dir_nonneut_col,
-                   #'kappa_dir_neut': kappa_dir_neut_col,
-                   'kappa_dir_nonneut': kappa_dir_nonneut_col,
-                   #'std_dir_neut': std_dir_neut_col,
-                   'std_dir_nonneut': std_dir_nonneut_col,
                    'NSness': NSness_col,
                    'Eness': Eness_col,
-                   #'dir_pval': dir_pval_col,
-                   #'mean_dist_neut': mean_dist_neut_col,
-                   'mean_dist_nonneut': mean_dist_nonneut_col,
-                   #'dist_pval': dir_pval_col,
-                   'min_x_b4': min_x_b4_col,
-                   'min_y_b4': min_y_b4_col,
-                   'max_x_b4': max_x_b4_col,
-                   'max_y_b4': max_y_b4_col,
-                   'min_x_af': min_x_af_col,
-                   'min_y_af': min_y_af_col,
-                   'max_x_af': max_x_af_col,
-                   'max_y_af': max_y_af_col,
                   })
 
 df_dir = make_stat_df('dir', output)
-df_dist = make_stat_df('dist', output)
 df_ts_data = pd.DataFrame(ts_data_dict)
-print("\n\ndir and dist dfs' lengths' equal?:   ",
-      df_dir.shape[0] == df_dist.shape[0],
-      '\n\n')
 
 #/\/\/\/\/\/\/\
 # finalize figs
 #\/\/\/\/\/\/\/
+if make_plots:
 
-#dir_tick_locs = np.linspace(0, 360, 9)
-dir_tick_locs = np.linspace(0, 360, 5)
-#dir_tick_labs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N']
-dir_tick_labs = ['N', 'E', 'S', 'W', 'N']
+    #dir_tick_locs = np.linspace(0, 360, 9)
+    dir_tick_locs = np.linspace(0, 360, 5)
+    #dir_tick_labs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N']
+    dir_tick_labs = ['N', 'E', 'S', 'W', 'N']
 
-for genicity_n, genicity in enumerate(genicities):
-    for linkage_n, linkage in enumerate(linkages):
-        for stat_n, stat in enumerate(gene_flow_stats):
-            row_idx = linkage_n
-            col_idx = (genicity_n*3)+stat_n
-            ax = fig_hist.add_subplot(gs_hist[row_idx, col_idx])
-            if col_idx == 0:
-                ax.set_ylabel('linkage: %s' % str(linkage), size=rowlab_size)
-            if row_idx == 0 and col_idx in [0, 3, 6]:
-                ax.set_title('|| genicity: %i' % genicity, size=collab_size)
-            # plot a histogram of the unlinked and then linked data
-            for nullness in ['non-null', 'null']:
-                #for neut_idx, neutrality in enumerate(['neut', 'nonneut']):
-                for neutrality in ['nonneut']:
-                    data_dict = output[nullness][linkage][genicity][stat]
-                    data = [v[neutrality] for v in data_dict.values()]
-                    data = [val for sublist in data for val in sublist]
-                    data = [np.nan if val is None else val for val in data]
-                    if neutrality == 'neut':
-                        try:
-                            kde = scipy.stats.gaussian_kde(data)
-                            xx = np.linspace(min(data), max(data), 1000)
-                            kde_vals = kde(xx)
-                            # NOTE: make a completely transparent hist,
-                            #       to steal the bar heights
-                            #       from it and use them to scale the kde!
-                            vals, breaks, bars = ax.hist(data, bins=50,
-                                                         alpha=0)
-                            kde_plot_factor = max(vals)/max(kde_vals)
-                            kde_plot_vals = [val * kde_plot_factor for val
-                                                            in kde_vals]
-                            ax.plot(xx, kde_plot_vals, alpha=0.5,
-                                    label='%s: %s' % (nullness, neutrality),
+    for genicity_n, genicity in enumerate(genicities):
+        for linkage_n, linkage in enumerate(linkages):
+            for stat_n, stat in enumerate(gene_flow_stats):
+                row_idx = linkage_n
+                col_idx = (genicity_n*3)+stat_n
+                ax = fig_hist.add_subplot(gs_hist[row_idx, col_idx])
+                if col_idx == 0:
+                    ax.set_ylabel('linkage: %s' % str(linkage), size=rowlab_size)
+                if row_idx == 0 and col_idx in [0, 3, 6]:
+                    ax.set_title('|| genicity: %i' % genicity, size=collab_size)
+                # plot a histogram of the unlinked and then linked data
+                for nullness in ['non-null', 'null']:
+                    #for neut_idx, neutrality in enumerate(['neut', 'nonneut']):
+                    for neutrality in ['nonneut']:
+                        data_dict = output[nullness][linkage][genicity][stat]
+                        data = [v[neutrality] for v in data_dict.values()]
+                        data = [val for sublist in data for val in sublist]
+                        data = [np.nan if val is None else val for val in data]
+                        if neutrality == 'neut':
+                            try:
+                                kde = scipy.stats.gaussian_kde(data)
+                                xx = np.linspace(min(data), max(data), 1000)
+                                kde_vals = kde(xx)
+                                # NOTE: make a completely transparent hist,
+                                #       to steal the bar heights
+                                #       from it and use them to scale the kde!
+                                vals, breaks, bars = ax.hist(data, bins=50,
+                                                             alpha=0)
+                                kde_plot_factor = max(vals)/max(kde_vals)
+                                kde_plot_vals = [val * kde_plot_factor for val
+                                                                in kde_vals]
+                                ax.plot(xx, kde_plot_vals, alpha=0.5,
+                                        label='%s: %s' % (nullness, neutrality),
+                                        color=colors[nullness][neutrality])
+                            except Exception as e:
+                                print(('\n\nCOULD NOT PLOT KDE\n\nERROR '
+                                      'THROWN:\n\t%s') % e)
+                        else    :
+                            ax.hist(data, bins = 50, alpha=0.5,
+                                    label= '%s: %s' % (nullness, neutrality),
                                     color=colors[nullness][neutrality])
-                        except Exception as e:
-                            print(('\n\nCOULD NOT PLOT KDE\n\nERROR '
-                                  'THROWN:\n\t%s') % e)
-                    else    :
-                        ax.hist(data, bins = 50, alpha=0.5,
-                                label= '%s: %s' % (nullness, neutrality),
-                                color=colors[nullness][neutrality])
-                    ax.set_xlabel(stat, size=8)
-                    if row_idx==2 and col_idx==8:
-                        ax.legend(prop={'size': 10},
-                                  fontsize=5,
-                                  bbox_to_anchor=(1.5, 0.2))
-                    if col_idx in [0, 3, 6]:
-                        ax.set_xticks(dir_tick_locs)
-                        ax.set_xticklabels(dir_tick_labs)
-                    ax.tick_params(labelsize=ticklabel_size)
-                    ax.tick_params(axis='y', rotation=60)
-                    # TODO standardize axes
+                        ax.set_xlabel(stat, size=8)
+                        if row_idx==2 and col_idx==8:
+                            ax.legend(prop={'size': 10},
+                                      fontsize=5,
+                                      bbox_to_anchor=(1.5, 0.2))
+                        if col_idx in [0, 3, 6]:
+                            ax.set_xticks(dir_tick_locs)
+                            ax.set_xticklabels(dir_tick_labs)
+                        ax.tick_params(labelsize=ticklabel_size)
+                        ax.tick_params(axis='y', rotation=60)
+                        # TODO standardize axes
 
-# show all the figures
-[fig.show() for fig in fig_time.values()]
-fig_hist.show()
+    # show all the figures
+    [fig.show() for fig in fig_time.values()]
+    fig_hist.show()
 
-# set the subplot spacing
-plt.subplots_adjust(left=0.1,
-                    bottom=0.1,
-                    right=0.9,
-                    top=0.9,
-                    wspace=1.0,
-                    hspace=0.9)
-try:
-    rcParams['figure.figsize'] = 40, 12
-except Exception as e:
-    pass
-for name, fig in fig_time.items():
-    fig.savefig((output_path + '/fig_time_' + name + '_PID-%s' % pid +
-                 '.png'), format='png', dpi=1000)
-fig_hist.savefig(output_path + '/fig_hist' + '_PID-%s' % pid + '.png',
-                 format='png', dpi=1000)
-
+    # set the subplot spacing
+    plt.subplots_adjust(left=0.1,
+                        bottom=0.1,
+                        right=0.9,
+                        top=0.9,
+                        wspace=1.0,
+                        hspace=0.9)
+    try:
+        rcParams['figure.figsize'] = 40, 12
+    except Exception as e:
+        pass
+    for name, fig in fig_time.items():
+        fig.savefig((output_path + '/fig_time_' + name + '_PID-%s' % pid +
+                     '.png'), format='png', dpi=1000)
+    fig_hist.savefig(output_path + '/fig_hist' + '_PID-%s' % pid + '.png',
+                     format='png', dpi=1000)
 
 
 #/\/\/\/\/\/\/\/\/\
@@ -1209,11 +876,9 @@ fig_hist.savefig(output_path + '/fig_hist' + '_PID-%s' % pid + '.png',
 
 # high-level stats output
 df.to_csv(os.path.join(output_path, 'output_PID-%s.csv' % pid), index=False)
-
-# dfs containing raw dir and dist data from individual locus-chrom combos
+# df containing raw gene flow dir data from individual locus-chrom combos
 df_dir.to_csv(os.path.join(output_path, 'output_PID-%s_DIR.csv' % pid),
               index=False)
-df_dist.to_csv(os.path.join(output_path, 'output_PID-%s_DIST.csv' % pid),
-               index=False)
+# time-series df
 df_ts_data.to_csv(os.path.join(output_path, 'output_PID-%s_TS_DATA.csv' % pid),
                  index=False)
