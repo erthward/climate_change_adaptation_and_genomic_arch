@@ -27,7 +27,7 @@ import os
 n_its = 1
 
 # reset the K_factor
-K_factor = 3
+K_factor = 2.5
 
 # set the different numbers of loci to use,
 # and the factor to multiply effect size by
