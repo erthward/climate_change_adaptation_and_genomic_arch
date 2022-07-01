@@ -12,9 +12,9 @@ if __name__ == '__main__':
     mp.set_start_method('spawn')
 
     # make the pool
-    pool = mp.Pool(int(ncpu/2))
+    #pool = mp.Pool(int(ncpu/2))
     #pool = mp.Pool(int(ncpu)-4)
-    #pool = mp.Pool(1)
+    pool = mp.Pool(10)
 
     # map a serial list of batch numbers into the pool
     pool.map_async(run_batch_script, [*range(ncpu)])
