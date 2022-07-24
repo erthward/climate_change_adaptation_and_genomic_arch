@@ -17,7 +17,7 @@
 #
 ## Command(s) to run:
 
-module load python gsl gcc
+module load gsl gcc python/3.7
 
 python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/sim/parallelize_batches.py > ch2_job.pyout
 
