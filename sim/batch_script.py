@@ -90,12 +90,12 @@ cts_table_list = [0] * (2 * len(linkages) * len(genicities))
 if os.getcwd().split('/')[1] == 'home':
     steps = pd.read_csv(('/home/deth/Desktop/CAL/research/projects/sim/'
                          'ch2/climate_change_adaptation_and_genomic_arch/sim/'
-                         'time_steps.csv'))
+                         'time_steps.CSV'))
 # or else get filepaths on Savio
 else:
     steps = pd.read_csv(('/global/scratch/users/drewhart/'
                          'ch2/climate_change_adaptation_and_genomic_arch/sim/'
-                         'time_steps.csv'))
+                         'time_steps.CSV'))
 
 # set time when environmental change begins
 change_T = int(steps[steps['name']=='start']['num'].values[0])
@@ -175,7 +175,7 @@ else:
 # create ParamsDict object
 params = gnx.read_parameters_file(filepath=params_filepath)
 data_times = params['model']['data']['sampling']['when']
-print('Data will collected at timesteps %i, %i, and %i' % (data_times[0],
+print('data will be collected at timesteps %i, %i, and %i' % (data_times[0],
                                                            data_times[1],
                                                            data_times[2],
                                                           ))
@@ -473,11 +473,6 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
 
         # run the model up to the env change event
         for t in range(change_T):
-            print('\n\n\n\t'+'-' * 20)
-            print('\tMIN AND MAX Z VALS!')
-            print(np.min(mod.comm[0]._get_z(0)), np.max(mod.comm[0]._get_z(1)))
-            print(np.min(mod.comm[0]._get_z(1)), np.max(mod.comm[0]._get_z(1)))
-            print('\t'+'-' * 20)
 
             # record the Nt, mean fit, and mean z, if <= deltaT_env_change
             # prior to climate change

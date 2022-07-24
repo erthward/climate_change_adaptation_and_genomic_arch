@@ -14,12 +14,12 @@ import os
 if os.getcwd().split('/')[1] == 'home':
     steps = pd.read_csv(('/home/deth/Desktop/CAL/research/projects/sim/'
                          'ch2/climate_change_adaptation_and_genomic_arch/sim/'
-                         'time_steps.csv'))
+                         'time_steps.CSV'))
 # or else get filepaths on Savio
 else:
     steps = pd.read_csv(('/global/scratch/users/drewhart/'
                          'ch2/climate_change_adaptation_and_genomic_arch/sim/'
-                         'time_steps.csv'))
+                         'time_steps.CSV'))
 # set time when environmental change begins
 change_T = int(steps[steps['name']=='start']['num'].values[0])
 # set time when environmental change ends
