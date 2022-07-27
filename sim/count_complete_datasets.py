@@ -77,8 +77,10 @@ for pid in all_pids_in_dir:
             for genicity in cts.indexes['genicity']:
                 # get all model-generated dirs
                 curr_dir_patt = dir_patt % (nullness, linkage, genicity, pid)
+                print('CURR DIR PATT: ', curr_dir_patt)
                 dirs = [f for f in os.listdir(datadir) if re.search(curr_dir_patt,
                                                                     f)]
+                print('DIRS: ', dirs)
                 if run_asserts:
                     assert len(dirs)==1, ('Did not find exactly 1 dir for '
                                           '%s, %s linkage, %i genes/trait.\n\n'
@@ -94,6 +96,7 @@ for pid in all_pids_in_dir:
                     # get the distinct timesteps
                     timesteps_this_dir = set([int(re.search(timestep_patt,
                                                        f).group()) for f in files])
+                    print('\n\nTIMSTEPS THIS DIR: ', timesteps_this_dir)
                     if run_asserts:
                         assert len(timesteps_this_dir) == 3
                     # add to overall set
