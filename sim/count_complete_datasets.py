@@ -2,8 +2,6 @@ import numpy as np
 import xarray as xr
 import os, re, sys, shutil
 
-# TODO:
-    # CORRECT n_copy_datasets to 100, then rerun for final analysis
 
 # CLI arg determine whether or not to run asserts
 # (run without asserts to determine PIDs to drop;
@@ -31,8 +29,7 @@ if len(sys.argv) > 3:
         raise Exception('copy_dir (last arg) must be an existing directory')
 else:
     copy_dir = None
-#n_copy_datasets = 100
-n_copy_datasets = 48
+n_copy_datasets = 100
 
 # regex patts
 dir_patt = 'GNX_mod-%s_L%s_G%i_its0_randID\d+PID-%s'
@@ -80,10 +77,8 @@ for pid in all_pids_in_dir:
             for genicity in cts.indexes['genicity']:
                 # get all model-generated dirs in the full-output dir
                 curr_dir_patt = dir_patt % (nullness, linkage, genicity, pid)
-                print('CURR DIR PATT: ', curr_dir_patt)
                 dirs = [f for f in os.listdir(full_datadir) if re.search(curr_dir_patt,
                                                                     f)]
-                print('DIRS: ', dirs)
                 if run_asserts:
                     assert len(dirs)==1, ('Did not find exactly 1 dir for '
                                           '%s, %s linkage, %i genes/trait.\n\n'
@@ -99,7 +94,6 @@ for pid in all_pids_in_dir:
                     # get the distinct timesteps
                     timesteps_this_dir = set([int(re.search(timestep_patt,
                                                        f).group()) for f in files])
-                    print('\n\nTIMSTEPS THIS DIR: ', timesteps_this_dir)
                     if run_asserts:
                         assert len(timesteps_this_dir) == 3
                     # add to overall set
