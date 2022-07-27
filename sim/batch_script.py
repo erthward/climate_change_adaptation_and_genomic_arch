@@ -489,7 +489,6 @@ def run_sim(nullness, linkage, genicity, n_its, params, output,
                                                     linkage, genicity, n_it))
             # walk 1 step
             mod.walk(1, mode='main', verbose=mod_verbose)
-            print(mod.comm[0].Nt[-1], ' INDIVIDS')
 
             # store the fitness data for this timestep
             fit_data.append(np.mean(mod.comm[0]._get_fit()))
@@ -765,6 +764,7 @@ for genicity in genicities:
                 len(delta_Nt_col) == len(delta_fit_col))
 
 
+print('\n\n\n%s\nNOW PREPPING DATA FOR PID %s\n\n%s\n' % ('<>'*40, str(pid), '<>'*40))
 # gather delta Nt and delta fit data into a DataFrame
 df = pd.DataFrame({'linkage': linkage_col,
                    'genicity': genicity_col,
@@ -870,10 +870,15 @@ if make_plots:
 # save dfs to disk, including:
 
 # high-level stats output
+print('\n\n\n%s\nNOW SAVING MAIN DF FOR PID %s\n\n%s\n' % ('<>'*40, str(pid), '<>'*40))
 df.to_csv(os.path.join(output_path, 'output_PID-%s.csv' % pid), index=False)
+
 # df containing raw gene flow dir data from individual locus-chrom combos
+print('\n\n\n%s\nNOW SAVING DIR DF FOR PID %s\n\n%s\n' % ('<>'*40, str(pid), '<>'*40))
 df_dir.to_csv(os.path.join(output_path, 'output_PID-%s_DIR.csv' % pid),
               index=False)
+
 # time-series df
+print('\n\n\n%s\nNOW SAVING TS DF FOR PID %s\n\n%s\n' % ('<>'*40, str(pid), '<>'*40))
 df_ts_data.to_csv(os.path.join(output_path, 'output_PID-%s_TS_DATA.csv' % pid),
                  index=False)
