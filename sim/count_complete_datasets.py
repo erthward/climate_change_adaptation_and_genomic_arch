@@ -43,10 +43,13 @@ pid_patt = '(?<=PID-)\d+'
 # ouput directory
 if os.getcwd().split('/')[1] == 'home':
     datadir = '/home/deth/Desktop/tmp_ch2_stats_tests_dev/'
+    full_datadir = None
 else:
     with open(('/global/scratch/users/drewhart/ch2/climate_change_adaptation_'
                'and_genomic_arch/analysis/outputdir.txt'), 'r') as f:
         datadir = f.read().strip()
+    full_datadir = os.path.join(os.path.split(datadir.rstrip('/'))[0],
+                                'output_all_final')
 
 # store iteration counts
 cts = xr.DataArray(np.zeros((2, 3, 3)),
@@ -58,7 +61,7 @@ cts = xr.DataArray(np.zeros((2, 3, 3)),
 # store all the distinct timesteps for which data has been generated
 all_timesteps = set()
 
-# get all unique PIDs in dir
+# get all unique PIDs in dir (using summary csv files in 100_final output dir)
 all_pids_in_dir = set([re.search(pid_patt,
             f).group() for f in os.listdir(datadir) if re.search(pid_patt, f)])
 # track which PIDs have complete datasets
@@ -75,10 +78,10 @@ for pid in all_pids_in_dir:
     for nullness in cts.indexes['nullness']:
         for linkage in cts.indexes['linkage']:
             for genicity in cts.indexes['genicity']:
-                # get all model-generated dirs
+                # get all model-generated dirs in the full-output dir
                 curr_dir_patt = dir_patt % (nullness, linkage, genicity, pid)
                 print('CURR DIR PATT: ', curr_dir_patt)
-                dirs = [f for f in os.listdir(datadir) if re.search(curr_dir_patt,
+                dirs = [f for f in os.listdir(full_datadir) if re.search(curr_dir_patt,
                                                                     f)]
                 print('DIRS: ', dirs)
                 if run_asserts:
@@ -91,7 +94,7 @@ for pid in all_pids_in_dir:
 
                 # check that the dir has a complete dataset
                 for d in dirs:
-                    d = os.path.join(datadir, d, 'it--1', 'spp-spp_0')
+                    d = os.path.join(full_datadir, d, 'it--1', 'spp-spp_0')
                     files = os.listdir(d)
                     # get the distinct timesteps
                     timesteps_this_dir = set([int(re.search(timestep_patt,
@@ -112,25 +115,26 @@ for pid in all_pids_in_dir:
                                  linkage=linkage,
                                  genicity=genicity)] += 1
 
-    # check that there's exactly one set of 4 CSV files for this PID
+    # check that there's exactly one set of 3 CSV files
+    # (in the 100_final datadir) for this PID
     summary_csvs = [f for f in os.listdir(datadir) if
                     re.search(summary_csv_patt % pid, f)]
     if run_asserts:
-        assert len(summary_csvs) == 4, ('Did not find exactly 4 summary '
+        assert len(summary_csvs) == 3, ('Did not find exactly 4 summary '
                                     'CSVs for PID %s\n\nCSVs: '
                                    '%s') % (pid, ', '.join(summary_csvs))
-    if dataset_count == 18 and len(summary_csvs) == 4:
+    if dataset_count == 18 and len(summary_csvs) == 3:
         pids_complete[pid] += 1
 
         # copy data for this complete PID, if requested and needed
         if copy_dir is not None:
             if copy_ct < n_copy_datasets:
-                for f in os.listdir(datadir):
-                    if re.search(('(?<=-)%s(_DIR)?(_DIST)?(_TS_DATA)?(\.csv)?'
+                for f in os.listdir(full_datadir):
+                    if re.search(('(?<=-)%s(_DIR)?(_TS_DATA)?(\.csv)?'
                                   '$') % str(pid), f):
                         #print('\n\tcopying %s...\n\n' % f)
-                        #shutil.copy(os.path.join(datadir, f), copy_dir)
-                        cmd = 'cp -R %s %s' % (os.path.join(datadir, f),
+                        #shutil.copy(os.path.join(full_datadir, f), copy_dir)
+                        cmd = 'cp -R %s %s' % (os.path.join(full_datadir, f),
                                                copy_dir)
                         print('\n\trunning command `%s` ...\n' % cmd)
                         os.system(cmd)
@@ -180,7 +184,7 @@ else:
             for pid, ct in pids_complete.items():
                 if ct != 1:
                     print('Deleting data for PID %s...\n' % pid)
-                    cmd = 'rm -rf %s/*%s*' % (datadir, pid)
+                    cmd = 'rm -rf %s/*%s*' % (full_datadir, pid)
                     os.system(cmd)
 
         else:
