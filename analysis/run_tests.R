@@ -1,6 +1,6 @@
 library(ggplot2)
-library(tidyverse)
 library(plyr)
+library(tidyverse)
 library(nlme)
 library(cowplot)
 library(latex2exp)

@@ -46,13 +46,12 @@ else:
 linkages = ['independent', 'weak', 'strong']
 genicities =  [4, 8, 20, 40, 100, 200]
 
-# get timesteps
-# get timesteps
+# get timesteps on laptop
 if os.getcwd().split('/')[1] == 'home':
     steps = pd.read_csv(('/home/deth/Desktop/CAL/research/projects/sim/'
                          'ch2/climate_change_adaptation_and_genomic_arch/sim/'
                          'time_steps.CSV'))
-# or else get filepaths on Savio
+# or else on Savio
 else:
     steps = pd.read_csv(('/global/scratch/users/drewhart/'
                          'ch2/climate_change_adaptation_and_genomic_arch/sim/'

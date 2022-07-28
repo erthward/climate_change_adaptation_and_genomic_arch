@@ -52,10 +52,21 @@ else:
     #datadir = '/global/scratch/users/drewhart/ch2/output/output'
     #analysis_dir = '/global/scratch/users/drewhart/ch2/output/analysis'
 
-# environmental change time steps
-change_start_t = 2499
-change_half_t = 2624
-change_end_t = 2749
+# get environmental change time steps on laptop
+if os.getcwd().split('/')[1] == 'home':
+    steps = pd.read_csv(('/home/deth/Desktop/CAL/research/projects/sim/'
+                         'ch2/climate_change_adaptation_and_genomic_arch/sim/'
+                         'time_steps.CSV'))
+# or else on Savio
+else:
+    steps = pd.read_csv(('/global/scratch/users/drewhart/'
+                         'ch2/climate_change_adaptation_and_genomic_arch/sim/'
+                         'time_steps.CSV'))
+change_T = int(steps[steps['name']=='start']['num'].values[0])
+T = int(steps[steps['name']=='end']['num'].values[0])
+change_start_t = change_T-1
+change_end_t = T-1
+change_half_t = int((change_start_t + change_end_t)/2)
 change_len = change_end_t - change_start_t
 
 # get arg determining whether to plot high- or low-redundancy scenarios
@@ -138,7 +149,7 @@ def plot_phenotypic_shift(linkage, genicity, fix_ur_corner=True):
                 candidate_filenames = [*np.sort(candidate_filenames)]
                 filenames[dirname] = candidate_filenames
             else:
-                print(('\n\nWARNING: following directory did not contain'
+                print(('\n\nWARNING: following directory did not contain '
                        '2 valid files, 1 for each of the right timesteps:\n\n\t'
                        '%s\n\n') % dirname)
 
