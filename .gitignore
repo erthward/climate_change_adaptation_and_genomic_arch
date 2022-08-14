@@ -1,7 +1,11 @@
 *.swp
 *.gif
 ./figs
-*.png
+./*png
+analysis/*png
+conceptual_fig/*png
+sim/*png
+scratch
 */jpg
 __pycache__/*
 slurm*.out
