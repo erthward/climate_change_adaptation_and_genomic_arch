@@ -4,7 +4,7 @@ library(plyr)
 library(nlme)
 library(cowplot)
 library(latex2exp)
-library(ggsignif)
+#library(ggsignif)
 
 
 
@@ -12,10 +12,13 @@ library(ggsignif)
 # PLOT FORMATTING PARAMS
 ########################
 
-legend.text.size = 17
-legend.title.size = 25
-axis.label.size = 25
-tick.label.size = 17
+legend.text.size = 20
+legend.title.size = 22
+tick.label.size = 20
+axis.label.size = 24
+height = 5500
+width = 5500
+dpi = 600
 
 
 ######################
@@ -95,13 +98,6 @@ summary.df$color = as.factor(cols)
 df.nonull = summary.df[summary.df$nullness == 'non_null',]
 df.null = summary.df[summary.df$nullness == 'null',]
 
-# plot delta_Nt and delta_fit as function of genicity and linkage
-#ggplot.delta_Nt = ggplot() + 
-#    geom_point(aes(num.linkage, delta_Nt, col=color, size=size), data=df.nonull, position='jitter') +
-#    geom_point(aes(num.linkage, delta_Nt, col=color, size=size), data=df.null, position='jitter') +
-#    scale_colour_manual(values=plot_cols) 
-#ggplot.delta_Nt
-
 
 # pop size boxplots
 for (redundancy in c('hi', 'lo')){
@@ -110,59 +106,63 @@ for (redundancy in c('hi', 'lo')){
    subdf.nonull = df.nonull[df.nonull$redundancy == redundancy, ]
 
   theme_set(theme_linedraw(base_size=20))
-  #jpeg(paste0(analysis.dir, 'boxplot_delta_Nt_', redundancy, 'REDUND.jpg'), width=5000, height=2500, res=300)
-  boxnull = ggplot(subdf.null) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
+  boxnull = ggplot(subdf.null) + geom_boxplot(outlier.size=0.5, lwd=0.3, aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
       geom_hline(yintercept=0) +
       scale_fill_manual(values = plot_cols[6:4],
                         labels=c('strong', 'weak', 'independent'),
                         name='linkage') +
-      scale_y_continuous(limits = c(-750, 250)) +
-      labs(y=TeX('$\\Delta$ population size'), x='number of loci per trait') +
+      scale_y_continuous(limits = c(-500, 125)) +
+      labs(y=TeX('$\\Delta$ population size'), x='') +
       theme(legend.text=element_text(size=legend.text.size),
             legend.title=element_text(size=legend.title.size),
             axis.title=element_text(size=axis.label.size),
-            axis.text=element_text(size=tick.label.size))
+            axis.text=element_text(size=tick.label.size),
+            axis.text.x=element_blank(),
+            plot.margin=unit(c(0.1, 0, 0.1, 0.1), 'cm'))
   
-  boxnonull = ggplot(subdf.nonull) + geom_boxplot(aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
+  boxnonull = ggplot(subdf.nonull) + geom_boxplot(outlier.size=0.5, lwd=0.3, aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
       geom_hline(yintercept=0) +
       scale_fill_manual(values = plot_cols[3:1],
                         labels=c('strong', 'weak', 'independent'),
                         name='linkage') +
-      scale_y_continuous(limits = c(-750, 250)) +
+      scale_y_continuous(limits = c(-500, 125)) +
       labs(y=TeX('$\\Delta$ population size'), x='number of loci per trait') +
       theme(legend.text=element_text(size=legend.text.size),
             legend.title=element_text(size=legend.title.size),
             axis.title=element_text(size=axis.label.size),
-            axis.text=element_text(size=tick.label.size))
-  cowplot::plot_grid(boxnull, boxnonull) 
-  ggsave(paste0(analysis.dir, 'boxplot_delta_Nt_', redundancy, 'REDUND.jpg'), width=5000, height=2500, units='px', dpi=300)
+            axis.text=element_text(size=tick.label.size),
+            plot.margin=unit(c(0.1, 0, 0.1, 0.1), 'cm'))
+  cowplot::plot_grid(boxnull, boxnonull, nrow=2, ncol=1) 
+  ggsave(paste0(analysis.dir, 'boxplot_delta_Nt_', redundancy, 'REDUND.jpg'), width=width, height=height, units='px', dpi=dpi)
   #dev.off()
   
   # mean fitness boxplots
-  #jpeg(paste0(analysis.dir, 'boxplot_delta_fit_', redundancy, 'REDUND.jpg'), width=5000, height=2500, res=300)
-  boxnull = ggplot(subdf.null) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
+  boxnull = ggplot(subdf.null) + geom_boxplot(outlier.size=0.5, lwd=0.3, aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
       geom_hline(yintercept=0) +
       scale_fill_manual(values = plot_cols[6:4],
                         labels=c('strong', 'weak', 'independent'),
                         name='linkage') +
-      scale_y_continuous(limits = c(-0.03, 0.015)) +
-      labs(y=TeX('$\\Delta$ fitness'), x='number of loci per trait') +
+      scale_y_continuous(limits = c(-0.03, 0.01)) +
+      labs(y=TeX('$\\Delta$ fitness'), x='') +
       theme(legend.text=element_text(size=legend.text.size),
             legend.title=element_text(size=legend.title.size),
             axis.title=element_text(size=axis.label.size),
-            axis.text=element_text(size=tick.label.size))
-  boxnonull = ggplot(subdf.nonull) + geom_boxplot(aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
+            axis.text=element_text(size=tick.label.size),
+            axis.text.x=element_blank(),
+            plot.margin=unit(c(0.1, 0, 0.1, 0.1), 'cm'))
+  boxnonull = ggplot(subdf.nonull) + geom_boxplot(outlier.size=0.5, lwd=0.3, aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
       geom_hline(yintercept=0) +
       scale_fill_manual(values = plot_cols[3:1],
                         labels=c('strong', 'weak', 'independent'),
                         name='linkage') +
-      scale_y_continuous(limits = c(-0.03, 0.015)) +
+      scale_y_continuous(limits = c(-0.03, 0.01)) +
       labs(y=TeX('$\\Delta$ fitness'), x='number of loci per trait') +
       theme(legend.text=element_text(size=legend.text.size),
             legend.title=element_text(size=legend.title.size),
             axis.title=element_text(size=axis.label.size),
-            axis.text=element_text(size=tick.label.size))
-  cowplot::plot_grid(boxnull, boxnonull)
-  ggsave(paste0(analysis.dir, 'boxplot_delta_fit_', redundancy, 'REDUND.jpg'), width=5000, height=2500, units='px', dpi=300)
+            axis.text=element_text(size=tick.label.size),
+            plot.margin=unit(c(0.1, 0, 0.1, 0.1), 'cm'))
+  cowplot::plot_grid(boxnull, boxnonull, nrow=2, ncol=1)
+  ggsave(paste0(analysis.dir, 'boxplot_delta_fit_', redundancy, 'REDUND.jpg'), width=width, height=height, units='px', dpi=dpi)
   #dev.off()
 }
