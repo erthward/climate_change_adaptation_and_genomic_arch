@@ -12,7 +12,7 @@ library(latex2exp)
 # PLOT FORMATTING PARAMS
 ########################
 
-legend.text.size = 20
+legend.text.size = 18
 legend.title.size = 22
 tick.label.size = 20
 axis.label.size = 24
@@ -118,7 +118,7 @@ for (redundancy in c('hi', 'lo')){
             axis.title=element_text(size=axis.label.size),
             axis.text=element_text(size=tick.label.size),
             axis.text.x=element_blank(),
-            plot.margin=unit(c(0.1, 0, 0.1, 0.1), 'cm'))
+            plot.margin=unit(c(0.1, 0.2, 0.1, 0.1), 'cm'))
   
   boxnonull = ggplot(subdf.nonull) + geom_boxplot(outlier.size=0.5, lwd=0.3, aes(x=genicity, y=delta_Nt, fill=num.linkage)) + 
       geom_hline(yintercept=0) +
@@ -131,7 +131,7 @@ for (redundancy in c('hi', 'lo')){
             legend.title=element_text(size=legend.title.size),
             axis.title=element_text(size=axis.label.size),
             axis.text=element_text(size=tick.label.size),
-            plot.margin=unit(c(0.1, 0, 0.1, 0.1), 'cm'))
+            plot.margin=unit(c(0.1, 0.2, 0.1, 0.1), 'cm'))
   cowplot::plot_grid(boxnull, boxnonull, nrow=2, ncol=1) 
   ggsave(paste0(analysis.dir, 'boxplot_delta_Nt_', redundancy, 'REDUND.jpg'), width=width, height=height, units='px', dpi=dpi)
   #dev.off()
@@ -149,7 +149,7 @@ for (redundancy in c('hi', 'lo')){
             axis.title=element_text(size=axis.label.size),
             axis.text=element_text(size=tick.label.size),
             axis.text.x=element_blank(),
-            plot.margin=unit(c(0.1, 0, 0.1, 0.1), 'cm'))
+            plot.margin=unit(c(0.1, 0.2, 0.1, 0.1), 'cm'))
   boxnonull = ggplot(subdf.nonull) + geom_boxplot(outlier.size=0.5, lwd=0.3, aes(x=genicity, y=delta_fit, fill=num.linkage)) + 
       geom_hline(yintercept=0) +
       scale_fill_manual(values = plot_cols[3:1],
@@ -161,7 +161,7 @@ for (redundancy in c('hi', 'lo')){
             legend.title=element_text(size=legend.title.size),
             axis.title=element_text(size=axis.label.size),
             axis.text=element_text(size=tick.label.size),
-            plot.margin=unit(c(0.1, 0, 0.1, 0.1), 'cm'))
+            plot.margin=unit(c(0.1, 0.2, 0.1, 0.1), 'cm'))
   cowplot::plot_grid(boxnull, boxnonull, nrow=2, ncol=1)
   ggsave(paste0(analysis.dir, 'boxplot_delta_fit_', redundancy, 'REDUND.jpg'), width=width, height=height, units='px', dpi=dpi)
   #dev.off()

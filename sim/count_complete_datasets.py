@@ -47,6 +47,8 @@ else:
         datadir = f.read().strip()
     full_datadir = os.path.join(os.path.split(datadir.rstrip('/'))[0],
                                 'output_all_final')
+				# DELETE ME:
+                                #'output_100_final_for_analysis')
 
 # store iteration counts
 cts = xr.DataArray(np.zeros((2, 3, 3)),

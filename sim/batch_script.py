@@ -32,8 +32,8 @@ K_factor = 2.5
 # set the different numbers of loci to use,
 # and the factor to multiply effect size by
 # to either implement high genetic redundancy or not
-redundancy = 'hi'
-#redundancy = 'lo'
+#redundancy = 'hi'
+redundancy = 'lo'
 assert redundancy in ['lo', 'hi']
 if redundancy == 'lo':
     genicities = [4, 20, 100]
