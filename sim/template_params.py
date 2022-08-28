@@ -1,16 +1,18 @@
-# prelim_params.py
+# template_params.py
 
+import numpy as np
+import pandas as pd
+import os
 
 # set up the landscape
-import numpy as np
 b4 = np.vstack([np.linspace(1, 0, 50) for _ in range(50)])
 af = np.vstack([np.linspace(1, 0.5, 50) for _ in range(50)])
 stable = np.vstack([np.linspace(1, 0, 50) for _ in range(50)])
 K = np.ones((50,50))
 
-import pandas as pd
-import os
-# get timesteps
+# NOTE: time_steps.CSV USED TO SET CLIMATE CHANGE
+#       TO START AT TIME STEP 2500
+#       AND FINISH AT TIME STEP 2750
 if os.getcwd().split('/')[1] == 'home':
     steps = pd.read_csv(('/home/deth/Desktop/CAL/research/projects/sim/'
                          'ch2/climate_change_adaptation_and_genomic_arch/sim/'
@@ -263,7 +265,7 @@ params = {
                     #carrying-capacity Layer name
                     'K_layer':          'K',
                     #multiplicative factor for carrying-capacity layer
-                    'K_factor':         50,
+                    'K_factor':         2.5,
                     }, # <END> 'init'
 
             #-------------------------------------#
@@ -289,7 +291,9 @@ params = {
                     'n_births_fixed':           True,
                     #radius of mate-search area
                     'mating_radius':            5,
+                    #whether individs should choose nearest neighs as mates
                     'choose_nearest_mate':      False,
+                    #whether mate-choice should be inverse distance-weighted
                     'inverse_dist_mating':      False,
                     }, # <END> 'mating'
 
@@ -323,18 +327,14 @@ params = {
                     'movement_distance_distr_param1':        0.25,
                     #variance of distr of movement distance
                     'movement_distance_distr_param2':     0.5,
+                     #movement distance distr to use ('lognormal','levy','wald')     
                     'movement_distance_distr':             'wald',
                     #mean of distr of dispersal distance
                     'dispersal_distance_distr_param1':       0.5,
                     #variance of distr of dispersal distance
                     'dispersal_distance_distr_param2':    0.5,
+                     #dispersal distance distr to use ('lognormal','levy','wald')     
                     'dispersal_distance_distr':             'wald',
-                    #TODO: UNCOMMENT move_surf SECTION IF NEEDED!
-                    #'move_surf':    {
-                    #    'layer': 'move',
-                    #    'mixture': True,
-                    #    'vm_distr_kappa': 12,
-                    #    'approx_len': 5000},
                     },    # <END> 'movement'
 
 
@@ -359,6 +359,10 @@ params = {
                     'delet_alpha_distr_shape':  0.2,
                     #scale of distr of deleterious effect sizes
                     'delet_alpha_distr_scale':  0.2,
+                    #NOTE: MAIN SCRIPT OVERRIDES THE FOLLOWING TWO PARAMS
+                    #TO SET RECOMBINATION RATES TO A FIXED VALUE OF
+                    #0.5, 0.05, OR 0.005 FOR INDEPENDENT,
+                    #WEAK, OR STRONG LINKAGE VALUES
                     #alpha of distr of recomb rates
                     'r_distr_alpha':            1000,
                     #beta of distr of recomb rates
@@ -373,13 +377,17 @@ params = {
                     'n_recomb_paths_mem':       int(1e4),
                     #total number of recomb paths to simulate
                     'n_recomb_paths_tot':       int(1e5),
+                    #num of crossing-over events (i.e. recombs) to simulate
                     'n_recomb_sims':            100_000,
                     #whether to generate recombination paths at each timestep
                     'allow_ad_hoc_recomb':       False,
                     #whether to save mutation logs
                     'mut_log':                  False,
+                    #whether to jitter recomb bps, to correctly track num_trees
                     'jitter_breakpoints': False,
+                    #whether to use tskit (to record full spatial pedigree)
                     'use_tskit': True,
+                    #time step interval for simplication of tskit tables 
                     'tskit_simp_interval': 100,
 
                     'traits': {
@@ -393,6 +401,9 @@ params = {
                             'layer':                'shift',
                             #polygenic selection coefficient
                             'phi':                  1,
+                            #NOTE: MAIN SCRIPT CHANGES NEXT PARAM TO 4, 20, OR 100
+                            #FOR LOW-REDUNDANCY SCENARIOS OF DIFF. POLYGENICITY,
+                            #OR 8, 40, OR 200 FOR HIGH-REDUNDANCY SCENARIOS
                             #number of loci underlying trait
                             'n_loci':               50,
                             #mutation rate at loci underlying trait
@@ -418,6 +429,9 @@ params = {
                             'layer':                'stable',
                             #polygenic selection coefficient
                             'phi':                  1,
+                            #NOTE: MAIN SCRIPT CHANGES NEXT PARAM TO 4, 20, OR 100
+                            #FOR LOW-REDUNDANCY SCENARIOS OF DIFF. POLYGENICITY,
+                            #OR 8, 40, OR 200 FOR HIGH-REDUNDANCY SCENARIOS
                             #number of loci underlying trait
                             'n_loci':               50,
                             #mutation rate at loci underlying trait
@@ -463,6 +477,7 @@ params = {
 #### MODEL ####
 ###############
     'model': {
+        # NOTE: NEXT PARAM OVERRIDDEN BY MAIN SCRIPT
         #total Model runtime (in timesteps)
         'T':            100000,
         #min burn-in runtime (in timesteps)
@@ -480,6 +495,7 @@ params = {
             'rand_landscape':   False,
             #whether to randomize Community each iteration
             'rand_comm':        False,
+            #whether to randomize GenomicArchitectures each iteration
             'rand_genarch':     True,
             #whether to burn in each iteration
             'repeat_burn':      False,
@@ -519,53 +535,11 @@ params = {
                 'geo_vect_format':      'csv',
                 #format for raster geodata {'geotiff', 'txt'}
                 'geo_rast_format':      'geotiff',
+                #format for files containing non-neutral loci
                 'nonneut_loc_format':      'csv',
                 },
+
             }, #<END> 'data'
-
-
-        ######################################
-        ##### stats-collection parameters ####
-        ######################################
-        #'stats': {
-        #    #number of individs at time t
-        #    'Nt': {
-        #        #whether to calculate
-        #        'calc':     False,
-        #        #calculation frequency (in timesteps)
-        #        'freq':     1,
-        #        },
-        #    #heterozgosity
-        #    'het': {
-        #        #whether to calculate
-        #        'calc':     False,
-        #        #calculation frequency (in timesteps)
-        #        'freq':     5,
-        #        #whether to mean across sampled individs
-        #        'mean': False,
-        #        },
-        #    #minor allele freq
-        #    'maf': {
-        #        #whether to calculate
-        #        'calc':     False,
-        #        #calculation frequency (in timesteps)
-        #        'freq':     5,
-        #        },
-        #    #mean fitness
-        #    'mean_fit': {
-        #        #whether to calculate
-        #        'calc':     False,
-        #        #calculation frequency (in timesteps)
-        #        'freq':     5,
-        #        },
-        #    #linkage disequilibirum
-        #    'ld': {
-        #        #whether to calculate
-        #        'calc':     False,
-        #        #calculation frequency (in timesteps)
-        #        'freq':     100,
-        #        },
-        #    }, # <END> 'stats'
 
         } # <END> 'model'
 

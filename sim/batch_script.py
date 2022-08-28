@@ -309,7 +309,6 @@ def store_data(nullness, genicity, linkage, n_it, mod, output, max_time_ago,
                                     use_individs_curr_pos=use_individs_curr_pos,
                                                     max_time_ago=max_time_ago,
                                                     loci=sample_loci)
-                                                    #loci=nonneut_loci)
     # store the gene-flow data in the right places
     for stat, dataset in nonneut_stats.items():
         nonneut_data = []

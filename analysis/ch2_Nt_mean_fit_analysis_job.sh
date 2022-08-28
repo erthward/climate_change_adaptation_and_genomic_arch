@@ -26,7 +26,7 @@ python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_
 
 # make delta_Nt and delta_fit boxplots
 echo "NOW PLOTTING delta_Nt and delta_fit boxplots."
-Rscript --vanilla /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/make_boxplots.R > boxplots_and_stats.Rout
+Rscript --vanilla /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/make_boxplots.R > boxplots.Rout
 
 # copy all results to BDrive
 echo "NOW PUSHING EVERYTHING TO BDRIVE USING RCLONE"

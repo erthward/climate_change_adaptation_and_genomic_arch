@@ -45,7 +45,7 @@ python /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_
 
 # make delta_Nt and delta_fit boxplots
 echo "NOW PLOTTING delta_Nt and delta_fit boxplots."
-Rscript --vanilla /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/make_boxplots.R > boxplots_and_stats.Rout
+Rscript --vanilla /global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/make_boxplots.R > boxplots.Rout
 
 # plot directional gene flow results
 echo "NOW FITTING ALL PIDs VON MISES DISTRIBUTIONS PARAMS"
