@@ -151,7 +151,7 @@ null.gf.Eness.df = demog.gf.df %>%
 gf.Eness.df = demog.gf.df %>%
    group_by('.id', 'genicity', 'linkage', 'redundancy') %>%
    subset(subset=nullness==1)
-gf.Eness.df['Eness_diff'] = gf.Eness.df['Eness'] - null.gf.Eness.df['Eness']
+gf.Eness.df['delta_flow'] = gf.Eness.df['Eness'] - null.gf.Eness.df['Eness']
 
 
 
@@ -165,7 +165,7 @@ gf.Eness.df['Eness_diff'] = gf.Eness.df['Eness'] - null.gf.Eness.df['Eness']
 # hypothesis 1.2 (gene flow contributes least to adaptation at high polygen and low linkage)
 #   |-> expect: positive and signif coeff on genicity, linkage, and their interaction term
 cat('\n\n\nH1: GENE FLOW:\n------------------------------------\n\n\n')
-mod.gf = lm(Eness_diff ~ 0 + genicity + linkage + redundancy, data=gf.Eness.df)
+mod.gf = lm(delta_flow ~ 0 + genicity + linkage + redundancy, data=gf.Eness.df)
 print(summary(mod.gf))
 
 # predict values for each scenario
@@ -173,7 +173,7 @@ pred_vals = data.frame(expand.grid(unique(demog.gf.df$genicity),
                                    unique(demog.gf.df$linkage),
                                    unique(demog.gf.df$redundancy)))
 colnames(pred_vals) = c('genicity', 'linkage', 'redundancy')
-pred_vals$pred = predict.lm(mod.gf, pred_vals)
+pred_vals$PREDICTED_delta_flow = predict.lm(mod.gf, pred_vals)
 cat('\n\tpredict values of change in mean upslope gene flow:\n')
 print(pred_vals)
 cat('\n\n')
@@ -196,5 +196,19 @@ print(summary(mod.delta_fit))
 cat('\n\n')
 mod.delta_Nt = lm(delta_Nt ~ 0 + genicity + linkage + redundancy + nullness, data=demog.gf.df)
 summary(mod.delta_Nt)
-mod.undershoot = lm(undershoot ~ 0 + genicity + linkage + redundancy + nullness, data=maladapt.df)
-print(summary(mod.undershoot))
+mod.maladapt = lm(undershoot ~ 0 + genicity + linkage + redundancy + nullness, data=maladapt.df)
+print(summary(mod.maladapt))
+# predict values for each scenario
+pred_vals = data.frame(expand.grid(unique(demog.gf.df$nullness),
+                                   unique(demog.gf.df$genicity),
+                                   unique(demog.gf.df$linkage),
+                                   unique(demog.gf.df$redundancy)))
+colnames(pred_vals) = c('nullness', 'genicity', 'linkage', 'redundancy')
+pred_vals$PREDICTED_delta_fit = predict.lm(mod.delta_fit, pred_vals)
+pred_vals$PREDICTED_delta_Nt = predict.lm(mod.delta_Nt, pred_vals)
+pred_vals$PREDICTED_maladapt = predict.lm(mod.maladapt, pred_vals)
+cat('\n\tpredicted values of change in fitness, change in Nt, and maladaptation:\n')
+print(pred_vals)
+cat('\n\n')
+
+
