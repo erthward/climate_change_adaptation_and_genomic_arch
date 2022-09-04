@@ -368,8 +368,6 @@ pheno_undershoot_df.to_csv(os.path.join(analysis_dir,
            'phenotypic_shift_undershoot%s_%sREDUND.csv' % (
                                 '_NULL' * (nullness=='null'), redundancy)),
                            index=False)
-#pheno_undershoot_df['intxn'] = (pheno_undershoot_df.linkage *
-#                                pheno_undershoot_df.genicity)
 
 y = pheno_undershoot_df['undershoot']
 X = sm.add_constant(pheno_undershoot_df[['linkage', 'genicity']])#, 'intxn']])
