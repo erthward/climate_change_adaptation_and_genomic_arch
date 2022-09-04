@@ -1,5 +1,4 @@
 library(ggplot2)
-library(ggpubr)
 library(plyr)
 library(tidyverse)
 library(nlme)
@@ -129,7 +128,7 @@ quantize_ind_vars = function(df){
              setequal(sort(unique(out_df$nullness)), c('non_null', 'null')))
    new_nullness = mapvalues(out_df$nullness,
                             from=c('non-null', 'non_null', 'null'),
-                            to=c(1, 1, 0))
+                            to=c(2, 2, 1))
    stopifnot(setequal(sort(unique(new_nullness)), c(1, 2)))
    if (ind_vars_as_ordinal_factors){
       out_df$nullness = as.numeric(new_nullness)
@@ -141,16 +140,21 @@ quantize_ind_vars = function(df){
 demog.gf.df = quantize_ind_vars(demog.gf.df)
 maladapt.df = quantize_ind_vars(maladapt.df)
 
+cat('\n\n\n')
+cat('SAMPLE SIZES:\n-------------\n')
+cat('demog.gf.df has ', nrow(demog.gf.df), ' rows\n\n')
+cat('maladapt.df has ', nrow(maladapt.df), ' rows')
+cat('\n\n\n')
 
 # calculate derived gene flow response var
 # (as diff btwn non-null null flow density upslope)
 # NOTE: coded as 'Eness' (i.e., 'eastness')
 null.gf.Eness.df = demog.gf.df %>%
    group_by('.id', 'genicity', 'linkage', 'redundancy') %>%
-   subset(subset=nullness==0)
+   subset(subset=nullness==1)
 gf.Eness.df = demog.gf.df %>%
    group_by('.id', 'genicity', 'linkage', 'redundancy') %>%
-   subset(subset=nullness==1)
+   subset(subset=nullness==2)
 gf.Eness.df['delta_flow'] = gf.Eness.df['Eness'] - null.gf.Eness.df['Eness']
 
 
@@ -160,12 +164,12 @@ gf.Eness.df['delta_flow'] = gf.Eness.df['Eness'] - null.gf.Eness.df['Eness']
 
 
 # hypothesis 1.1 (upslope gene flow greater under climate change)
-#   |-> expect: positive and signif coeff on nullness (coded as 0: null; 1:non-null, i.e., main)
+#   |-> expect: positive and signif coeff on nullness (coded as 1: null; 2:non-null, i.e., main)
 # &
 # hypothesis 1.2 (gene flow contributes least to adaptation at high polygen and low linkage)
 #   |-> expect: positive and signif coeff on genicity, linkage, and their interaction term
 cat('\n\n\nH1: GENE FLOW:\n------------------------------------\n\n\n')
-mod.gf = lm(delta_flow ~ 0 + genicity + linkage + redundancy, data=gf.Eness.df)
+mod.gf = lm(delta_flow ~ genicity + linkage + redundancy, data=gf.Eness.df)
 print(summary(mod.gf))
 
 # predict values for each scenario
@@ -191,12 +195,12 @@ cat('\n\n')
 #   |-> expect: positive and signif coeff on redundancy for delta_fit and delta_Nt models,
 #               ngeative and signif coeff on redundancy for maladaptation model
 cat('\n\n\nH2 & H3: ADAPTIVE CAPACITY:\n------------------------------------\n\n\n')
-mod.delta_fit = lm(delta_fit ~ 0 + genicity + linkage + redundancy + nullness, data=demog.gf.df)
+mod.delta_fit = lm(delta_fit ~ genicity + linkage + redundancy + nullness, data=demog.gf.df)
 print(summary(mod.delta_fit))
 cat('\n\n')
-mod.delta_Nt = lm(delta_Nt ~ 0 + genicity + linkage + redundancy + nullness, data=demog.gf.df)
+mod.delta_Nt = lm(delta_Nt ~ genicity + linkage + redundancy + nullness, data=demog.gf.df)
 summary(mod.delta_Nt)
-mod.maladapt = lm(undershoot ~ 0 + genicity + linkage + redundancy + nullness, data=maladapt.df)
+mod.maladapt = lm(undershoot ~ genicity + linkage + redundancy + nullness, data=maladapt.df)
 print(summary(mod.maladapt))
 # predict values for each scenario
 pred_vals = data.frame(expand.grid(unique(demog.gf.df$nullness),
