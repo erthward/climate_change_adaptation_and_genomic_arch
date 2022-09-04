@@ -16,12 +16,12 @@ library(stringr)
 
 
 
-
-
 # behavioral params
 ###################
 
-factors_ordinal = F
+# treat the independent variables as ordinal factors,
+# instead of continuous numerical vars?
+ind_vars_as_ordinal_factors = F
 
 
 # set up directories
@@ -35,21 +35,19 @@ if (strsplit(getwd(), '/')[[1]][2] == 'home'){
     data.dir = readChar(datadir.file, file.info(datadir.file)$size-1)
     analysisdir.file = '/global/scratch/users/drewhart/ch2/climate_change_adaptation_and_genomic_arch/analysis/analysisdir.txt'
     analysis.dir = readChar(analysisdir.file, file.info(analysisdir.file)$size-1)
-    #data.dir = '/global/scratch/users/drewhart/ch2/output/output/'
-    #analysis.dir = '/global/scratch/users/drewhart/ch2/output/analysis/'
 }
 
 
 # load and prep datasets
 ########################
-# gather all demographic summary-output files into one
-demog.csvs = list.files(data.dir)[grep("^output_PID-\\d+\\.csv$", list.files(data.dir))] 
+# gather all demographic and gene flow summary-output files into one
+demog.gf.csvs = list.files(data.dir)[grep("^output_PID-\\d+\\.csv$", list.files(data.dir))] 
 dfs = list()
-for (csv in demog.csvs){
+for (csv in demog.gf.csvs){
     curr.df = read.csv(paste0(data.dir, csv))
     dfs[[csv]] = curr.df
 }
-demog.df = ldply(dfs, rbind)
+demog.gf.df = ldply(dfs, rbind)
 
 # gather both maladaptation summary-output files into one
 maladapt.csvs = list.files(analysis.dir)[grep("phenotypic_shift_undershoot",
@@ -76,20 +74,6 @@ for (csv in maladapt.csvs){
 maladapt.df = ldply(dfs, rbind)
 
 
-# gather all four gene flow summary-output files into one
-gf.csvs = list.files(analysis.dir)[grep("ch2_E_NS_gene_flow_densities_",
-                                        list.files(analysis.dir))] 
-dfs = list()
-for (csv in gf.csvs){
-    curr.df = read.csv(paste0(analysis.dir, '/', csv))
-    # grab the redundancy value
-    # (NOTE: always in a fixed location in hard-coded filenames)
-    curr.df$redundancy = substr(csv, 30, 31)
-    dfs[[csv]] = curr.df
-}
-gf.df = ldply(dfs, rbind)
-
-
 # quantize independent vars' columns
 quantize_ind_vars = function(df){
    # copy input df
@@ -110,7 +94,7 @@ quantize_ind_vars = function(df){
    } 
    stopifnot(setequal(sort(unique(new_genicity)), c(1,2,3)))
    stopifnot(setequal(sort(unique(new_redundancy)), c(1,2)))
-   if (factors_ordinal){
+   if (ind_vars_as_ordinal_factors){
       out_df$genicity = as.numeric(new_genicity)
       out_df$redundancy = as.numeric(new_redundancy)
    } else {
@@ -122,7 +106,7 @@ quantize_ind_vars = function(df){
    if (setequal(sort(unique(out_df$linkage)), c(0.005, 0.05, 0.5))){
       new_linkage = -log10(out_df$linkage/5)
       stopifnot(setequal(sort(new_linkage), c(1, 2, 3)))
-      if (factors_ordinal){
+      if (ind_vars_as_ordinal_factors){
         out_df$linkage = as.numeric(new_linkage)
       } else {
         out_df$linkage = as.factor(new_linkage)
@@ -132,11 +116,12 @@ quantize_ind_vars = function(df){
                               from=c('independent', 'weak', 'strong'),
                               to=c(1, 2, 3))
       stopifnot(setequal(sort(new_linkage), c(1, 2, 3)))
-      if (factors_ordinal){
+      if (ind_vars_as_ordinal_factors){
         new_linkage = as.numeric(new_linkage)
       } else {
         new_linkage = as.factor(new_linkage)
       }
+      out_df$linkage = new_linkage
    }
 
    # quantize nullness
@@ -145,24 +130,28 @@ quantize_ind_vars = function(df){
    new_nullness = mapvalues(out_df$nullness,
                             from=c('non-null', 'non_null', 'null'),
                             to=c(1, 1, 0))
-   stopifnot(setequal(sort(unique(new_nullness)), c(0, 1)))
-   if (factors_ordinal){
+   stopifnot(setequal(sort(unique(new_nullness)), c(1, 2)))
+   if (ind_vars_as_ordinal_factors){
       out_df$nullness = as.numeric(new_nullness)
    } else {
       out_df$ nullness = as.factor(new_nullness)
    }
    return(out_df)
 }
-demog.df = quantize_ind_vars(demog.df)
+demog.gf.df = quantize_ind_vars(demog.gf.df)
 maladapt.df = quantize_ind_vars(maladapt.df)
-gf.df = quantize_ind_vars(gf.df)
 
-# calculate derived gene flow response vars
-# (as diff btwn non-null null flow densities for both onslope and upslope flow)
-gf.df %>%
-   group_by('genicity', 'linkage', 'redundancy') # %>%
-   #mutate(E_dens_diff = 
 
+# calculate derived gene flow response var
+# (as diff btwn non-null null flow density upslope)
+# NOTE: coded as 'Eness' (i.e., 'eastness')
+null.gf.Eness.df = demog.gf.df %>%
+   group_by('.id', 'genicity', 'linkage', 'redundancy') %>%
+   subset(subset=nullness==0)
+gf.Eness.df = demog.gf.df %>%
+   group_by('.id', 'genicity', 'linkage', 'redundancy') %>%
+   subset(subset=nullness==1)
+gf.Eness.df['Eness_diff'] = gf.Eness.df['Eness'] - null.gf.Eness.df['Eness']
 
 
 
@@ -176,9 +165,18 @@ gf.df %>%
 # hypothesis 1.2 (gene flow contributes least to adaptation at high polygen and low linkage)
 #   |-> expect: positive and signif coeff on genicity, linkage, and their interaction term
 cat('\n\n\nH1: GENE FLOW:\n------------------------------------\n\n\n')
-mod.gf = lm(E_dens ~ 0 + genicity + linkage + redundancy + nullness, data=gf.df)
+mod.gf = lm(Eness_diff ~ 0 + genicity + linkage + redundancy, data=gf.Eness.df)
 print(summary(mod.gf))
 
+# predict values for each scenario
+pred_vals = data.frame(expand.grid(unique(demog.gf.df$genicity),
+                                   unique(demog.gf.df$linkage),
+                                   unique(demog.gf.df$redundancy)))
+colnames(pred_vals) = c('genicity', 'linkage', 'redundancy')
+pred_vals$pred = predict.lm(mod.gf, pred_vals)
+cat('\n\tpredict values of change in mean upslope gene flow:\n')
+print(pred_vals)
+cat('\n\n')
 
 
 # hypothesis 2.1 (stronger linkage reduces adaptive capacity)
@@ -193,13 +191,10 @@ print(summary(mod.gf))
 #   |-> expect: positive and signif coeff on redundancy for delta_fit and delta_Nt models,
 #               ngeative and signif coeff on redundancy for maladaptation model
 cat('\n\n\nH2 & H3: ADAPTIVE CAPACITY:\n------------------------------------\n\n\n')
-mod.delta_fit = lm(delta_fit ~ 0 + genicity + linkage + redundancy + nullness, data=demog.df)
+mod.delta_fit = lm(delta_fit ~ 0 + genicity + linkage + redundancy + nullness, data=demog.gf.df)
 print(summary(mod.delta_fit))
 cat('\n\n')
-mod.delta_Nt = lm(delta_Nt ~ 0 + genicity + linkage + redundancy + nullness, data=demog.df)
+mod.delta_Nt = lm(delta_Nt ~ 0 + genicity + linkage + redundancy + nullness, data=demog.gf.df)
 summary(mod.delta_Nt)
 mod.undershoot = lm(undershoot ~ 0 + genicity + linkage + redundancy + nullness, data=maladapt.df)
 print(summary(mod.undershoot))
-
-
-

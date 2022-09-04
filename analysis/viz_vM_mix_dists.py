@@ -35,11 +35,13 @@ row_label_fontsize = 18
 fig_width = 13.8
 fig_height = 4.6
 dpi = 400
+# factor by which to multiply the max absolute values in the gray reference
+# circles in order to determine the plots' axis limits
+axlim_graycirc_factor = 1.7
 
 # data directory
 if os.getcwd().split('/')[1] == 'home':
-    analysis_dir = ('/home/deth/Desktop/CAL/research/projects/sim/'
-               'ch2/climate_change_adaptation_and_genomic_arch/analysis')
+    analysis_dir = '/media/deth/SLAB/ch2/analysis/'
 else:
     with open(('/global/scratch/users/drewhart/ch2/climate_change_adaptation_'
                'and_genomic_arch/analysis/analysisdir.txt'), 'r') as f:
@@ -189,7 +191,7 @@ def viz_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None,
         pc = PatchCollection(patches, alpha=0.6, match_original=True)
         # add axes, for reference
         if ax is None:
-            fig = plt.figure()
+            fig = plt.figure(figsize=(fig_width, fig_height))
             ax = fig.add_subplot(111)
             plt.plot([0,0], [-1,1], '-', color='gray')
             plt.plot([-1,1], [0,0], '-', color='gray')
@@ -205,7 +207,7 @@ def viz_vM_mix_dist(row=None, df=None, mu=None, kappa=None, alpha=None,
             ax.plot([-1,1], [0,0], ':', color='gray', linewidth=0.5, alpha=0.5)
             ax.add_collection(pc)
             #ax.plot(xs, ys, color=col)
-        lim_val = 1.1*np.max(np.abs(np.concatenate((xs, ys, ref_xs, ref_ys))))
+        lim_val = axlim_graycirc_factor*np.max(np.abs(np.concatenate((ref_xs, ref_ys))))
         axlims = [-1*lim_val, lim_val]
         plt.xlim(axlims)
         plt.ylim(axlims)
@@ -251,7 +253,8 @@ def make_vM_mix_dist_comparison_grid(df, genicities,
     fig = plt.figure()
     # counter to keep track of plot number
     plt_num = 1
-    for linkage in df.linkage.unique():
+    linkages = ['independent', 'weak', 'strong']
+    for linkage in linkages:
         for genicity in df.genicity.unique():
             # make the next axis instance
             ax = fig.add_subplot(3, 3, plt_num)
@@ -262,18 +265,17 @@ def make_vM_mix_dist_comparison_grid(df, genicities,
             ax.set_title('')
             col_labs = dict(zip([1,2,3],
                                 [g for g in genicities]))
-            row_labs = dict(zip([1, 4, 7],
-                                 #['linkage: %s' % l for l in ['independent',
-                                 [l for l in ['independent',
-                                                            'weak', 'strong']]))
             if plt_num in [1, 2, 3]:
                 ax.set_title(col_labs[plt_num], size=col_labelsize)
             if plt_num in [1, 4, 7]:
-                ax.set_ylabel(row_labs[plt_num], fontsize=row_labelsize)
+                ax.set_ylabel(linkage, fontsize=row_labelsize)
 
             # subset the df
             subdf = df[(df.linkage == linkage) &
                        (df.genicity == genicity)]
+            assert len(subdf.linkage.unique()) == 1
+            if len(ax.get_ylabel()) > 0:
+                assert subdf.linkage.unique()[0] == ax.get_ylabel()
             # subset further, by nullness
             for nullness in ['null', 'non-null']:
                 nullness_subdf = subdf[subdf.nullness == nullness]
@@ -369,85 +371,3 @@ for redundancy in ['hi', 'lo']:
     grid_fig.savefig(os.path.join(analysis_dir,
                     'ch2_gene_flow_dir_analysis_%sREDUND.png' % redundancy),
                      dpi=400)
-
-
-    # run null and non-null statistical models, and gather results into a small df
-    results = {'nullness': [],
-               'response_var': [],
-               'covar': [],
-               'coeff': [],
-               'p': [],
-               'R2': [],
-               }
-        # NOTES:
-            # response vars aren't exactly normal (a bit skewed), but not awful
-            # either, so just using a basic linear model for now
-    all_tuk_data = []
-    for nullness in ['null', 'non-null']:
-        print('\n%s MODELS\n:' % nullness.upper())
-        for response_var in ['E_dens', 'NS_mean_dens']:
-            print('\n\tresponse var: %s\n' % response_var)
-            subdf = E_NS_dens_df[E_NS_dens_df['nullness'] == nullness]
-
-            # code for two-way ANOVA with post-hoc Tukey HSD test stolen from:
-            # https://towardsdatascience.com/anova-tukey-test-in-python-b3082b6e6bda
-
-            # R-style formula specification using a string
-            # NOTE: C() operator coerces a variable to categorical
-            formula = ('%s ~ C(linkage) + C(genicity) + '
-                       'C(linkage):C(genicity)') % response_var
-            lm = ols(formula, subdf).fit()
-            table = sm.stats.anova_lm(lm, typ=2)
-            print(table)
-            # perform multiple pairwise comparison (Tukey HSD)
-            subdf['combination'] = (subdf.linkage.astype(str) + " / " +
-                                    subdf.genicity.astype(str))
-            tuk = pairwise_tukeyhsd(endog=subdf[response_var],
-                                    groups=subdf['combination'], alpha=0.05)
-            # coerce the tukeyhsd table to a DataFrame, then filter and sort
-            tukey_data = pd.DataFrame(data=tuk._results_table.data[1:],
-                                      columns = tuk._results_table.data[0])
-            group1_comp =tukey_data.loc[tukey_data.reject ==
-                                        True].groupby('group1').reject.count()
-            group2_comp = tukey_data.loc[tukey_data.reject ==
-                                         True].groupby('group2').reject.count()
-            tukey_data_summ = pd.concat([group1_comp, group2_comp], axis=1)
-            tukey_data_summ = tukey_data_summ.fillna(0)
-            tukey_data_summ.columns = ['reject1', 'reject2']
-            tukey_data_summ['total_sum'] = (tukey_data_summ.reject1 +
-                                            tukey_data_summ.reject2)
-            print('\n\n\tTukey HSD pairwise comparison test results:\n\n')
-            print(tukey_data_summ.sort_values('total_sum',ascending=False))
-            # save these Tukey results to our list
-            tukey_data['nullness'] = nullness
-            tukey_data['dir'] = response_var
-            all_tuk_data.append(tukey_data)
-
-
-            # build identical model, but with numeric instead of categorical vars
-            y = subdf[response_var]
-            X = sm.add_constant(subdf[['linkage', 'genicity']])
-            mod = sm.OLS(y, X).fit()
-            coeffs = mod.params
-            print(mod.summary())
-            print('\n'*4 + '+'*80 + '\n'*4)
-            p_vals = mod.pvalues
-            R2 = mod.rsquared
-            for coeff in coeffs.index:
-                results['nullness'].append(nullness)
-                results['response_var'].append(response_var)
-                results['covar'].append(coeff)
-                results['coeff'].append(coeffs[coeff])
-                results['p'].append(coeffs[coeff])
-                results['R2'].append(R2)
-
-    results_df = pd.DataFrame.from_dict(results)
-    results_df.to_csv(os.path.join(analysis_dir,
-                'ch2_gene_flow_dir_analysis_stats_%sREDUND.csv' % redundancy),
-                      index=False)
-    tuk_df = pd.concat(all_tuk_data)
-    tuk_df.to_csv(os.path.join(analysis_dir,
-                'ch2_gene_flow_dir_tukey_results_%sREDUND.csv' % redundancy),
-                      index=False)
-
-    print('~'*80 + '\n\n')
