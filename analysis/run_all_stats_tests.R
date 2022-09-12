@@ -84,15 +84,15 @@ quantize_ind_vars = function(df){
    new_redundancy = c()
    for (g in out_df$genicity){
      if (g %in% c(4, 20, 100)){
-        new_genicity = c(new_genicity, log(g/4, base=5)+1)
-        new_redundancy = c(new_redundancy, 1)
+        new_genicity = c(new_genicity, log(g/4, base=5))
+        new_redundancy = c(new_redundancy, 0)
      } else {
-        new_genicity = c(new_genicity, log(g/4/2, base=5)+1)
-        new_redundancy = c(new_redundancy, 2)
+        new_genicity = c(new_genicity, log(g/4/2, base=5))
+        new_redundancy = c(new_redundancy, 1)
      }
    } 
-   stopifnot(setequal(sort(unique(new_genicity)), c(1,2,3)))
-   stopifnot(setequal(sort(unique(new_redundancy)), c(1,2)))
+   stopifnot(setequal(sort(unique(new_genicity)), c(0,1,2)))
+   stopifnot(setequal(sort(unique(new_redundancy)), c(0,1)))
    if (ind_vars_as_ordinal_factors){
       out_df$genicity = as.factor(new_genicity)
       out_df$redundancy = as.factor(new_redundancy)
@@ -103,8 +103,8 @@ quantize_ind_vars = function(df){
 
    # quantize linkage
    if (setequal(sort(unique(out_df$linkage)), c(0.005, 0.05, 0.5))){
-      new_linkage = -log10(out_df$linkage/5)
-      stopifnot(setequal(sort(new_linkage), c(1, 2, 3)))
+      new_linkage = -log10(out_df$linkage/0.5)
+      stopifnot(setequal(sort(new_linkage), c(0, 1, 2)))
       if (ind_vars_as_ordinal_factors){
         out_df$linkage = as.factor(new_linkage)
       } else {
@@ -113,8 +113,8 @@ quantize_ind_vars = function(df){
    } else if (setequal(sort(unique(out_df$linkage)), c('independent', 'strong', 'weak'))){
       new_linkage = mapvalues(out_df$linkage,
                               from=c('independent', 'weak', 'strong'),
-                              to=c(1, 2, 3))
-      stopifnot(setequal(sort(new_linkage), c(1, 2, 3)))
+                              to=c(0, 1, 2))
+      stopifnot(setequal(sort(new_linkage), c(0, 1, 2)))
       if (ind_vars_as_ordinal_factors){
         new_linkage = as.factor(new_linkage)
       } else {
@@ -128,8 +128,8 @@ quantize_ind_vars = function(df){
              setequal(sort(unique(out_df$nullness)), c('non_null', 'null')))
    new_nullness = mapvalues(out_df$nullness,
                             from=c('non-null', 'non_null', 'null'),
-                            to=c(2, 2, 1))
-   stopifnot(setequal(sort(unique(new_nullness)), c(1, 2)))
+                            to=c(1, 1, 0))
+   stopifnot(setequal(sort(unique(new_nullness)), c(0, 1)))
    # NOTE: always treat nullness as categorical
    out_df$ nullness = as.factor(new_nullness)
    return(out_df)
