@@ -130,11 +130,8 @@ quantize_ind_vars = function(df){
                             from=c('non-null', 'non_null', 'null'),
                             to=c(2, 2, 1))
    stopifnot(setequal(sort(unique(new_nullness)), c(1, 2)))
-   if (ind_vars_as_ordinal_factors){
-      out_df$nullness = as.numeric(new_nullness)
-   } else {
-      out_df$ nullness = as.factor(new_nullness)
-   }
+   # NOTE: always treat nullness as categorical
+   out_df$ nullness = as.factor(new_nullness)
    return(out_df)
 }
 demog.gf.df = quantize_ind_vars(demog.gf.df)
@@ -158,6 +155,10 @@ gf.Eness.df = demog.gf.df %>%
 gf.Eness.df['delta_flow'] = gf.Eness.df['Eness'] - null.gf.Eness.df['Eness']
 
 
+# print structure info for each data.frame, to check that factor/numeric variables are correct
+print(str(demog.gf.df))
+print(str(maladpt.df))
+print(str(gf.Eness.df))
 
 # build and print out models
 ############################

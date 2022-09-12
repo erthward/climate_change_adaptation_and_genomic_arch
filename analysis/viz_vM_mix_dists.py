@@ -7,7 +7,6 @@ from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
-from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import os
 
 
