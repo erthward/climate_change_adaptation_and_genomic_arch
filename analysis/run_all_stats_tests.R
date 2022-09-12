@@ -94,11 +94,11 @@ quantize_ind_vars = function(df){
    stopifnot(setequal(sort(unique(new_genicity)), c(1,2,3)))
    stopifnot(setequal(sort(unique(new_redundancy)), c(1,2)))
    if (ind_vars_as_ordinal_factors){
-      out_df$genicity = as.numeric(new_genicity)
-      out_df$redundancy = as.numeric(new_redundancy)
-   } else {
       out_df$genicity = as.factor(new_genicity)
       out_df$redundancy = as.factor(new_redundancy)
+   } else {
+      out_df$genicity = as.numeric(new_genicity)
+      out_df$redundancy = as.numeric(new_redundancy)
    }
 
    # quantize linkage
@@ -106,9 +106,9 @@ quantize_ind_vars = function(df){
       new_linkage = -log10(out_df$linkage/5)
       stopifnot(setequal(sort(new_linkage), c(1, 2, 3)))
       if (ind_vars_as_ordinal_factors){
-        out_df$linkage = as.numeric(new_linkage)
-      } else {
         out_df$linkage = as.factor(new_linkage)
+      } else {
+        out_df$linkage = as.numeric(new_linkage)
       }
    } else if (setequal(sort(unique(out_df$linkage)), c('independent', 'strong', 'weak'))){
       new_linkage = mapvalues(out_df$linkage,
@@ -116,9 +116,9 @@ quantize_ind_vars = function(df){
                               to=c(1, 2, 3))
       stopifnot(setequal(sort(new_linkage), c(1, 2, 3)))
       if (ind_vars_as_ordinal_factors){
-        new_linkage = as.numeric(new_linkage)
-      } else {
         new_linkage = as.factor(new_linkage)
+      } else {
+        new_linkage = as.numeric(new_linkage)
       }
       out_df$linkage = new_linkage
    }
@@ -157,7 +157,7 @@ gf.Eness.df['delta_flow'] = gf.Eness.df['Eness'] - null.gf.Eness.df['Eness']
 
 # print structure info for each data.frame, to check that factor/numeric variables are correct
 print(str(demog.gf.df))
-print(str(maladpt.df))
+print(str(maladapt.df))
 print(str(gf.Eness.df))
 
 # build and print out models
