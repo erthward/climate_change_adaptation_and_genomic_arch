@@ -1,4 +1,16 @@
 \documentclass[9pt,twocolumn,twoside,lineno]{pnas-new}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%TODO:
+%1. discuss and decide about stats results (include? if so, combine hi and lo redundancy?)
+%2. use 'polygenicity' or 'gene count'? (ONCE DECIDED, ALSO FIX BOXPLOT X-AXES)
+%3. write signif statement
+%4. add quick methods bit about fig_s1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 % Use the lineno option to display guide line numbers if required.
 
 % packages
@@ -89,14 +101,6 @@ and predicting the climatic vulnerability of real populations.
 \maketitle
 \thispagestyle{firststyle}
 \ifthenelse{\boolean{shortarticle}}{\ifthenelse{\boolean{singlecolumn}}{\abscontentformatted}{\abscontent}}{}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%TODO:
-%1. discuss and decide about stats results (include? if so, combine hi and lo redundancy?)
-%2. use 'polygenicity' or 'gene count'? (ONCE DECIDED, ALSO FIX BOXPLOT X-AXES)
-%3. write signif statement
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \dropcap{C}limate change is one of the foremost threats to biodiversity in the Anthropocene.
@@ -215,9 +219,10 @@ of genomic architecture:
 
 We use our simulations to test a series of hypotheses about the influence of genomic architecture 
 on multivariate adaptation under climate change. First of all, we hypothesize that up-gradient 
-gene flow is higher under climate change than under a stable climate, for all
-scenarios, but that gene flow contributes least to climate-change adaptation in lower-linkage, 
-high-polygenicity scenarios. This is because we expect gene flow to always have
+gene flow is higher under climate change than under a stable climate across all
+scenarios, but that gene flow contributes least to climate-change adaptation when
+linkage is low and polygenicity is high.
+This is because we expect gene flow to always have
 at least some adaptive value, but expect low-linkage, high-polygenicity architectures 
 (i.e., 'dispersed' architectures \cite{yeaman_review}) to exhibit quick \textit{in situ}
 restructuring of allelic covariance among many small-effect alleles, akin to adaptation 
@@ -238,18 +243,24 @@ in population size and mean fitness than in our low-redundancy scenarios.
 \section*{Results}
 
 \subsection{Hypothesis 1: Gene flow}
-As expected, up-gradient gene flow was always at least slightly higher
-(and conversely, maladaptive downslope gene flow supressed) 
-under climate change than in paired null simulations (\ref{fig:fig_2}).
-However, contrary to our expectation we found that the amount of up-gradient gene flow
-was negatively correlated with the level of linkage.
-Polygenicity had the strongest overall effect on the amount that up-gradient gene flow contributes to adaptation:
-with the exception of the low-redundancy, independent-linkage scenarios,
-moderate and high polygenicity scenarios had much lower up-gradient gene flow
-than did low-polygenicity scenarios. 
-Interestingly, moderate-polygenicitiy scenarios consistently showed the least upslople gene flow,
-though differences between moderate- and high-redundancy scenarios were mostly minimal.
-
+As expected, up-gradient gene flow was always
+increased under climate change in comparison to paired null
+simulations (STAT; \ref{fig:fig_2}).
+However, the magnitude of the this increase was minimal under
+some scenarios, and varied across simulations in a way that corroborates
+our first hypothesis --- i.e., it was positively correlated with linkage (STAT)
+and inversely correlated with polygenicity (STAT).
+(As expected, downslope gene flow showed the converse result, being
+universally suppressed under climate change.)
+Of the three components of genomic architecture that we tested,
+polygenicity had the strongest overall effect on the extent to which
+up-gradient gene flow contributes to adaptation:
+moderate and high polygenicity scenarios generally had much lower
+up-gradient gene flow than did low-polygenicity scenarios (STAT),
+with low-redundancy, independent-linkage scenarios being the main exception.
+Interestingly, moderate-polygenicitiy showed the lowest overall increase
+in upslope gene flow (STAT), though differences between moderate- and
+high-redundancy scenarios were minor.
 \begin{figure}
 \centering
 \includegraphics[width=.8\linewidth]{pub/figs/FIG_2_gene_flow.jpg}
@@ -260,18 +271,21 @@ though differences between moderate- and high-redundancy scenarios were mostly m
 
 
 \subsection{Hypothesis 2: Linkage and polygenicity}
-As expected, null simulations showed no change in mean fitness (\ref{fig_2}),
-population size(\ref{fig_s2}), or phenotypic distribution (\ref{fig_s3}),
-whereas climate change caused the maladaptation predicted under basic theory
-\cite{aitken_whitlock},
-decreasing population size and mean fitness and shifting phenotypic distributions (\ref{fig_4}).
-Our main simulation results lend mixed support to our second hypothesis.
+As expected, null simulations showed essentially no change in mean fitness (\ref{fig_2}) or population size(\ref{fig_s2}) --- barring small
+numerical artefacts that varied identically across both
+null and main scenarios --- and their phenotypic distributions were
+stable (\ref{fig_s3}).
+Conversely, climate change caused the maladaptation
+predicted by basic theory \cite{aitken_whitlock},
+with patterns of decrease in population size and mean fitness
+and change in phenotypic distribution (\ref{fig_4})
+lending mixed support to our second hypothesis:
 The magnitude of the demographic impacts of climate change was positively
-correlated with the level of linkage across scenarios.
+correlated with the level of linkage across scenarios (STAT).
 However, the effect of polygenicity
 was more complex, with demographic effects being smallest at moderate polygenicity,
 moderate at low polygenicity regardless of redundancy and at high polgenicity when redundancy was high,
-but very large at high polygeniciy and low redundancy (\ref{fig:fig_3}, \ref{fig:fig_s2}).
+but very large at high polygeniciy and low redundancy (\ref{fig:fig_3}, \ref{fig:fig_s2}) (STAT).
 Indeed, demographic decline was so strong at low redundancy and high polygenicity
 that adaptive capacity was effectively outstripped: demographic decline persisted throughout
 the climate change period, with little indication of evolutionary rescue
@@ -310,7 +324,7 @@ but is more clearly visible in the before-after population density maps in \ref{
 \subsection{Hypothesis 3: Redundancy}
 Our third hypothesis was fully supported by our results: High-redundancy scenarios showed
 consistently smaller demographic impacts of climate change and higher adaptive capacity
-than their low-redundancy comparators (\ref{fig:fig_2}, \ref{fig:fig_s2}).
+than their low-redundancy comparators (\ref{fig:fig_2}, \ref{fig:fig_s2}) (STAT).
 As mentioned above, this was especially notable in the high-polygenicity scenarios,
 which did not show not show evidence of demographic rebound during climate change.
 This is not to say that adaptation successfully occurred in all other scenarios though:
@@ -324,8 +338,8 @@ in high-redundancy, high-polygenicity scenarios (\ref{fig:fig_2}, \ref{fig:fig_s
 Current thinking about evolutionary responses to climate change
 frequently starts from a simplified mechanistic model in which
 adaptation is facilitated by up-gradient gene flow.
-This model not only serves as the conceptual basis for research,
-but also as the inspiration for some climate-smart
+This model is not only the conceptual basis for research
+but also the inspiration for some climate-smart
 approaches to biodiversity management
 (e.g., assisted gene flow; \cite{aitken_whitlock}).
 Yet the validity of the model under different
@@ -338,42 +352,41 @@ is equal or greater under all simulation scenarios
 as compared to static-environment null simulations.
 However, our results also suggest a major caveat:
 Polygenicity, and to a lesser extent linkage,
-can constrain the extent to which up-gradient
+can control the extent to which up-gradient
 gene flow contributes to adaptation under environmental change.
-In the case of linkage, our results contradicted our first hypothesis,
-perhaps because lower recombination between both traits'
-genes makes up-gradient gene flow more maladaptive,
-despite creating larger-effect clusters of non-neutral loci.
 Given the plausibility of the range of genomic architectures we simulate
 \cite{barghi_polygenic,boyle,rockman,savolainen,sella,bomblies},
 these results raise the compelling
 possibility that up-gradient gene flow, while unlikely
 to be maladaptive, could nonetheless prove
-ineffectual for supporting adaptation in many systems.
+ineffectual for supporting adaptation in many systems,
+especially those where climatically-adapted traits
+have more dispersed architectures
+(i.e., architecutres composed of many genes of small effect; \cite{yeaman_review}),
+providing a higher capacity for \textit{in situ} adaptation to rapid change.
 This poses important questions for subsequent research:
-How applicable are our low-polygenicity results to real-world
-systems --- i.e., how often does species' climatically-adaptive
-standing genetic variation include
-rare, large-effect alleles that might predominate in
-evolutionary responses to climate change?
-And how can such systems be distinguished from high-polygenicity systems,
+How often are species' climatically-adaptive
+genetic architectures dispersed,
+versus being more concentrated or composed of
+few loci of large effect,
+and how can we best determine this in the field, 
 so as to redirect management funds from assisted gene flow
-to more apt strategies (e.g., marker-assisted selection; \cite{muranty}) as needed?
+to more apt strategies (e.g., marker-assisted selection;
+\cite{muranty}) when called for?
 
-
-Aside from gene flow patterns, the population dynamics of evolutionary responses
+The population dynamics of evolutionary responses
 to climate change are also rarely considered in the context of genomic architecture.
 Our results show that neglecting genomic architecture
 can lead to overlooking important evolutionary contingencies,
-whereas accounting for them can help extend current theory.
+whereas accounting for them can extend current theory and provide valuable insight.
 First, our models suggest that maladaptation and demographic decline
 can be augmented by strong linkage between non-neutral loci,
 especially under high polygenicity. 
 In the most extreme case, high polygenicity and low redundancy
 combine to drive dramatic and persistent declines,
 and even local extinction when linkage is strong.
-This was unexpected in light of previous work reporting that genetic architectures composed
-of many genes of small effect (i.e., 'dispersed' genetic architectures) produce stable,
+This was unexpected in light of previous work reporting
+that dispersed architectures produce stable,
 resilient phenotypic clines despite transient genotypic composition \cite{yeaman_amnat,yeaman_review},
 and thus that species with such architectures
 could exhibit rapid local adaptation \cite{aitken_yeaman}. 
@@ -400,8 +413,8 @@ these populations could be more similar to our high-redundancy scenarios:
 selection would be balancing rather than directional,
 segregating redundancy substantial, and thus adaptive capacity more robust.
 
-Our simulations exhibit other intriguing patterns
-that indicate theoretical ambiguities that could benefit from further work.
+Our simulations exhibit other intriguing patterns,
+indicating theoretical ambiguities that could benefit from further work.
 First, our results add an interesting complication
 to the theoretical generality that recombination can be deleterious
 in situations of clinal adaptation
@@ -428,7 +441,7 @@ in our moderate-polygenicity models,
 contrasts with previous work reporting that adaptation
 to a gradient is most effective under either
 concentrated or dispersed genomic architectures.
-This discord may be attributable to the
+This disagreement may be attributable to the
 difference in timeframes between adaptation to a univariate environmental gradient
 and adaptation to a decoupling, multivariate gradient.
 Adaptation to a single, static gradient can proceed gradually,
@@ -494,7 +507,7 @@ ways in which multivariate environmental change extends
 or complicates current theory.
 Much work remains to be done to better understand and predict
 evolutionary responses to climate change,
-and our work points toward fruitful next steps.
+and our work points to a number of fruitful next steps.
 
 
 
@@ -579,8 +592,9 @@ assigned to them across all models
 parameter overridden by the main simulation scripts), see Appendix 1.
 
 Using a combination of internal \texttt{geonomics} functions and custom Python code, we 
-designed a set of data outputs from each model run that would allow us to test our 
-series of hypotheses. We saved tables of individuals’ locations and phenotypes at both
+designed a set of data outputs from each model run, to visualize our
+results and test our series of hypotheses.
+We saved tables of individuals’ locations and phenotypes at both
 the beginning and the end of the climate change period. We also saved time 
 series of population size, mean fitness, and mean phenotype of the trait adapted to 
 the shifting gradient. We gathered this data at every time step, from 250 time steps 
@@ -590,31 +604,33 @@ The final 250 time steps after climate change are unrealistic, but are useful
 for elucidating the nature of the changes that persisted to the end of the climate change period;
 we refer to this period as the 'post-change period'.
 
-We also saved data on the vector directions of all gene flow during the 
-climate change period, extracted from the spatial pedigrees stored in the
-\texttt{tskit} \cite{kelleher} data structures.
-CITE HORNIK  ET AL 2014 &/or 2022 AND EXPLAIN USE OF MOVMF!
-From that full set of gene flow data we calculated a pair of measures
-of gene flow directionality,  which we refer to as ‘rightness’ (i.e., up-gradient 
-directionality) and ‘up-downness’ (i.e., on-contour directionality). These were 
-calculated as:
-
-$Rness = \frac{\sum\limits_{i}^{n}\cos\theta}{n},\ \cos\theta\geq0$,
-
-$UDness = \frac{\sum\limits_{i}^{n}|\sin\theta|}{n}$,
-
-where angles are expressed counterclockwise from the right.
-We ignored leftward gene flow because it was expected to be low irrespective 
-of scenario, given that it would oppose the environmental shift so would be largely maladaptive.
-DOUBLE-CHECK THE SENTENCE BELOW
-We also saved a subsample of the full set of gene flow 
-direction data by keeping all data pertaining to two randomly chosen loci that had 
-positive effects on the trait adapted to the shifting environmental gradient. We 
-restricted our sample in this way both to focus on loci expected to facilitate 
+We also saved subsampled data on the vector directions
+of gene flow occurring during climate change, by keeping all final individuals'
+data pertaining to two randomly chosen loci that had positive
+effects on the trait adapted to the shifting environmental gradient.
+We restricted our sample in this way both to focus on loci expected to facilitate 
 adaptation to increasing environmental values and thus to shift upslope, and to 
 provide equal sample sizes across scenarios in downstream analysis (which was 
-constrained to the number of positive-effect loci present in the four-locus-per-trait 
-scenarios, i.e. two). 
+constrained to the number of positive-effect loci present in
+the low-polyegenicity, low-redundancy scearnios). 
+Data were collected using an internal \texttt{geonomics} function
+that extracts data from the spatial pedigrees stored in the
+simulation's \texttt{tskit} \cite{kelleher} data structures.
+We also calculated a single high-level summary metric per model
+that provided us a comparator for the relative amounts of
+upslope gene flow that occurred across our scenarios,
+for use in hypothesis testing.
+We refer to the metric simply as 'upslope gene flow',
+and we calculate it as:
+
+$GFup\ = \frac{\sum\limits_{i}^{n}\cos\theta}{n},\ \cos\theta\geq0$,
+
+where angles are expressed counterclockwise from the right.
+The $\cos\theta\geq0$ condition allows us to ignore leftward gene flow,
+which we expected to be low irrespective of scenario for the positive-effect loci
+for which we collected data,
+given that it would oppose the environmental shift so would be generally maladaptive.
+
 
 \subsection*{Analysis}
 
@@ -632,15 +648,19 @@ from each simulation for a random
 sample of the gene flow that occurred during the climate change event, using 
 \texttt{geonomics}' integration with \texttt{tskit} \cite{kelleher}, which allows for temporal 
 subsetting and output of the information contained the full spatial pedigree of a 
-simulated population. We then fitted a mixture of 4 von Mises distributions to that data, 
+simulated population. We then fitted a mixture of 4 von Mises distributions to that data
+using the R package \texttt{movMF} \cite{hornik},
 yielding 12 parameter estimates defining each simulation's fitted mixture distribution. For each of 
 the 18 scenarios, we then plotted the probability density function 
 described by the means of all length-12 vectors of fitted parameters. We did this 
-separately for null scenarios and for main scenarios, then overlaid the null (in blue)
-and main (in red) results, providing a summary depiction of the nature of gene flow within each 
+separately for null scenarios and for main scenarios, then overlaid the main scenario (in red)
+on top of the nulls (in blue), providing a summary depiction of the nature of gene flow within each 
 main scenario as compared to its null expectation.
-Finally, we ran two-way ANOVAs of 
-rightness and up-downness (with Bonferroni correction for multiple testing), 
+Finally, we ran a simple linear regression
+of the main-null difference in upslope gene flow density
+as a function of the components of genomic architecture
+($GFup{main}-GFup_{null} \sim \alpha + \beta_{p}polgenicity + \beta_{l}linkage + \beta_{r}redundancy + \epsilon$),
+which we used to interpret our results and test the components of our first hypothesis.
 to test the null hypotheses that the values of both directional metrics
 had no statistical relation to our genomic architecture parameters
 of interest (polygenicity, linkage, and genotypic redundancy),
@@ -723,20 +743,17 @@ in maladaptation observed between scenarios were attributable to climate change,
 and with blue translucent wedges showing the expected area of phenotypic shift
 under each null scenario's corresponding main simulation, for reference.
 
-To statistically test our second and third hypotheses,
-we ran multi-factor ANOVAs on each of three response variables measuring
-population-level changes during the climate change event ---
+To better understand our results,
+we ran identically structured simple linear regressions
+for each of our three response variables measuring
+population-level changes during the climate change event
 change in mean fitness, change in population size,
 and persistent maladaptation --- with polygenicity,
-linkage, and redundancy serving as genomic-architecture
-ORDINAL OR CATEGORICAL??
-factors.
-For each ANOVA, we then used \textit{post hoc} HSD tests
-to help determine the influence of explanatory variables,
-treating the p-values of each explanatory variable,
-in combination with the cross-scenario trends visible in
+linkage, redundancy, and nullness serving as explanatory variables:
+$[\Delta N_{t}\ |\ \Delta fit\ |\ maladaptation] \sim \alpha + \beta_{p}polgenicity + \beta_{l}linkage + \beta_{r}redundancy + \beta_{n}nullness + \epsilon$.
+We used these models, in combination with the cross-scenario trends visible in
 \ref{fig:fig_3}, \ref:{fig:fig_s2}, and \ref{fig:fig_4},
-as tests of the components of our second hypothesis
+to test the components of our second hypothesis
 (polygenicity and linkage) and third (redundancy).
 
 } % end matmethods
