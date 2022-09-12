@@ -148,10 +148,10 @@ cat('\n\n\n')
 # NOTE: coded as 'Eness' (i.e., 'eastness')
 null.gf.Eness.df = demog.gf.df %>%
    group_by('.id', 'genicity', 'linkage', 'redundancy') %>%
-   subset(subset=nullness==1)
+   subset(subset=nullness==0)
 gf.Eness.df = demog.gf.df %>%
    group_by('.id', 'genicity', 'linkage', 'redundancy') %>%
-   subset(subset=nullness==2)
+   subset(subset=nullness==1)
 gf.Eness.df['delta_flow'] = gf.Eness.df['Eness'] - null.gf.Eness.df['Eness']
 
 
