@@ -170,7 +170,7 @@ print(str(gf.Eness.df))
 # hypothesis 1.2 (gene flow contributes least to adaptation at high polygen and low linkage)
 #   |-> expect: positive and signif coeff on genicity, linkage, and their interaction term
 cat('\n\n\nH1: GENE FLOW:\n------------------------------------\n\n\n')
-mod.gf = lm(delta_flow ~ 0 + genicity + linkage + redundancy, data=gf.Eness.df)
+mod.gf = lm(delta_flow ~ genicity + linkage + redundancy, data=gf.Eness.df)
 print(summary(mod.gf))
 
 # predict values for each scenario
@@ -196,12 +196,12 @@ cat('\n\n')
 #   |-> expect: positive and signif coeff on redundancy for delta_fit and delta_Nt models,
 #               ngeative and signif coeff on redundancy for maladaptation model
 cat('\n\n\nH2 & H3: ADAPTIVE CAPACITY:\n------------------------------------\n\n\n')
-mod.delta_fit = lm(delta_fit ~ 0 + genicity + linkage + redundancy + nullness, data=demog.gf.df)
+mod.delta_fit = lm(delta_fit ~ genicity + linkage + redundancy + nullness, data=demog.gf.df)
 print(summary(mod.delta_fit))
 cat('\n\n')
-mod.delta_Nt = lm(delta_Nt ~ 0 + genicity + linkage + redundancy + nullness, data=demog.gf.df)
+mod.delta_Nt = lm(delta_Nt ~ genicity + linkage + redundancy + nullness, data=demog.gf.df)
 summary(mod.delta_Nt)
-mod.maladapt = lm(undershoot ~ 0 + genicity + linkage + redundancy + nullness, data=maladapt.df)
+mod.maladapt = lm(undershoot ~ genicity + linkage + redundancy + nullness, data=maladapt.df)
 print(summary(mod.maladapt))
 # predict values for each scenario
 pred_vals = data.frame(expand.grid(unique(demog.gf.df$nullness),
