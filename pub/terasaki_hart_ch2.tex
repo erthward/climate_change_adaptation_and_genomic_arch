@@ -203,7 +203,7 @@ and null (stable-climate) simulations, for each of eighteen scenarios
 resulting from the full factorial crossing of three focal components
 of genomic architecture:
 \begin{enumerate}
-    \item two levels of \textbf{redundancy} (\textit{low}: genotype-phenotype mapping is many-to-one for mid-range phenotypes, but reduces to one-to-one at extreme phenotypes; \textit{high}: all phenotypes have many-to-one genotype-phenotype mappings \ref{fig_s1}); 
+    \item two levels of \textbf{redundancy} (\textit{low}: genotype-phenotype mapping is many-to-one for mid-range phenotypes, but reduces to one-to-one at extreme phenotypes; \textit{high}: all phenotypes have many-to-one genotype-phenotype mappings Fig. \ref{fig:fig_s1}); 
     \item three levels of \textbf{polygenicity} (\textit{low}: 4 loci per trait for low-redundancy scenarios, 8 loci per trait for high; \textit{moderate}: 20 and 40 loci per trait for low and high redundancy; and \textit{high}: 100 and 200 loci per trait for low and high redundancy);
     \item three levels of \textbf{linkage} (\textit{independent}: recombination rate ($r$) = 0.5 between all loci; \textit{weak linkage}: $r$ = 0.05; and \textit{strong linkage}: $r$ = 0.005).
 \end{enumerate}
@@ -243,23 +243,26 @@ in population size and mean fitness than in our low-redundancy scenarios.
 \section*{Results}
 
 \subsection{Hypothesis 1: Gene flow}
-As expected, up-gradient gene flow was always
-increased under climate change in comparison to paired null
-simulations (STAT; \ref{fig:fig_2}).
+As expected, up-gradient gene flow under climate change was generally
+equal to or greater than that in paired null
+simulations (difference in gene flow $\geq0$ for all scenarios in Fig. \ref{fig:fig_2}
+and all but one scenario in linear regression).
 However, the magnitude of the this increase was minimal under
 some scenarios, and varied across simulations in a way that corroborates
-our first hypothesis --- i.e., it was positively correlated with linkage (STAT)
-and inversely correlated with polygenicity (STAT).
+our first hypothesis --- i.e., it was positively correlated with linkage
+($\beta_{l} = 0.0129\pm0.0006, P<2\times10^{-16}$)
+and inversely correlated with polygenicity
+($\beta_{p} = -0.0142\pm0.0006, P<2\times10^{-16}$).
 (As expected, downslope gene flow showed the converse result, being
 universally suppressed under climate change.)
 Of the three components of genomic architecture that we tested,
-polygenicity had the strongest overall effect on the extent to which
+polygenicity had the most striking effect on the extent to which
 up-gradient gene flow contributes to adaptation:
 moderate and high polygenicity scenarios generally had much lower
-up-gradient gene flow than did low-polygenicity scenarios (STAT),
+up-gradient gene flow than did low-polygenicity scenarios,
 with low-redundancy, independent-linkage scenarios being the main exception.
 Interestingly, moderate-polygenicitiy showed the lowest overall increase
-in upslope gene flow (STAT), though differences between moderate- and
+in upslope gene flow, though differences between moderate- and
 high-redundancy scenarios were minor.
 \begin{figure}
 \centering
@@ -271,42 +274,50 @@ high-redundancy scenarios were minor.
 
 
 \subsection{Hypothesis 2: Linkage and polygenicity}
-As expected, null simulations showed essentially no change in mean fitness (\ref{fig_2}) or population size(\ref{fig_s2}) --- barring small
+As expected, null simulations showed essentially no change in mean fitness (Fig. \ref{fig:fig_2}) or population size(Fig. \ref{fig:fig_s2}) --- barring small
 numerical artefacts that varied identically across both
 null and main scenarios --- and their phenotypic distributions were
-stable (\ref{fig_s3}).
+stable (Fig. \ref{fig:fig_s3}).
 Conversely, climate change caused the maladaptation
 predicted by basic theory \cite{aitken_whitlock},
 with patterns of decrease in population size and mean fitness
-and change in phenotypic distribution (\ref{fig_4})
+and change in phenotypic distribution (Fig. \ref{fig:fig_4})
 lending mixed support to our second hypothesis:
-The magnitude of the demographic impacts of climate change was positively
-correlated with the level of linkage across scenarios (STAT).
+Across scenarios, the demographic impacts of
+climate change increased with increasing linkage
+(change in fitness: $\beta_{l} = -0.00183\pm0.00010, P<2\times10^{-16}$;
+change in population size: $\beta_{l} = -33.33\pm1.287, P<2\times10^{-16}$;
+maladaptation: $\beta_{l} = 0.0038\pm0.0004, P<2\times10^{-16}$).
 However, the effect of polygenicity
 was more complex, with demographic effects being smallest at moderate polygenicity,
 moderate at low polygenicity regardless of redundancy and at high polgenicity when redundancy was high,
-but very large at high polygeniciy and low redundancy (\ref{fig:fig_3}, \ref{fig:fig_s2}) (STAT).
+but very large at high polygeniciy and low redundancy (Fig. \ref{fig:fig_3}, Fig. \ref{fig:fig_s2}),
+producing in our statistical analysis the expected overall
+trend of increasing impact with increasing polygenicity
+(change in fitness: $\beta_{p} = -0.00217\pm0.00010, P<2\times10^{-16}$;
+change in population size: $\beta_{p} = -15.07\pm1.287, P<2\times10^{-16}$;
+maladaptation: $\beta_{p} = 0.0097\pm0.0004, P<2\times10^{-16}$).
 Indeed, demographic decline was so strong at low redundancy and high polygenicity
 that adaptive capacity was effectively outstripped: demographic decline persisted throughout
 the climate change period, with little indication of evolutionary rescue
 (i.e., stabilization and rebound) occurring until the artificial post-climate-change period.
 The collapse of adaptive capacity in these scenarios
-low is also visible in the low-redundancy, high-polygenicity plots in \ref{fig:fig_4}
-(\textit{cf.}\ref{fig:fig_s3}),
+low is also visible in the low-redundancy, high-polygenicity plots in Fig. \ref{fig:fig_4}
+(\textit{cf.} Fig. \ref{fig:fig_s3}),
 which show much greater maladaptation (i.e., much larger red areas of phenotypic shortfall),
 than the small amount that occurs in all other scenarios.
 The low-redundancy, high-polygenicity, strong-linkage scenario had such low adaptive capacity
-that mean fitness declined by XXXXXX\% on average (from XXX to XXX),
-mean population size declined by XXXXX\% on average (from ~XXXXXX to ~XXXX individuals),
+that mean fitness declined by 5.2\% on average (from 0.934 to 0.885),
+mean population size declined by 17.1\% on average (from 6326 to 5246 individuals),
 and the simulated population went locally extinct in the rightmost, fastest-changing portion of the landscape.
-This is visible in \ref{fig:fig_4} as the disappearance of population density in the portion
+This is visible in Fig. \ref{fig:fig_4} as the disappearance of population density in the portion
 of the post-climate change phenotypic space corresponding to that region of the landscape,
-but is more clearly visible in the before-after population density maps in \ref{fig:fig_s4}.
+but is more clearly visible in the before-after population density maps in Fig. \ref{fig:fig_s4}.
 
 \begin{figure*}[\sidecaptionrelwidth][t]
 \centering
 \includegraphics[width=17.8cm]{pub/figs/FIG_3_fit_over_time.jpg}
-\caption{Left: Mean fitness dynamics for all scenarios during the 250 time steps before the climate change period and the 250 time steps during it (with the two periods divided by a red, dashed vertical line marking the onset of the climate change period). Scenarios are organized as in \ref{fig_2}: top and bottom sections for low and high redundancy, with rows in each section representing levels of linkage and columns representing polygenicity. Right: Comparison of climate change-driven changes in mean fitness across scenarios. Null scenarios are plotted on the left in blue, and main scenarios are plotted on the right, in red. Within each plot, scenarios are divided by the number of loci per trait (x-axis) and by the strength of linkage (shade, with darker hues representing stronger linkage). Asterisks above each box indicate level of significance (*=0.1, **=0.05, ***=0.005).}
+\caption{Left: Mean fitness dynamics for all scenarios during the 250 time steps before the climate change period and the 250 time steps during it (with the two periods divided by a red, dashed vertical line marking the onset of the climate change period). Scenarios are organized as in Fig. \ref{fig:fig_2}: top and bottom sections for low and high redundancy, with rows in each section representing levels of linkage and columns representing polygenicity. Right: Comparison of climate change-driven changes in mean fitness across scenarios. Null scenarios are plotted on the left in blue, and main scenarios are plotted on the right, in red. Within each plot, scenarios are divided by the number of loci per trait (x-axis) and by the strength of linkage (shade, with darker hues representing stronger linkage). Asterisks above each box indicate level of significance (*=0.1, **=0.05, ***=0.005).}
 \label{fig:fig_3}
 \end{figure*}
 
@@ -315,7 +326,7 @@ but is more clearly visible in the before-after population density maps in \ref{
 % NOTE: MAY NEED TO ADJUST THIS FIG TO FIT PNAS FORMAT, IF EVENTUALLY WE AND GET ACCEPTED THERE
 %\includegraphics[width=17.8cm]{pub/figs/FIG_4_phenotypic_shift.jpg}
 \includegraphics[width=15.8cm]{pub/figs/FIG_4_phenotypic_shift.jpg}
-\caption{Comparison, across all 18 redundancy scenarios, of the observed versus expected phenotypic shift during the climate change period. Scenarios are organized as in \ref{fig_2}: top and bottom sections representing low and high redundancy, with rows in each section representing levels of linkage and columns (in before-after pairs) representing polygenicity. For each scenario, the left ('before') scatterplot shows the distribution of individuals’ bivariate phenotypes before climate change begins, whereas the right ('after') scatterplot shows how the distribution has shifted by the end of the climate change period. The trait adapted to the shifting environmental gradient is distributed along the x axis, and the trait adapted to the stable gradient is distributed along the y axis. Scatterplots depict multi-model ensemble results for each scenario. The size and opacity of each point represents the number of individuals exhibiting that bivariate phenotype. (Note that the gridded arrangement of the points in each scatterplot is a function of the number of loci per trait which, because locus effect sizes are fixed, directly determines the set of attainable, evenly-spaced, discrete phenotypic values. Because fewer loci per trait yields fewer possible phenotypes, individuals are grouped into fewer, larger phenotypic bins in the 4- and 20-locus scenarios.) Solid black lines delineate the shift in the phenotypic distributions’ central tendencies that is expected to take place during the cimate change period, dotted black lines depict the observed (OLS-fitted) phenotypic distributions’ central tendencies at the ‘during’ and ‘after’ time steps, and translucent red wedges depict the differences between the expected and observed distributions (i.e., ‘phenotypic shortfall’, the response variable in our statistical tests).
+\caption{Comparison, across all 18 redundancy scenarios, of the observed versus expected phenotypic shift during the climate change period. Scenarios are organized as in Fig. \ref{fig:fig_2}: top and bottom sections representing low and high redundancy, with rows in each section representing levels of linkage and columns (in before-after pairs) representing polygenicity. For each scenario, the left ('before') scatterplot shows the distribution of individuals’ bivariate phenotypes before climate change begins, whereas the right ('after') scatterplot shows how the distribution has shifted by the end of the climate change period. The trait adapted to the shifting environmental gradient is distributed along the x axis, and the trait adapted to the stable gradient is distributed along the y axis. Scatterplots depict multi-model ensemble results for each scenario. The size and opacity of each point represents the number of individuals exhibiting that bivariate phenotype. (Note that the gridded arrangement of the points in each scatterplot is a function of the number of loci per trait which, because locus effect sizes are fixed, directly determines the set of attainable, evenly-spaced, discrete phenotypic values. Because fewer loci per trait yields fewer possible phenotypes, individuals are grouped into fewer, larger phenotypic bins in the 4- and 20-locus scenarios.) Solid black lines delineate the shift in the phenotypic distributions’ central tendencies that is expected to take place during the cimate change period, dotted black lines depict the observed (OLS-fitted) phenotypic distributions’ central tendencies at the ‘during’ and ‘after’ time steps, and translucent red wedges depict the differences between the expected and observed distributions (i.e., ‘phenotypic shortfall’, the response variable in our statistical tests).
 }
 \label{fig:fig_4}
 \end{figure*}
@@ -324,12 +335,15 @@ but is more clearly visible in the before-after population density maps in \ref{
 \subsection{Hypothesis 3: Redundancy}
 Our third hypothesis was fully supported by our results: High-redundancy scenarios showed
 consistently smaller demographic impacts of climate change and higher adaptive capacity
-than their low-redundancy comparators (\ref{fig:fig_2}, \ref{fig:fig_s2}) (STAT).
+than their low-redundancy comparators (Fig. \ref{fig:fig_2}, Fig. \ref{fig:fig_s2})
+(change in fitness: $\beta_{r} = 0.00402\pm0.00016, P<2\times10^{-16}$;
+change in population size: $\beta_{r} = 39.06\pm2.101, P<2\times10^{-16}$;
+maladaptation: $\beta_{r} = -0.0098\pm0.0006, P<2\times10^{-16}$).
 As mentioned above, this was especially notable in the high-polygenicity scenarios,
 which did not show not show evidence of demographic rebound during climate change.
 This is not to say that adaptation successfully occurred in all other scenarios though:
 fitness and population declines stabilized but did not rebound
-in high-redundancy, high-polygenicity scenarios (\ref{fig:fig_2}, \ref{fig:fig_s2}).
+in high-redundancy, high-polygenicity scenarios (Fig. \ref{fig:fig_2}, Fig. \ref{fig:fig_s2}).
 
 
 
@@ -577,7 +591,7 @@ Our parameters of interest, and the values we assigned them, are:
    - high: doubling of the values produces many-to-one mappings across all phenotypes between 0 and 1, inclusive (i.e., all phenotypes matching environmental values somewhere on the landscape).
 The full factorial combinations of the chosen values of those parameters generate the set
 of simulation scenarios depicted in the tabular arrangments of figures
-\ref{fig:fig_2}, \ref{fig:fig_3}, \ref{fig:fig_4}, \ref{fig_fig_s2}, \ref{fig_fig_s3}, and \ref{fig_fig_s4}.
+Fig. \ref{fig:fig_2}, Fig. \ref{fig:fig_3}, Fig. \ref{fig:fig_4}, Fig. \ref{fig:fig_s2}, Fig. \ref{fig:fig_s3}, and Fig. \ref{fig:fig_s4}.
 We used that script to run a set of batch jobs on the 
 savio3 partition of UC Berkeley’s Savio system (each node has 96 GB RAM and 32, 
 2.1-GHz Skylake processors). For each scenario, we ran a total of 100 iterations of 
@@ -642,7 +656,7 @@ Python and R \cite{r_core_team}.
 To test our first hypothesis about gene flow,
 we first produced a visualization of the directional 
 distributions of gene flow in all 18 scenarios, comparing between main
-and null scenarios (\ref{fig:fig_2}).
+and null scenarios (Fig. \ref{fig:fig_2}).
 To create this visualization, we gathered directional data
 from each simulation for a random 
 sample of the gene flow that occurred during the climate change event, using 
@@ -656,18 +670,28 @@ described by the means of all length-12 vectors of fitted parameters. We did thi
 separately for null scenarios and for main scenarios, then overlaid the main scenario (in red)
 on top of the nulls (in blue), providing a summary depiction of the nature of gene flow within each 
 main scenario as compared to its null expectation.
+
 Finally, we ran a simple linear regression
 of the main-null difference in upslope gene flow density
 as a function of the components of genomic architecture
 ($GFup{main}-GFup_{null} \sim \alpha + \beta_{p}polgenicity + \beta_{l}linkage + \beta_{r}redundancy + \epsilon$),
 which we used to interpret our results and test the components of our first hypothesis.
-to test the null hypotheses that the values of both directional metrics
-had no statistical relation to our genomic architecture parameters
-of interest (polygenicity, linkage, and genotypic redundancy),
-followed by \textit{post hoc} Tukey's honest significant difference (HSD) tests
-to determine the nature of the relationship between those metrics and our
-genomic architecture parameters of interest.
-As a comparator, we also ran this analysis for our null data.
+We model the genomic architecture components
+as numeric integer variables
+representing the factorial or exponential increases
+used to set their parameter values in simulations:
+polygenicity: low = 0, moderate = 1; high = 2 ($polygenicity_{variable}=\log_{5}(\frac{polygenicity_{simulated}}{4\times\ redundancy_{variable}})$;
+linkage: low = 0, moderate = 1, high = 2 ($linkage_{variable}=-\log_{10}(\frac{linkage_{simulated}}{0.5})$);
+redundancy: low = 0, high = 1.
+We use this model, compared against
+the patterns revealed by Fig. \ref{fig:fig_2},
+to test both components of our first hypothesis,
+expecting the combined
+values of all coefficients to consistently predict values
+$\geq0$ for the main-null difference in upslope gene flow (component 1),
+and expecting the coefficients on the linkage and polygenicity
+terms of the model to be significantly positive and
+negative, respectively (component 2).
 
 To visually assess our second and third hypotheses, we created a series of
 plots comparing climate change-driven demographic shifts
@@ -680,8 +704,8 @@ for both main and null models, we created ensemble datasets by combining all 100
 iterations’ output time series of the metric,
 then derived summary time series by calculating each time step's
 100-iteration mean and 5th and 95th percentiles.
-We plotted the resulting summary time series in \ref{fig:fig_3} (mean fitness)
-and \ref{fig:fig_s2} (population size), with null results again shown in blue
+We plotted the resulting summary time series in Fig. \ref{fig:fig_3} (mean fitness)
+and Fig. \ref{fig:fig_s2} (population size), with null results again shown in blue
 and main results in red.
 We plotted the metrics starting from 250 time steps before the climate change event
 and running until 250 time steps after its completion, allowing us
@@ -694,7 +718,7 @@ and shaded darker for increasing levels of linkage.
 
 Next, to better understand changes in population size and distribution,
 we mapped before-after comparisons of population density across all 18
-main scenarios (\ref{fig:fig_s4}).
+main scenarios (Fig. \ref{fig:fig_s4}).
 Each population density map is calculated as
 the array of mean population densities at all cells on the landscape,
 averaged across all 100 main simulations of the map's corresponding scenario.
@@ -706,7 +730,7 @@ grid of plots comparing each scenario's
 mean phenotypic distributions before and after climate change,
 including scatter plots of the density of individuals occuring across
 two-dimensional trait space and lines and wedges depicting the average maladaptation
-observed across each scenario's 100 iterations (\ref{fig:fig_4}).
+observed across each scenario's 100 iterations (Fig. \ref{fig:fig_4}).
 We refer to the wedge as 'persistent maladaptation',
 and we calculate it as the difference between: a.) the area 
 within two-dimensional trait space that the population’s phenotypic distribution 
@@ -737,13 +761,13 @@ shaded to depict relative densities of individuals).
 We then overplot onto those scatter plots the central tendency lines of
 the expected (dotted lines) and observed (solid lines) phenotypic distributions,
 as well as the wedges of persistent maladaptation.
-In \ref{fig:fig_s3} we produce the same plot as \ref{fig:fig_4},
+In Fig. \ref{fig:fig_s3} we produce the same plot as Fig. \ref{fig:fig_4},
 but using data from null simulations to demonstrate that all differences
 in maladaptation observed between scenarios were attributable to climate change,
 and with blue translucent wedges showing the expected area of phenotypic shift
 under each null scenario's corresponding main simulation, for reference.
 
-To better understand our results,
+To summarize our results,
 we ran identically structured simple linear regressions
 for each of our three response variables measuring
 population-level changes during the climate change event
@@ -751,10 +775,21 @@ change in mean fitness, change in population size,
 and persistent maladaptation --- with polygenicity,
 linkage, redundancy, and nullness serving as explanatory variables:
 $[\Delta N_{t}\ |\ \Delta fit\ |\ maladaptation] \sim \alpha + \beta_{p}polgenicity + \beta_{l}linkage + \beta_{r}redundancy + \beta_{n}nullness + \epsilon$.
-We used these models, in combination with the cross-scenario trends visible in
-\ref{fig:fig_3}, \ref:{fig:fig_s2}, and \ref{fig:fig_4},
+We model nullness as a binary categorical variable (null=0, main=1)
+and again model the genomic architecture components
+as numeric integer variables, as described above.
+We use these models, in combination with the
+cross-scenario trends visible in
+Fig. \ref{fig:fig_3}, Fig. \ref{fig:fig_s2}, and Fig. \ref{fig:fig_4},
 to test the components of our second hypothesis
 (polygenicity and linkage) and third (redundancy).
+Specifically, our second hypothesis predicts that
+the coefficients of the linkage and genicity terms are significantly
+non-zero and negative (for the fitness-change
+and population size-change models) or positive (for the maladaptation
+model) with increasing linkage and genicity,
+while our third hypothesis predicts significantly non-zero
+redundancy coefficients with the opposite signs.
 
 } % end matmethods
 
@@ -773,6 +808,7 @@ to test the components of our second hypothesis
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TEMPORARY PLACE FOR SUPPLEMENTAL FIGS
 
+\pagebreak
 \textbf{SUPPLEMENTAL FIGS:}
 
 
@@ -788,14 +824,14 @@ to test the components of our second hypothesis
 \begin{figure*}[\sidecaptionrelwidth][t]
 \centering
 \includegraphics[width=17.8cm]{pub/figs/FIG_S2_Nt_over_time.jpg}
-\caption{Left: Population size dynamics for all scenarios during the 250 time steps before the climate change period and the 250 time steps during it (with the two periods divided by a red, dashed vertical line marking the onset of the climate change period). Scenarios are organized as in \ref{fig_2}: top and bottom sections representing low and high redundancy, with rows in each section representing levels of linkage and columns representing polygenicity. Both means (black lines) and variability envelopes (5th percentile to 95th percentile) are shown, with scenario type depicted by color (main scenarios in red, null scenarios in blue). Right: Comparison of climate change-driven changes in mean population size across scenarios. Null scenarios are plotted on the left in blue, and main scenarios are plotted on the right, in red. Within each plot, scenarios are divided by the number of loci per trait (x-axis) and by the strength of linkage (shade, with darker hues representing stronger linkage). Asterisks above each box indicate level of significance (*=0.1, **=0.05, ***=0.005).}
+\caption{Left: Population size dynamics for all scenarios during the 250 time steps before the climate change period and the 250 time steps during it (with the two periods divided by a red, dashed vertical line marking the onset of the climate change period). Scenarios are organized as in Fig. \ref{fig:fig_2}: top and bottom sections representing low and high redundancy, with rows in each section representing levels of linkage and columns representing polygenicity. Both means (black lines) and variability envelopes (5th percentile to 95th percentile) are shown, with scenario type depicted by color (main scenarios in red, null scenarios in blue). Right: Comparison of climate change-driven changes in mean population size across scenarios. Null scenarios are plotted on the left in blue, and main scenarios are plotted on the right, in red. Within each plot, scenarios are divided by the number of loci per trait (x-axis) and by the strength of linkage (shade, with darker hues representing stronger linkage). Asterisks above each box indicate level of significance (*=0.1, **=0.05, ***=0.005).}
 \label{fig:fig_s2}
 \end{figure*}
 
 \begin{figure*}
 \centering
 \includegraphics[width=.8\linewidth]{pub/figs/FIG_S3_phenotypic_shift_null.jpg}
-    \caption{Maps depicting shifts in population density during climate change for all null simulations. Scenarios are organized as in \ref{fig_2}: top and bottom sections representing low and high redundancy, with rows in each section representing levels of linkage and columns (in before-after pairs) representing polygenicity. As well as showing local extinction in the low-redundancy, high-polygenicity, strong-linkage scenario (bottom right of top section), these maps also show moderate simulation edge effects and density banding in the low-polygenicity scenarios because of the mismatch between environmental and phenotypic resolutions.}
+    \caption{Maps depicting shifts in population density during climate change for all null simulations. Scenarios are organized as in Fig. \ref{fig:fig_2}: top and bottom sections representing low and high redundancy, with rows in each section representing levels of linkage and columns (in before-after pairs) representing polygenicity. As well as showing local extinction in the low-redundancy, high-polygenicity, strong-linkage scenario (bottom right of top section), these maps also show moderate simulation edge effects and density banding in the low-polygenicity scenarios because of the mismatch between environmental and phenotypic resolutions.}
 \label{fig:fig_s3}
 \end{figure*}
 
