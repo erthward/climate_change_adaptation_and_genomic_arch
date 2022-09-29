@@ -178,7 +178,12 @@ pred_vals = data.frame(expand.grid(unique(demog.gf.df$genicity),
                                    unique(demog.gf.df$linkage),
                                    unique(demog.gf.df$redundancy)))
 colnames(pred_vals) = c('genicity', 'linkage', 'redundancy')
-pred_vals$PREDICTED_delta_flow = predict.lm(mod.gf, pred_vals)
+# NOTE: generating confidence intervals, not prediction, because
+#       summarizing seen values, not predicting new
+pred_out = predict.lm(mod.gf, newdata=pred_vals, interval='confidence')
+pred_vals$PREDICTED_delta_flow = pred_out[,'fit']
+pred_vals$PREDICTED_delta_flow_lwr = pred_out[,'lwr']
+pred_vals$PREDICTED_delta_flow_upr = pred_out[,'upr']
 cat('\n\tpredict values of change in mean upslope gene flow:\n')
 print(pred_vals)
 cat('\n\n')
@@ -209,9 +214,19 @@ pred_vals = data.frame(expand.grid(unique(demog.gf.df$nullness),
                                    unique(demog.gf.df$linkage),
                                    unique(demog.gf.df$redundancy)))
 colnames(pred_vals) = c('nullness', 'genicity', 'linkage', 'redundancy')
-pred_vals$PREDICTED_delta_fit = predict.lm(mod.delta_fit, pred_vals)
-pred_vals$PREDICTED_delta_Nt = predict.lm(mod.delta_Nt, pred_vals)
-pred_vals$PREDICTED_maladapt = predict.lm(mod.maladapt, pred_vals)
+pred_out_delta_fit = predict.lm(mod.delta_fit, newdata=pred_vals, interval='confidence')
+pred_out_delta_Nt = predict.lm(mod.delta_Nt, newdata=pred_vals, interval='confidence')
+pred_out_maladapt = predict.lm(mod.maladapt, newdata=pred_vals, interval='confidence')
+pred_vals$PREDICTED_delta_fit = pred_out_delta_fit[,'fit']
+pred_vals$PREDICTED_delta_fit_lwr = pred_out_delta_fit[,'lwr']
+pred_vals$PREDICTED_delta_fit_upr = pred_out_delta_fit[,'upr']
+pred_vals$PREDICTED_delta_Nt = pred_out_delta_Nt[,'fit']
+pred_vals$PREDICTED_delta_Nt_lwr = pred_out_delta_Nt[,'lwr']
+pred_vals$PREDICTED_delta_Nt_upr = pred_out_delta_Nt[,'upr']
+pred_vals$PREDICTED_maladapt = pred_out_maladapt[,'fit']
+pred_vals$PREDICTED_maladapt_lwr = pred_out_maladapt[,'lwr']
+pred_vals$PREDICTED_maladapt_upr = pred_out_maladapt[,'upr']
+
 cat('\n\tpredicted values of change in fitness, change in Nt, and maladaptation:\n')
 print(pred_vals)
 cat('\n\n')
