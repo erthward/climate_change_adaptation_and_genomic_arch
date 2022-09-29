@@ -14,3 +14,4 @@ GNX_mod*/
 *.zip
 *lock*#
 *odg
+pub/*.pdf
