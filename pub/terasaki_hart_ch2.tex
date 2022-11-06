@@ -28,61 +28,66 @@
 \correspondingauthor{\textsuperscript{1}To whom correspondence should be addressed. E-mail: drew.hart@berkeley.edu}
 
 % At least three keywords are required at submission. Please provide three to five keywords, separated by the pipe symbol.
-\keywords{adaptation $|$ climate change $|$ $|$ landscape genomics $|$ spatial simulation $|$ gene flow $|$ genetic architecture} 
+\keywords{adaptation $|$ climate change $|$ $|$ landscape genomics $|$ spatial simulation $|$ gene flow $|$ genomic architecture} 
 
 \begin{abstract}
-% NOTE: 250 WORDS MAX!
-% NOTE: THIS NEEDS REFINING AND SHORTENING; THREW TOGETHER IN 10 MINUTES
-As climate change advances,
-environmental gradients will frequently decouple,
-leading to the emergence of novel multivariate 
-environments that will exert increasing stress on wild populations.
-Evolutionary responses are expected to be one of the main ways in which
-populations may adjust and survive,
-with a common expectation
-that local adaptation may occur by way of up-gradient gene flow
-that brings adaptive diversity 
-into populations whose future climates are well
-approximated by the current climate of source populations.
-However, multivariate selective environments in the real world can have
-profound evolutionary importance,
-potentially generating dynamics that complicate that simplified model
---- yet, they have been largely overlooked in most
-research on climate change adaptation so far.
-The genomic architecture of climate-adapted traits
-may also exert major influence on evolutionary dynamics
-under climate change, and hence on long-term conservation outcomes,
-but is poorly understood and expected to be vary widely across taxa.
-Here, we use \textit{geonomics}, a Python package
+As climate change advances
+environmental gradients decouple,
+generating novel multivariate 
+environments that stress wild populations.
+A commonly assumed mechanism of evolutionary rescue is adaptive gene flow
+from populations whose current climates
+approximate future projections --- 
+but novel multivariate environments have no current analogs by definition,
+and gene flow from similar climates can cause maladaptive introgression with respect to decoupling environmental variables.
+Genomic architecture can play an important but often-ignored role in
+determining the effectiveness and relative magnitudes of adaptive gene flow and \textit{in situ} adaptation.
+Here, we use \textit{Geonomics}, a Python \cite{rossum} package
 for constructing landscape genomic simulations
-on complex and changing landscapes,
+on changing landscapes,
 to simulate multivariate evolutionary responses to climate change
-under various genomic architectures --- combinations of polygenicity, genotypic redundancy,
-and linkage between loci underlying adaptive traits.
-We use the results to test a series of hypotheses about microevolutionary responses to climate change.
-While we corroborate some theoretical results reported from previous models
-based on univariate or static environments,
-our results also extend and complicate established theory in a few ways.
-First, while we find that up-gradient gene flow under climate change is always at least
-equal to or greater than that in null models, it is strongly constrained
-under lower linkage and higher polygenicity, suggesting that \textit{in situ} shifts
-in allelic covariance may be a more effective mechanism of adaptation
-under some conditions.
-Second, we find that stronger linkage and higher polygenicity also
-decrease adaptive capacity, increase maladaptation, and thus exacerbate
-demographic declines under climate change, even leading to failure to
-adapt and local extinction in the most extreme circumstances.
-Finally, we find that adaptive capacity increases under 
+under scenarios of variable trait polygenicity, linkage, and genotypic redundancy.
+We test a series of hypotheses
+about cross-scenario variability in evolutionary outcomes,
+reporting results that partially corroborate but also complicate or extend previous findings based on univariate and static environments.
+First, we find that up-gradient gene flow is consistently present,
+but its magnitude is strongly constrained under lower linkage and higher polygenicity and redundancy,
+suggesting \textit{in situ} adaptation
+as a more effective mechanism of evolutionary rescue under these conditions.
+Second, we find that high polygenicity
+causes increased maladaptation and acute
+demographic decline, a concerning result given the likely polygenic nature
+of many climate-adapted traits.
+Finally, we show that adaptive capacity increases under 
 higher genotypic redundancy across all scenarios,
-contributing to the growing
-recognition of redundancy as an important facet of genomic
-architecture and suggesting directions for better understanding
-and predicting the climatic vulnerability of real populations.
+adding to the growing
+recognition of its importance and suggesting opportunities for better understanding the climatic vulnerability of real populations.
 \end{abstract}
 
 
 % Please add a significance statement to explain the relevance of your work
-\significancestatement{Authors must submit a 120-word maximum statement about the significance of their research paper written at a level understandable to an undergraduate educated scientist outside their field of speciality. The primary goal of the significance statement is to explain the relevance of the work in broad context to a broad readership. The significance statement appears in the paper itself and is required for all research papers.}
+\significancestatement{
+Climate change makes climate gradients
+shift in space and decouple,
+causing the emergence of novel environments.
+Using that conceptual basis,
+our simulation results reveal
+the complex and previously unrecognized dependence of
+adaptation to climate change on the
+genomic architectures of the traits involved:
+the number of loci influencing a trait ('polygenicity'),
+how frequently the loci are recombined in offspring
+('linkage'), and the number of different genotypes that
+yield identical phenotypes ('genotypic redundancy').
+We show that \textit{in situ} adaptation
+can be more effective than
+climate-tracking adaptive gene flow under certain architectures;
+and that high polygenicity can cause
+local populations to decline,
+but that high redundancy ameliorates this
+and generally improves adaptive capacity.
+}
+
 
 \dates{This manuscript was compiled on \today}
 \doi{\url{www.pnas.org/cgi/doi/10.1073/pnas.XXXXXXXXXX}}
@@ -102,9 +107,9 @@ Because adaptive \textit{de novo} mutations take a long time to arise,
 this adaptation will instead most likely be facilitated
 by the reconfiguration of existing adaptive diversity \cite{bomblies}.
 A common conceptual model underlying this assumption is that of
-adaptive gene flow parallel to a shifting climatic gradient
+adaptive gene flow tracking a shifting climatic gradient
 (i.e., in the vector
-direction of climate velocity; \cite{ackerly}),
+direction of climate velocity; \cite{loarie,ackerly}),
 which would bring beneficial genes into recipient populations
 from 'climate-suitable' populations --- i.e., populations whose
 current climates approximate future local projections \cite{bellis}.
@@ -123,14 +128,14 @@ In recent decades, research bridging the fields
 of molecular population genetics
 and quantitative genetics
 \cite{barghi_polygenic,barton,pritchard_human_adaptation,pritchard_sweeps_alone}
-has revealed that the genetic architecture of a trait
+has revealed that the genomic architecture of a trait
 is a core determinant of whether and how that trait
 becomes locally adapted \cite{yeaman_review}.
 The number of loci underlying a trait (henceforth, 'polygenicity'),
 the rate of recombination between trait loci (i.e., linkage),
 and the number of distinct genotypes that yield identical trait phenotypes
 (i.e., genotypic redundancy; \cite{yeaman_review,laruson,barghi_polygenic})
-are among the key aspects of genetic architecture that influence adaptation
+are among the key aspects of genomic architecture that influence adaptation
 \cite{barton,yeaman_whitlock,yeaman_review,lecorre}.
 Previous research suggests that ecologically-important traits can vary from
 few loci of large effect \cite{martin,rees}
@@ -146,9 +151,9 @@ Genotypic redundancy can facilitate local adaptation
 by allowing the existence of a stable phenotypic cline
 subtended by a genotypic dynamic equilibrium
 consisting of continuous and concerted shifts in non-neutral allele frequencies
-(i.e., 'transient genetic architectures' \cite{barghi_redundancy,manceau,yeaman_amnat}).
+(i.e., 'transient genomic architectures' \cite{barghi_redundancy,manceau,yeaman_amnat}).
 
-The influence of genetic architecture on the nature and outcomes
+The influence of genomic architecture on the nature and outcomes
 of local adaptation to changing environmental gradients
 has been studied to a limited extent,
 with nearly exclusive focus on univariate models
@@ -159,37 +164,41 @@ unaligned environmental gradients \cite{guillaume} that can shift differentially
 and thus decouple as climate change advances
 \cite{crimmins,daly},
 leading to the emergence of novel multivariate landscapes
-\cite{williams_novel_climates,williams_projected_novel_disappearing,fitzpatrick_climate_novelty_forecasts}.
-Under these circumstances,
-gene flow from 'climate-suitable' populations
-may not be universally adaptive
-if the incoming haplotypes conferring
-a fitness advantage for a climate-adapted trait
-also contain genetic variation that could cause conflicting
-fitness effects for other traits adapted to non-climatic and decoupling gradients,
-such that the evolutionary outcome could depend on
-the genetic architectures of the traits involved
-\cite{aitken_whitlock,schiffers}.
-The genomic architecture of locally adapted traits
-can influence the relative magnitudes of the maladaptation resulting from gene flow
-and that resulting from shifting allelic covariance \textit{in situ},
-and can thus determine the relative contributions of these two processes to
- adaptation under climate change --- or, indeed,
-whether adaptation occurs at all.
+\cite{williams_novel_climates,williams_projected_novel_disappearing,fitzpatrick}.
+Thus, it is important to assess how the genomic architectures
+of multiple traits can combine to determine the nature and outcome
+of multivariate adaptation under climate change.
+Gene flow from `climate-suitable' portions of a species' range
+is often assumed to be adaptive from the perspective of a single trait
+adapted to a shifting climatic gradient, but this assumption
+may be invalid if this gene flow also conveys
+linked variation for a trait
+adapted to a second environmental gradient
+from which the climatic gradient is decoupling --- i.e.,
+if the gene flow contains alleles of countervailing adaptive value.
+
+Under these circumstances, the genomic architectures of both traits
+(e.g., polygenicity, linkage, and genotypic redundancy)
+can determine the relative likelihoods of adaptation by gene flow
+and \textit{in situ} adaptation by shifting
+allelic covariance
+\cite{aitken_whitlock,schiffers} --- and thus,
+the overall evolutionary outcome.
 
 Spatially explicit simulation is one of our strongest tools
 for improving our understanding of the complex dynamics of gene flow and adaptation
 under climate change \cite{capblancq_review}.
 In this study, we use individual-based, spatially explicit simulations
-to test how genetic architecture influences multivariate adaptation to climate change.
-We first simulate 
-the adaptation of a population to a bivariate environment composed of two horizontal 
+to test how genomic architecture influences multivariate adaptation to climate change.
+We simulate the adaptation of a single population
+continuously distributed in space
+to a bivariate environment composed of two horizontal 
 environmental gradients, each exerting selection on a separate trait.
 In our main models, we then simulate climate change on that landscape by holding one gradient 
 constant while gradually shifting the other gradient horizontally, such that
 the decoupling environment pushes local fitness peaks toward novel regions 
-of bivariate trait space (Fig. \ref{fig:conceptual}).
-We run 100 pairs of climate change
+of bivariate trait space (Fig. \ref{fig:fig_1}).
+We run 100 pairs of climate change simulations
 and null (i.e., stable climate) simulations, for each of eighteen scenarios
 resulting from the full factorial crossing of three key components
 of genomic architecture: genotypic redundancy, polygenicity, and linkage
@@ -221,33 +230,36 @@ of genomic architecture: genotypic redundancy, polygenicity, and linkage
 
 \begin{figure}%[tbhp]
 \centering
-\includegraphics[width=.8\linewidth]{pub/figs/FIG_1_conceptual.jpg}
+\includegraphics[width=.8\linewidth]{pub/figs_and_stats/FIG_1_conceptual.jpg}
     \caption{Conceptual model of adaptation to climate change. Above: Stacked, horizontal cross-sections of our square simulation landscape, shown for the shifting environmental gradient ($e_{1}$, blue-red color ramp) and the stable gradient ($e_{2}$, white-black color ramp), both before climate change ($t_{1}$) and after ($t_{2}$). Below: Bivariate fitness landscape of the traits adapted to the shifting and stable gradients, on axes $e_{1}$ and $e_{2}$, respectively. Three example positions along the bivariate gradient ($x_{1}$, $x_{2}$, $x_{3}$) are delineated by thin vertical boxes on the physical landscape, both before climate change (gray) and after (yellow), and their corresponding fitness peaks are shown as color-matched kernels located along color-matched lines of the fitness optima that exist on the physical landscape before ($t_{1}$) and after ($t_{2}$) climate change. Shifts in local fitness peaks are shown as labeled arrows ($x_{2}$, $x_{3}$); the environment at the far left of the physical landscape does not change, so $x_{1}$'s fitness peaks are overlapping and have no shift, whereas the environment at the far right of the physical landscape experiences the maximal rate of change, which is reflected in the shift in $x_{3}$'s fitness peaks. Note that fitness peaks are stylized and truncated for ease of depiction; in our simulations, fitness decreases as a linear function of an individual's distance from its phenotypic optimum, rather than the truncated Gaussian function depicted here.}
 \label{fig:fig_1}
 \end{figure}
 
 
-We use our simulations to test a series of hypotheses about the influence of genomic architecture 
+We analyze cross-scenario variation in the resulting spatiotemporal
+patterns of gene flow, population size and density, and phenotypic
+distributions --- all of which are emergent properties of our simulation
+parameterizations, as explained in our methods
+and specified in Appendix 1 --- 
+to test a series of hypotheses about the influence of genomic architecture 
 on multivariate adaptation under climate change. First, we hypothesize that up-gradient 
 gene flow will be higher under climate change than under a stable climate across all
-scenarios but that gene flow contributes least to climate change adaptation when
+scenarios, but that gene flow contributes least to climate change adaptation when
 linkage is low and polygenicity is high.
 This is because we expect gene flow to always have
 at least some adaptive value, but we also expect low-linkage, high-polygenicity architectures 
 (i.e., 'dispersed' architectures \cite{yeaman_review}) to exhibit quick \textit{in situ}
-adaptation by way of shifting allelic covariance among many small-effect alleles, akin to adaptation 
-under transient genetic architectures, facilitating phenotypic shifts in the absence of up-gradient gene flow.
+adaptation \textit{via} shifting allelic covariance among many small-effect alleles, akin to adaptation 
+under transient genomic architectures, facilitating phenotypic shifts in the absence of up-gradient gene flow.
 Second, we hypothesize that stronger linkage 
 and higher polygenicity will reduce a population's adaptive capacity under climate change,
 manifesting as greater reductions in population size and mean fitness
 and more persistent maladaptation, because both conditions impose longer expected
 wait times for the emergence of recombinant haplotypes that push phenotypes
-away from their pre-change fitness peaks. Finally, we hypothesize that higher genotypic redundancy
+further from their pre-change fitness peaks. Finally, we hypothesize that higher genotypic redundancy
 facilitates adaptation to shifting gradients, much as it does on stable gradients 
 \cite{barghi_redundancy,manceau,yeaman_amnat}, resulting in smaller reductions 
 in population size and mean fitness.
-
-
 
 
 \section*{Results}
@@ -277,7 +289,7 @@ in up-gradient gene flow, though differences between moderate- and
 high-redundancy scenarios were minor.
 \begin{figure}
 \centering
-\includegraphics[width=.8\linewidth]{pub/figs/FIG_2_gene_flow.jpg}
+\includegraphics[width=.8\linewidth]{pub/figs_and_stats/FIG_2_gene_flow.jpg}
     \caption{Comparison, across all 18 scenarios, of the distributions of gene-flow directions during the climate change period. Scenarios are organized into top and bottom sections for low and high redundancy, with rows in each section representing levels of linkage and columns representing polygenicity. Main scenarios (red) are compared against null scenarios (blue). Compass labels indicate directions of gene flow as it would be observed from a bird’s-eye view of the simulated landscape, with rightward (i.e., `up-gradient') gene flow moving in the same direction as the shifting environmental gradient, and with upward and downward (i.e., `on contour’) gene flow being perpendicular to the environmental gradients. Down-gradient gene flow is expected to be maladaptive under all scenarios, explaining why it is universally suppressed relative to the null results. There is a general trend toward increasing on-contour gene flow and decreasing up-gradient gene flow with decreasing strength of linkage and increasing number of loci per trait.
 }
 \label{fig:fig_2}
@@ -290,9 +302,9 @@ in mean fitness (Fig. \ref{fig:fig_2}) or population size(Fig. \ref{fig:fig_s2})
 --- aside from small modeling artefacts that applied to both
 null and climate-change scenarios --- and their phenotypic distributions were
 stable through time (Fig. \ref{fig:fig_s3}).
-The results of our climate change simulations exhibited the 
-predicted decreases in population size and mean fitness
-that are the expected results of maladaptation \cite{aitken_whitlock}.
+The results of our climate change simulations exhibited
+decreases in population size and mean fitness
+that are the expected results of increasing maladaptation \cite{aitken_whitlock}.
 They also revealed environment-tracking bivariate phenotypic shifts (Fig. \ref{fig:fig_4})
 in line with the expected direction depicted in the lower half of Fig. \ref{fig:fig_1}
 but with variable amounts of shortfall below the fitness-maximizing phenotypic shift.
@@ -300,7 +312,10 @@ Across scenarios, the demographic impacts of
 climate change increased with increasing linkage
 (change in fitness: $\beta_{l} = -0.00183\pm0.00010, P<2\times10^{-16}$;
 change in population size: $\beta_{l} = -33.33\pm1.287, P<2\times10^{-16}$;
-maladaptation (i.e., area of phenotypic-shift shortfall): $\beta_{l} = 0.0038\pm0.0004, P<2\times10^{-16}$).
+maladaptation: $\beta_{l} = 0.0038\pm0.0004, P<2\times10^{-16}$).
+(Maladaptation is defined as the area in bivariate trait space separating the central line
+of a population's post-change phenotypic distribution from the central line of the distribution
+that would optimally track the changing environment; see wedges in Figs. \ref{fig:fig_4} and \ref{fig:fig_s3}, and see Methods for details.)
 Demographic impacts also showed a signal of overall increase with increasing polygenicity
 (change in fitness: $\beta_{p} = -0.00217\pm0.00010, P<2\times10^{-16}$;
 change in population size: $\beta_{p} = -15.07\pm1.287, P<2\times10^{-16}$;
@@ -324,14 +339,14 @@ but is more clearly visible in the before-after population density maps \ref{fig
 
 \begin{figure*}[\sidecaptionrelwidth][t]
 \centering
-\includegraphics[width=17.8cm]{pub/figs/FIG_3_fit_over_time.jpg}
+\includegraphics[width=17.8cm]{pub/figs_and_stats/FIG_3_fit_over_time.jpg}
 \caption{Left: Mean fitness dynamics for all scenarios during the 250 time steps before the climate change period and the 250 time steps during it (with the two periods divided by a red, dashed vertical line marking the onset of the climate change period). Scenarios are organized as in Fig. \ref{fig:fig_2}: top and bottom sections for low and high redundancy, with rows in each section representing levels of linkage and columns representing polygenicity. Right: Comparison of climate change-driven changes in mean fitness across scenarios. Null scenarios are plotted on the left in blue, and main scenarios are plotted on the right, in red. Within each plot, scenarios are divided by the number of loci per trait (x-axis) and by the strength of linkage (shade, with darker hues representing stronger linkage). Asterisks above each box indicate level of significance (*=0.1, **=0.05, ***=0.005).}
 \label{fig:fig_3}
 \end{figure*}
 
 \begin{figure*}
 \centering
-\includegraphics[width=15.8cm]{pub/figs/FIG_4_phenotypic_shift.jpg}
+\includegraphics[width=15.8cm]{pub/figs_and_stats/FIG_4_phenotypic_shift.jpg}
 \caption{Comparison, across all 18 redundancy scenarios, of the observed versus expected phenotypic shift during the climate change period. Scenarios are organized as in Fig. \ref{fig:fig_2}: top and bottom sections representing low and high redundancy, with rows in each section representing levels of linkage and columns (in before-after pairs) representing polygenicity. For each scenario, the left ('before') scatterplot shows the distribution of individuals’ bivariate phenotypes before climate change begins, whereas the right ('after') scatterplot shows how the distribution has shifted by the end of the climate change period. The trait adapted to the shifting environmental gradient is distributed along the x axis, and the trait adapted to the stable gradient is distributed along the y axis. Scatterplots depict multi-model ensemble results for each scenario. The size and opacity of each point represents the number of individuals exhibiting that bivariate phenotype. (Note that the gridded arrangement of the points in each scatterplot is a function of the number of loci per trait which, because locus effect sizes are fixed, directly determines the set of attainable, evenly-spaced, discrete phenotypic values. Because fewer loci per trait yields fewer possible phenotypes, individuals are grouped into fewer, larger phenotypic bins in the 4- and 20-locus scenarios.) Solid black lines delineate the shift in the phenotypic distributions’ central tendencies that is expected to take place during the cimate change period, dotted black lines depict the observed (OLS-fitted) phenotypic distributions’ central tendencies at the ‘during’ and ‘after’ time steps, and translucent red wedges depict the differences between the expected and observed distributions (i.e., ‘phenotypic shortfall’, the response variable in our statistical tests).
 }
 \label{fig:fig_4}
@@ -364,26 +379,21 @@ This model is not only the conceptual basis for research
 but also the inspiration for some climate-smart
 approaches to biodiversity management
 (e.g., assisted gene flow; \cite{aitken_whitlock}).
-However, by employing this model as the basis
+However, adopting this model as the basis
 for theoretical and mechanistic research
-we risk overlooking the nuanced but important dynamics that
-can result when complex genomic architectures
-are involved in local adaptation
-to multivariate environmental change.
-Starting from this more realistic framework,
-our simulations confirm that up-gradient gene flow does, indeed,
-play a generalized role in mitigating
-the impacts of climate change on populations,
-but they also reveal a major caveat:
-polygenicity and, to a lesser extent, linkage
-can limit the extent to which
-gene flow contributes to adaptation.
+risks overlooking the influence of
+genomic architecture on multivariate adaptation to environmental change.
+Starting from a more realistic, multi-trait framework,
+our simulations demonstrate that up-gradient gene flow does indeed
+occur under climate change,
+but that its conrtibution to adaptation can be constrained
+by polygenicity and, to a lesser extent, linkage.
 Given the plausibility of the range of genomic architectures we simulate
 \cite{barghi_polygenic,boyle,rockman,savolainen,sella,bomblies},
 these results raise the compelling
 possibility that up-gradient gene flow, while unlikely
-to be maladaptive, could nonetheless prove
-ineffectual for supporting adaptation in many systems,
+to be net-maladaptive, could have limited ability to
+support adaptation in many systems,
 especially those where climate-adapted traits
 have more dispersed architectures
 (i.e., architectures composed of many genes of small effect; \cite{yeaman_review}),
@@ -393,51 +403,60 @@ How often are climate-adapted trait architectures dispersed,
 versus being more concentrated (i.e., composed of
 few loci of large effect)?
 
-The genomic architecture of climate-adapted traits
-also has the potential to influence the population dynamics
+We also show that the genomic architecture of climate-adapted traits
+can influence the nature and size of the demographic fluctuations
 that occur during evolutionary responses to climate change.
-Our results show that neglecting this fact
-can lead to overlooking important contingencies,
-whereas accounting for them can extend current theory and provide valuable insight.
+Our results suggest that neglecting this fact
+can cause important contingencies to go overlooked,
+while accounting for it could extend current theory and provide valuable insight.
 First, our results suggest that strong linkage between non-neutral loci,
 especially under high polygenicity, can increase maladaptation and demographic decline
 during climate change. 
-In the most extreme case, high polygenicity and low redundancy
-combine to drive dramatic and persistent declines
-and even local extinction when linkage is strong.
+In the most extreme case, evolutionary rescue is absent:
+high polygenicity and low redundancy
+combine to drive dramatic and persistent demographic declines,
+and even cause local extinction when linkage is strong.
 This was unexpected in light of previous work reporting
 that dispersed architectures produce stable,
 resilient phenotypic clines despite transient genotypic composition \cite{yeaman_amnat,yeaman_review},
 and thus that species with such architectures
-could exhibit rapid local adaptation \cite{aitken_yeaman}. 
-We still expected evolutionary responses to climate change
+could exhibit rapid local adaptation \cite{aitken_yeaman}
+--- but may make sense in light of the quick evolutionary
+rescue observed in these scenarios' artificial 
+`post-change' periods, suggesting that the pace of environmental change exceeded the pace of
+adaptation. 
+We did expect evolutionary responses to climate change
 to be slower in these scenarios,
 because natural selection is less effective on smaller-effect alleles
 and because high linkage leads to longer expected wait times for the generation
 of novel, adaptive recombinants, but we did not expect
-to see such a pronounced lack of adaptive capacity.
+adaptive capacity to be completely outstripped.
+
 The fact that high genotypic redundancy reduces demographic decline,
-not just in these but across all scenarios, contributes to the building recognition of the importance of redundancy
+not just in the aforementioned scenarios but across them all, contributes to the building recognition of the importance of redundancy
 as a driver of population-genetic outcomes in polygenic systems
-\cite{laruson,yeaman_review},
-and also presents a possible mechanism to be explored
+\cite{laruson,yeaman_review}.
+This also presents a possible mechanism to be explored
 in real-world populations living at species' colder range edges.
 Much like the local populations in the rightmost region of our low-redundancy scenarios,
-these populations could already be at the edge of the phenotypic space defined by
-standing genetic variation, such that local selection would be directional,
-segregating redundancy (\textit{a la} \cite{laruson}) correspondingly low,
-adaptive capacity lacking, and extinction vulnerability substantial.
-However, species whose cold range edges are more determined by geographic barriers
-or biotic interactions than by bioclimate \cite{thomas}
-could feature populations more similar to our high-redundancy scenarios:
-selection would be balancing rather than directional,
-segregating redundancy substantial, and thus adaptive capacity more robust.
+these local populations could already be at the edge of the phenotypic space defined by
+their standing genetic variation;
+in this case, 
+segregating redundancy (\textit{a la} \cite{laruson}) and thus
+adaptive capacity would be low,
+so local extinction vulnerability would be substantial.
+However, species whose cold range edges are predominantly determined by geographic barriers
+or biotic interactions rather than by bioclimate \cite{thomas}
+could feature local populations more similar to our high-redundancy scenarios:
+segregating redundancy would be higher,
+so selection would be balancing rather than directional and adaptive capacity would be substantial.
 
 Our findings also help advance the theoretical understanding
 of local adaptation with recombination.
 Recombination is generally regarded as disadvantageous
 in situations of clinal adaptation
-with gene flow, because it disrupts the association between adaptive loci 
+with gene flow, because it disrupts the
+association between adaptive loci 
 underlying a single trait,
 but unstable environments are considered a major exception \cite{tigano}.
 Our results suggest that recombination can also
@@ -451,6 +470,11 @@ by shifting allelic covariance --- despite the fact that
 it still disrupts the associations between loci
 that would otherwise allow for the development of
 larger-effect gene clusters.
+This suggests that \textit{in situ} shifts in allelic covariance
+provide an alternative to adaptive gene flow as a mechanism for evolutionary rescue,
+especially in multi-trait systems where gene flow can be adaptive
+for shifting climatic gradients but maladaptive with
+respect to other decoupling gradients.
  
 Second, the minimal demographic decline
 in our moderate-polygenicity models
@@ -469,7 +493,7 @@ or dispersed architectures
 in temporally fluctuating environments.
 However, the sudden onset of persistent environmental change 
 in a population that is already locally adapted triggers a 'race against time,' 
-and it may be that the genetic architectures with
+and it may be that the genomic architectures with
 optimal adaptive capacity are 'middle ground' architectures that comprise
 freely recombining loci with small-enough effect sizes to avoid large
 sudden declines in fitness from migration load
@@ -487,21 +511,21 @@ Informative studies can be constructed by focusing on a small set of
 key parameters while holding others at reasonable values, as we have done here.
 This nonetheless leaves unexplored a number of secondary parameters
 that can have non-negligible influence over the complex ecological phenomena of interest.
-In the case of evolutionary responses to climate change,
-a number of these provide areas for future research, including:
-population size, a key determinant of the relative strengths of drift
+In the case of evolutionary responses to climate change
+this provides areas for future research, including:
+population size (in Geonomics, an emergent property of
+a number of parameters, including carrying capacity
+and instrinsic population growth rate), which is a key determinant of the relative strengths of drift
 and natural selection \cite{murray} and of the wait time to emergence of
 recombinant haploytpes \cite{christiansen}, among other important dynamics;
 movement behavior, a key factor embedded in the rudimentary
 migration-selection dynamics that lie at the heart of models like ours
 \cite{wright,haldane,barton};
 allelic effect size distributions \cite{orr},
-which are omitted here in favor of a single fixed effect size but would
-help clarify evolutionary tendencies when loci of varying effect sizes
-are simultaneously subject to selection;
-and the structure of the environment,
+which are omitted here in favor of a single fixed effect size;
+and the spatial structure of the environment,
 including the geometries, slopes, and orientations of gradients
-(e.g., \cite{benes}) and their rates of change.
+(e.g., \cite{benes}), and their rates of change.
 A number of other more complex evolutionary aspects could also be explored 
 through a similar modeling framework, including 
 pleiotropy \cite{thompson} and epistasis,
@@ -512,19 +536,24 @@ integration of other dimensions of climate change ecology, including range shift
 and range-wide variation in population density \cite{aitken_whitlock}.
 
 Adaptation is one of the main mechanisms by which species
-have a chance of weathering climate change.
-Given the decoupling of environmental gradients that
+may persist under climate change.
+Given the multidimensional nature of ecological phenotypes
+and the decoupling of environmental gradients that
 climate change will frequently cause,
-adaptive responses will often be multivariate.
+adaptive responses will frequently be multivariate.
 Within this context, the potential influence of adaptive genomic architecture
-on evolutionary outcomes has typically been neglected in conceptual and mechanistic models.
-Our results show that this neglect leads
-us to overlook important variability in the nature
+on evolutionary outcomes has typically been neglected
+in conceptual and mechanistic models.
+Our results show that this neglect can
+conceal important variability in the nature
 and success of adaptive responses,
-including strong influence of genomic architecture
-on both the effectiveness
-of up-gradient gene flow and the magnitude and persistence
-of maladaptation and concomitant demographic decline.
+including the strong influence of genomic architecture
+on the effectiveness
+of up-gradient gene flow and \textit{in situ} adaptation,
+the magnitude and persistence
+of maladaptation,
+and the likelihood of concomitant demographic decline
+or evolutionary rescue.
 Further research in this arena, both simulated and empirical,
 can help refine our understanding of adaptation to climate change,
 both advancing evolutionary theory
@@ -535,7 +564,7 @@ and facilitating the development of better-informed management strategies.
 
 \subsection*{Simulation}
 
-We performed all of the simulations for this study using \texttt{geonomics} \cite{terasaki_hart},
+We performed all of the simulations for this study using \texttt{Geonomics} \cite{terasaki_hart},
 a Python \cite{rossum} package for
 creating forward-time, agent-based, continuous-space landscape genomic simulations 
 using arbitrarily complex life histories, environments, and environmental change 
@@ -549,7 +578,7 @@ environmental values and their phenotypes, which are determined by the
 additive effects of multiple loci (i.e., without pleiotropy or epistasis) ---
 a reasonable approximation of many traits of interest in real populations \cite{sella}.
 
-Each simulation starts with a neutral burn-in period, ended by \texttt{geonomics}' tests
+Each simulation starts with a neutral burn-in period, ended by \texttt{Geonomics}' tests
 of temporal and spatial population stability, then runs for 2500 time steps
 non-neutral evolution, generating a pattern of local adaptation to the initial environment.
 After that, one of the environmental layers undergoes a change 
@@ -562,7 +591,7 @@ two-dimensional environmental space).
 The purpose of this is to emulate a common 
 phenomenon under climate change: the decoupling of multivariate environmental gradients,
 leading to the emergence of novel climates
-\cite{williams_novel_climates,williams_projected_novel_disappearing,fitzpatrick_climate_novelty_forecasts}.
+\cite{williams_novel_climates,williams_projected_novel_disappearing,fitzpatrick}.
 Importantly, this landscape arrangement generates heterogeneous rates of climate change,
 with the rate ranging from 0 at the leftmost edge to $\frac{0.5}{250 time steps}$ at the rightmost edge.
 This complicates interpretation of our results,
@@ -575,10 +604,10 @@ This latter approach is also of interest,
 and may be explored in future work,
 but the approach we chose here allows us
 to best isolate the evolutionary dynamics
-resulting from the components of genetic architecture
+resulting from the components of genomic architecture
 that define our scenarios and hypotheses.
 
-Next, we wrote a custom Python script that reads the template \texttt{geonomics}
+Next, we wrote a custom Python script that reads the template \texttt{Geonomics}
 parameters file, edits any parameters that vary 
 across our scenarios, instantiates a model, runs a fixed number of iterations 
 of that model, and outputs simulated genetic and other data. 
@@ -604,14 +633,23 @@ savio3 partition of UC Berkeley’s Savio system (each node has 96 GB RAM and 32
 the scenario of interest, featuring a 250-time-step climate change period (henceforth, 
 the ‘main’ scenarios), and 100 iterations of a paired null scenario without natural 
 selection (henceforth, the ‘null’ scenarios). 
-Given that \texttt{geonomics} is a complex simulation framework, it features numerous other 
+Given that \texttt{Geonomics} is a complex simulation framework, it features numerous other 
 parameters, which we set at reasonable default values.
-For the complete set of parameters and the values 
-assigned to them across all models
+Certain values of interest that might be parameter settings in
+some population-based, spatially-implicit simulation models are instead
+emergent properties within \texttt{Geonomics}' individual-based, spatially-explicit
+framework; for example, the population size values we report herein emerge from the interaction
+of numerous parameters (e.g., the raster of local carrying capacities,
+the population intrinsic growth rate, the number of offspring per reproduction event,
+and the death rates resulting from the parameters controlling both density-dependent mortality
+and natural selection), rather than being set \textit{a priori}.
+The complete set of \texttt{Geonomics} parameters and the values 
+we assigned to them across all models
 (as well as green-highlighted notes denoting runtime and genomic-architecture
-parameter overridden by the main simulation scripts), see Appendix 1.
+parameter overridden by the main simulation scripts)
+are provided in Appendix 1.
 
-Using a combination of internal \texttt{geonomics} functions and custom Python code, we 
+Using a combination of internal \texttt{Geonomics} functions and custom Python code, we 
 designed a set of data outputs from each model run, to visualize our
 results and test our series of hypotheses.
 We saved tables of individuals’ locations and phenotypes at both
@@ -633,7 +671,7 @@ adaptation to increasing environmental values and thus to shift up-gradient, and
 provide equal sample sizes across scenarios in downstream analysis (which was 
 constrained to the number of positive-effect loci present in
 the low-polygenicity, low-redundancy scearnios). 
-Data were collected using an internal \texttt{geonomics} function
+Data were collected using an internal \texttt{Geonomics} function
 that extracts data from the spatial pedigrees stored in the
 simulation's \texttt{tskit} \cite{kelleher} data structures.
 We also calculated a single high-level summary metric per model
@@ -666,7 +704,7 @@ and null scenarios (Fig. \ref{fig:fig_2}).
 To create this visualization, we gathered directional data
 from each simulation for a random 
 sample of the gene flow that occurred during the climate change event, using 
-\texttt{geonomics}' integration with \texttt{tskit} \cite{kelleher}, which allows for temporal 
+\texttt{Geonomics}' integration with \texttt{tskit} \cite{kelleher}, which allows for temporal 
 subsetting and output of the information contained the full spatial pedigree of a 
 simulated population. We then fitted a mixture of 4 von Mises distributions to that data
 using the R package \texttt{movMF} \cite{hornik},
@@ -820,7 +858,7 @@ redundancy coefficients with the opposite signs.
 
 \begin{figure}
 \centering
-\includegraphics[width=.8\linewidth]{pub/figs/FIG_S1_redundancy.png}
+\includegraphics[width=.8\linewidth]{pub/figs_and_stats/FIG_S1_redundancy.png}
 \caption{Depiction of genotypic redundancy for all simulated polygenicity values. Phenotypic values are plotted along the x-axis, and the natural log of the number of genotypes that yield each phenotypic value is plotted along the y-axis. Polygenicities corresponding to low-redundancy scenarios are plotted and labeled in light teal, and those corresponding to high-redundancy scenarios in dark teal. The minimum and maximum environmental values on the landscape are represented by dotted vertical lines. The number of genotypes corresponding to each phenotype is calculated using a custom adaptation of Eqxn. ii, Box 1 in \cite{laruson}, implemented for a diploid species and fitted to the numerical conventions used by Geonomics.
 }
 \label{fig:fig_s1}
@@ -829,21 +867,21 @@ redundancy coefficients with the opposite signs.
 
 \begin{figure*}[\sidecaptionrelwidth][t]
 \centering
-\includegraphics[width=17.8cm]{pub/figs/FIG_S2_Nt_over_time.jpg}
+\includegraphics[width=17.8cm]{pub/figs_and_stats/FIG_S2_Nt_over_time.jpg}
 \caption{Left: Population size dynamics for all scenarios during the 250 time steps before the climate change period and the 250 time steps during it (with the two periods divided by a red, dashed vertical line marking the onset of the climate change period). Scenarios are organized as in Fig. \ref{fig:fig_2}: top and bottom sections representing low and high redundancy, with rows in each section representing levels of linkage and columns representing polygenicity. Both means (black lines) and variability envelopes (5th percentile to 95th percentile) are shown, with scenario type depicted by color (main scenarios in red, null scenarios in blue). Right: Comparison of climate change-driven changes in mean population size across scenarios. Null scenarios are plotted on the left in blue, and main scenarios are plotted on the right, in red. Within each plot, scenarios are divided by the number of loci per trait (x-axis) and by the strength of linkage (shade, with darker hues representing stronger linkage). Asterisks above each box indicate level of significance (*=0.1, **=0.05, ***=0.005).}
 \label{fig:fig_s2}
 \end{figure*}
 
 \begin{figure*}
 \centering
-\includegraphics[width=.8\linewidth]{pub/figs/FIG_S3_phenotypic_shift_null.jpg}
+\includegraphics[width=.8\linewidth]{pub/figs_and_stats/FIG_S3_phenotypic_shift_null.jpg}
     \caption{Maps depicting shifts in population density during climate change for all null simulations. Scenarios are organized as in Fig. \ref{fig:fig_2}: top and bottom sections representing low and high redundancy, with rows in each section representing levels of linkage and columns (in before-after pairs) representing polygenicity. As well as showing local extinction in the low-redundancy, high-polygenicity, strong-linkage scenario (bottom right of top section), these maps also show moderate simulation edge effects and density banding in the low-polygenicity scenarios because of the mismatch between environmental and phenotypic resolutions.}
 \label{fig:fig_s3}
 \end{figure*}
 
 \begin{figure*}
 \centering
-\includegraphics[width=.8\linewidth]{pub/figs/FIG_S4_density_shift.jpg}
+\includegraphics[width=.8\linewidth]{pub/figs_and_stats/FIG_S4_density_shift.jpg}
 \caption{Maps depicting shifts in population density during climate change for all scenarios.}
 \label{fig:fig_s4}
 \end{figure*}
