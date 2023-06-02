@@ -219,6 +219,207 @@ will facilitate adaptation to shifting gradients, much as it does on stable grad
 in population size and mean fitness.
 
 
+\section*{Methods}
+
+\subsection{Simulations}
+
+We performed simulations using \texttt{Geonomics} \cite{terasaki_hart},
+a Python \cite{rossum} package for forward-time, agent-based, continuous-space landscape genomic simulations.
+All of our simulated scenarios feature
+a species with two traits, each of which experiences 
+selection on the basis of a different environmental variable.
+Both environmental variables are modeled as linear, horizontal gradients
+that initially span environmental values from 1 to 0, left to right across the landscape.
+The genome is modeled as an array of length L,
+which in our 2-trait simulations equals 2 times the number of genes per trait.
+Instead of randomly assigning loci to either of the two traits
+we alternate locus trait assignment along the genome,
+to avoid creating islands of within-trait linkage
+that would vary across iterations and introduce noise in our results.
+The fitness of individuals is a function of the difference between their local
+environmental values and their phenotypes, which are determined by the
+additive effects of multiple loci (i.e., without pleiotropy or epistasis), a reasonable approximation of many traits in real populations \cite{sella}.
+Local environmental values are derived from the landscape cells within which individuals' continuous-space locations fall.
+Individuals' locations update during each time step's movement phase,
+when each individual moves along a vector composed of a randomly drawn direction
+(from a uniform circular distribution, in our simulations) and a randomly drawn distance
+(distributed ~Wald(0.25, 0.5), such that most movements are less than one landscape cell in length).
+
+Simulations start with a neutral burn-in period that does not include differential fitness.
+The burn-in is concluded when statistical tests
+of temporal and spatial population stability are passed.
+Simulations then run for 2500 time steps with differential fitness,
+generating a pattern of local adaptation to the initial environment.
+After that, one environmental layer undergoes a change 
+event in which the gradient’s values change stepwise over a period of 250 time steps,
+resulting in a final gradient that spans values from 1 to 0.5, left to right.
+This creates a scenario in 
+which the two environmental variables become decoupled, leading 
+to the emergence of novel environments (i.e. sites occupying new values in 
+two-dimensional environmental space).
+The purpose of this is to emulate a common 
+phenomenon under climate change: the decoupling of multivariate environmental gradients,
+leading to the emergence of novel conditions
+\cite{williams_novel_climates,williams_projected_novel_disappearing,fitzpatrick}.
+This generates spatially heterogeneous rates of climate change, ranging from no change at the leftmost edge to 0.002 units per timestep at the rightmost edge.
+We chose this scenario because one with spatially homogeneous rates of change would generate an artefact of range expansion
+whose genomic signal could not reliably by disentangled from that of
+climate change adaptation. Hence, the approach we chose here allows us
+to best isolate the evolutionary dynamics
+resulting from the components of genomic architecture
+that define our scenarios and hypotheses.
+
+We used a custom Python script to establish values for the parameters of interest in our simulations: the number of loci underlying
+each trait (parameter \texttt{n\_loci}),
+the recombination rate between neighboring loci
+(parameter \texttt{recomb}),
+and the level of genotypic redundancy (parameter \texttt{redund}).
+The values we assign to these parameters are provided in Tab. \ref{tab:tab_1}, and a visual depiction, across all possible phenotypes, of the difference between low- and high-redundancy scenarios is provided in Fig. S1.
+We used that script to run the simulations on the 
+savio3 partition of UC Berkeley’s Savio computing cluster (each node has 96 GB RAM and 32, 
+2.1-GHz Skylake processors). For each scenario, we ran a total of 100 iterations, featuring a 250 time-step climate change period (henceforth, 
+the ‘main’ scenarios), and 100 iterations of a paired null scenario without natural 
+selection (henceforth, the ‘null’ scenarios). 
+\texttt{Geonomics} is a complex simulation framework that features numerous other 
+parameters; we set these at their default values.
+Some values of interest that might be explicit parameter settings in
+other simulation programs are instead
+emergent properties in \texttt{Geonomics}; for example, the population size values we report emerge from the interaction
+of several explicit parameters, including the raster of local carrying capacities,
+the population intrinsic growth rate, the number of offspring per reproduction event,
+and the death rates resulting from the parameters controlling density-dependent mortality
+and natural selection.
+The complete set of \texttt{Geonomics} parameters and the values 
+we assigned to them across all models are provided in Appendix 1.
+
+Using a combination of internal \texttt{Geonomics} functions and custom Python code, we 
+designed a set of data outputs from each model run,
+to visualize results and test hypotheses.
+We saved tables of the locations and phenotypes for all individuals at
+the beginning and end of the climate change period. We also saved time 
+series of population size, mean fitness, and the mean phenotype of the trait adapted to 
+the shifting gradient. We gathered this data at every time step for the 250 time steps immediately 
+before the onset of climate change, 250 time steps during the climate change period, and 250 time steps after climate change completed (which we refer to as the 'post-change period').
+
+We also saved data on the vector directions
+of gene flow occurring during climate change by keeping 
+data for two randomly chosen loci underlying the trait adapted to the shifting environmental gradient (with positive effect) for all of the individuals remaining in the final time step.
+By capturing loci expected to facilitate 
+adaptation to increasing environmental values, this allowed us to track up-gradient gene flow, and it  provided equal sample sizes across scenarios for downstream analysis (which was 
+constrained to the number of positive-effect loci in
+the low-polygenicity, low-redundancy scenarios). 
+We collected these data using an internal function
+that extracts data from the spatial pedigrees stored in the
+simulation's \texttt{tskit} \cite{kelleher} data structures.
+We also calculated a single summary metric of 'up-gradient gene flow' for each iteration:
+
+$GF_{up}\ = \frac{\sum\limits_{i}^{n}\cos\theta}{n},\ \cos\theta\geq0$,
+
+where $\theta$ is the angle of gene flow, expressed counterclockwise from the right.
+The $\cos\theta\geq0$ condition allowed us to track only rightward (up-gradient) gene flow (i.e., gene flow with
+vector directions in the intervals [0, $\frac{\pi}{2}$] or [$\frac{3\pi}{2}$, $2\pi$], where cosine is $\geq{0}$),
+and to omit leftward (down-gradient) gene flow which would be maladaptive for
+the positive-effect loci we tracked and, thus, low irrespective of scenario.
+
+
+\subsection{Analysis}
+
+We analyzed the results from all of our simulations using custom scripts written in 
+Python \cite{rossum} and R \cite{r_core_team}. To test our first hypothesis --- that up-gradient gene flow should be greater under climate change scenarios --- we first produced a visualization of the directional 
+distributions of gene flow under all 18 scenarios, comparing between main
+and null simulations (Fig. \ref{fig:fig_2}) based on the random 
+sample of the gene flow that occurred during the climate change period that we captured from our simulations. We then fitted a mixture of 4 von Mises distributions to that data
+using the R package \texttt{movMF} \cite{hornik},
+yielding 12 parameter estimates defining each simulation's fitted mixture distribution. For each of 
+the 18 scenarios, we then plotted the probability density function 
+described by the means of all vectors of fitted parameters. We did this 
+separately for null scenarios and for main scenarios then overlaid the results for the main scenarios (in red)
+on top of the null results (in blue), providing a visualization of the directionality of gene flow within each 
+climate change scenario as compared to its null expectation.
+
+We also ran a simple linear regression
+of the main vs. null difference in up-gradient gene flow density
+as a function of polygenicity, linkage, and redundancy. We coded the genomic architecture components
+as integer variables
+representing the levels of the
+parameter values used in the simulations (redundancy: low = 1, high = 2;
+polygenicity: low = 0, moderate = 1; high = 2;
+linkage: low = 0, moderate = 1, high = 2).
+We used the regression results
+to test both predictions for our first hypothesis: (1) that the main main - null difference in up-gradient gene flow
+should have 95\% confidence intervals $>0$ under all scenarios
+(calculated using the \texttt{stats} package's \texttt{predict.lm} function with
+the argument \texttt{interval=`confidence'}, for each scenario's combination of the three predictor variables),
+indicating significant up-gradient gene flow under climate change; and (2) that the coefficients on the linkage ($\beta_{l}$) and polygenicity ($\beta_{p}$)
+terms of the model should be significantly positive and
+negative, respectively, indicating that higher levels of gene flow are associated with stronger linkage and lower polygenicity.
+
+To visually assess our second and third hypotheses, we created a series of
+plots comparing climate change driven demographic shifts
+and maladaptation across all 18 scenarios and between our null and main models.
+First, we plotted the 
+null and main time series of two demographic
+metrics, mean fitness and population size, for 
+each of our 18 scenarios, combining the results for all 100 iterations under each scenario. For each time series we calculated the mean and 5th and 95th percentiles at each time step (Figs. \ref{fig:fig_3} and S2).
+We also summarized all scenarios in a pair of box plots.
+
+To better understand changes in population size and distribution,
+we also mapped before and after comparisons of population density for all 18
+main scenarios (Fig. S3).
+Each population density map is calculated as
+the mean population density at each cell on the landscape,
+averaged across all 100 iterations.
+
+Finally, to visualize maladaptation, we plotted each scenario's
+mean phenotypic distributions before and after climate change as scatter plots of the density of individuals occurring across
+two-dimensional trait space. We plotted lines and wedges depicting the average maladaptation
+observed across each scenario's 100 iterations (Fig. \ref{fig:fig_4}).
+We refer to the wedge as 'persistent maladaptation,'
+and we calculate it as the difference between: a) the area 
+within two-dimensional trait space that the population’s phenotypic distribution 
+would have needed to shift through during the climate change event, so as to remain 
+optimally fit to its environment, and b) the observed area of phenotypic shift within
+a scenario's 100 simulations.
+We qualify this metric as 'persistent' to emphasize that it does
+not reflect transient maladaptation that arises but then
+resides during the period of climate change but rather reflects
+only maladaptation that remains at the end of the climate change period.
+To measure this area, we first determined the triangular area between 
+the expected central tendency lines of the optimal two-dimensional phenotypic distributions
+before and after the climate change event.
+Then, for each model run, we used ordinary least squares (OLS)
+to fit a central tendency line to the 100-iteration ensemble phenotypic distribution
+observed at the end of the climate change event
+(arithmetically fixing the y-intercept at the (1,1) point in phenotypic 
+space, the unchanging phenotypic optimum at the leftmost extent of the landscape).
+The area of the wedge between the expected and observed post-change central tendency
+lines provides our measure of a scenario's persistent maladaptation.
+We plot before and after scatter plots of the ensemble datasets
+of individuals' two-dimensional phenotypes
+(binned to a grid of regular points for interpretability).
+We also produce these plots (Fig. S4) using data from our null simulations to demonstrate that all differences
+in maladaptation observed between scenarios were attributable to climate change.
+
+To statistically evaluate our results,
+we ran simple linear regressions
+for each of our three response variables measuring
+population-level changes during the climate change event --- change in mean fitness, change in population size,
+and persistent maladaptation --- with polygenicity,
+linkage, redundancy, and nullness serving as explanatory variables.
+We modeled nullness as a binary categorical variable (null = 0, main = 1)
+and again model the genomic architecture components
+as integer variables, as described above.
+We used these regressions to test our second 
+(polygenicity and linkage) and third (redundancy) hypotheses.
+Specifically, our second hypothesis predicts that
+the coefficients of the linkage and polygenicity terms are significantly
+non-zero and negative (for changes in fitness-change
+and population size) and positive (for the maladaptation
+model),
+while our third hypothesis predicts significantly non-zero
+redundancy coefficients with the opposite signs.
+
+
 \section*{Results}
 
 \subsection{Gene flow}
@@ -256,7 +457,7 @@ high-redundancy scenarios were minor.
 As expected, our null simulations showed essentially no changes
 in mean fitness (Fig. \ref{fig:fig_2}) or population size (Fig. S2), aside from small modeling artefacts that applied to both the 
 null and climate-change scenarios, and the phenotypic distributions for the populations in these simulations were
-stable through time (Fig. S3).
+stable through time (Fig. S4).
 The results of our climate change simulations exhibited
 decreases in population size and mean fitness
 that are the expected results of increasing maladaptation \cite{aitken_whitlock}.
@@ -270,7 +471,7 @@ climate change increased with increasing linkage
 change in population size: $\beta_{l} = -33.330\pm1.287, P<1\times10^{-15}$).
 We also found greater maladaptation, defined as the area in two-dimensional trait space separating the central line
 of a population's post-change phenotypic distribution from the central line of the distribution
-that would optimally track the changing environment (Figs. \ref{fig:fig_4} and S3), associated with increasing linkage (maladaptation: $\beta_{l} = 0.0038\pm0.0004, P<1\times10^{-15}$).
+that would optimally track the changing environment (Figs. \ref{fig:fig_4} and S4), associated with increasing linkage (maladaptation: $\beta_{l} = 0.0038\pm0.0004, P<1\times10^{-15}$).
 
 Demographic impacts also showed a signal of overall increase with increasing polygenicity
 (change in fitness: $\beta_{p} = -0.0022\pm0.0001, P<1\times10^{-15}$;
@@ -476,212 +677,6 @@ the magnitude and persistence
 of maladaptation,
 and the likelihood of concomitant demographic decline
 or evolutionary rescue. These findings highlight the importance of considering multivariate environmental gradients for climate change research and suggest that the genomic architecture underlying traits adapted to those gradients has direct consequences for how species respond to environmental change.
-
-\matmethods{
-
-\subsection*{Simulations}
-
-We performed our simulations using \texttt{Geonomics} \cite{terasaki_hart},
-a Python \cite{rossum} package for forward-time, agent-based, continuous-space landscape genomic simulations. All of our simulated scenarios feature
-a species with two traits, each of which experiences 
-selection on the basis of a different environmental variable.
-Both environmental variables are modeled as linear, horizontal gradients
-that initially span environmental values from 1 to 0, left to right across the landscape.
-The genome is modeled as an array of length L,
-which in our 2-trait simulations equals 2 times the number of genes per trait.
-Instead of randomly assigning loci to either of the two traits
-we alternate locus trait assignment along the genome,
-to avoid creating islands of within-trait linkage
-that would vary across iterations and introduce noise in our results.
-The fitness of individuals is a function of the difference between their local
-environmental values and their phenotypes, which are determined by the
-additive effects of multiple loci (i.e., without pleiotropy or epistasis), a reasonable approximation of many traits in real populations \cite{sella}.
-Local environmental values are derived from the landscape cells within which individuals' continuous-space locations fall.
-Individuals' locations update during each time step's movement phase,
-when each individual moves along a vector composed of a randomly drawn direction
-(from a uniform circular distribution, in our simulations) and a randomly drawn distance
-(distributed ~Wald(0.25, 0.5), such that most movements are less than one landscape cell in length).
-
-Simulations start with a neutral burn-in period that does not include differential fitness.
-The burn-in is concluded when statistical tests
-of temporal and spatial population stability are passed.
-Simulations then run for 2500 time steps with differential fitness,
-generating a pattern of local adaptation to the initial environment.
-After that, one environmental layer undergoes a change 
-event in which the gradient’s values change stepwise over a period of 250 time steps,
-resulting in a final gradient that spans values from 1 to 0.5, left to right.
-This creates a scenario in 
-which the two environmental variables become decoupled, leading 
-to the emergence of novel environments (i.e. sites occupying new values in 
-two-dimensional environmental space).
-The purpose of this is to emulate a common 
-phenomenon under climate change: the decoupling of multivariate environmental gradients,
-leading to the emergence of novel conditions
-\cite{williams_novel_climates,williams_projected_novel_disappearing,fitzpatrick}.
-This generates spatially heterogeneous rates of climate change, ranging from no change at the leftmost edge to 0.002 units per timestep at the rightmost edge.
-We chose this scenario because one with spatially homogeneous rates of change would generate an artefact of range expansion
-whose genomic signal could not reliably by disentangled from that of
-climate change adaptation. Hence, the approach we chose here allows us
-to best isolate the evolutionary dynamics
-resulting from the components of genomic architecture
-that define our scenarios and hypotheses.
-
-We used a custom Python script to establish values for the parameters of interest in our simulations: the number of loci underlying
-each trait (parameter \texttt{n\_loci}),
-the recombination rate between neighboring loci
-(parameter \texttt{recomb}),
-and the level of genotypic redundancy (parameter \texttt{redund}).
-The values we assigned to these parameters are provided in Tab. \ref{tab:tab_1}.
-We used that script to run the simulations on the 
-savio3 partition of UC Berkeley’s Savio computing cluster (each node has 96 GB RAM and 32, 
-2.1-GHz Skylake processors). For each scenario, we ran a total of 100 iterations, featuring a 250 time-step climate change period (henceforth, 
-the ‘main’ scenarios), and 100 iterations of a paired null scenario without natural 
-selection (henceforth, the ‘null’ scenarios). 
-\texttt{Geonomics} is a complex simulation framework that features numerous other 
-parameters; we set these at their default values.
-Some values of interest that might be explicit parameter settings in
-other simulation programs are instead
-emergent properties in \texttt{Geonomics}; for example, the population size values we report emerge from the interaction
-of several explicit parameters, including the raster of local carrying capacities,
-the population intrinsic growth rate, the number of offspring per reproduction event,
-and the death rates resulting from the parameters controlling density-dependent mortality
-and natural selection.
-The complete set of \texttt{Geonomics} parameters and the values 
-we assigned to them across all models are provided in Appendix 1.
-
-Using a combination of internal \texttt{Geonomics} functions and custom Python code, we 
-designed a set of data outputs from each model run to visualize 
-results and test our hypotheses.
-We saved tables of the locations and phenotypes for all individuals at
-the beginning and end of the climate change period. We also saved time 
-series of population size, mean fitness, and the mean phenotype of the trait adapted to 
-the shifting gradient. We gathered this data at every time step for the 250 time steps immediately 
-before the onset of climate change, 250 time steps during the climate change period, and 250 time steps after climate change completed (which we refer to as the 'post-change period').
-
-We also saved data on the vector directions
-of gene flow occurring during climate change by keeping 
-data for two randomly chosen loci underlying the trait adapted to the shifting environmental gradient (with positive effect) for all of the individuals remaining in the final time step.
-By capturing loci expected to facilitate 
-adaptation to increasing environmental values, this allowed us to track up-gradient gene flow, and it  provided equal sample sizes across scenarios for downstream analysis (which was 
-constrained to the number of positive-effect loci in
-the low-polygenicity, low-redundancy scenarios). 
-We collected these data using an internal function
-that extracts data from the spatial pedigrees stored in the
-simulation's \texttt{tskit} \cite{kelleher} data structures.
-We also calculated a single summary metric of 'up-gradient gene flow' for each iteration:
-
-$GF_{up}\ = \frac{\sum\limits_{i}^{n}\cos\theta}{n},\ \cos\theta\geq0$,
-
-where $\theta$ is the angle of gene flow, expressed counterclockwise from the right.
-The $\cos\theta\geq0$ condition allowed us to track only rightward (up-gradient) gene flow (i.e., gene flow with
-vector directions in the intervals [0, $\frac{\pi}{2}$] or [$\frac{3\pi}{2}$, $2\pi$], where cosine is $\geq{0}$),
-and to omit leftward (down-gradient) gene flow which would be maladaptive for
-the positive-effect loci we tracked and, thus, low irrespective of scenario.
-
-
-\subsection*{Analysis}
-
-We analyzed the results from all of our simulations using custom scripts written in 
-Python \cite{rossum} and R \cite{r_core_team}. To test our first hypothesis --- that up-gradient gene flow should be greater under climate change scenarios --- we first produced a visualization of the directional 
-distributions of gene flow under all 18 scenarios, comparing between main
-and null simulations (Fig. \ref{fig:fig_2}) based on the random 
-sample of the gene flow that occurred during the climate change period that we captured from our simulations. We then fitted a mixture of 4 von Mises distributions to that data
-using the R package \texttt{movMF} \cite{hornik},
-yielding 12 parameter estimates defining each simulation's fitted mixture distribution. For each of 
-the 18 scenarios, we then plotted the probability density function 
-described by the means of all vectors of fitted parameters. We did this 
-separately for null scenarios and for main scenarios then overlaid the results for the main scenarios (in red)
-on top of the null results (in blue), providing a visualization of the directionality of gene flow within each 
-climate     change scenario as compared to its null expectation.
-
-We also ran a simple linear regression
-of the main vs. null difference in up-gradient gene flow density
-as a function of polygenicity, linkage, and redundancy. We coded the genomic architecture components
-as integer variables
-representing the levels of the
-parameter values used in the simulations (redundancy: low = 1, high = 2;
-polygenicity: low = 0, moderate = 1; high = 2;
-linkage: low = 0, moderate = 1, high = 2).
-We used the regression results
-to test both predictions for our first hypothesis: (1) that the main main - null difference in up-gradient gene flow
-should have 95\% confidence intervals $>0$ under all scenarios
-(calculated using the \texttt{stats} package's \texttt{predict.lm} function with
-the argument \texttt{interval=`confidence'}, for each scenario's combination of the three predictor variables),
-indicating significant up-gradient gene flow under climate change; and (2) that the coefficients on the linkage ($\beta_{l}$) and polygenicity ($\beta_{p}$)
-terms of the model should be significantly positive and
-negative, respectively, indicating that higher levels of gene flow are associated with stronger linkage and lower polygenicity.
-
-To visually assess our second and third hypotheses, we created a series of
-plots comparing climate change driven demographic shifts
-and maladaptation across all 18 scenarios and between our null and main models.
-First, we plotted the 
-null and main time series of two demographic
-metrics, mean fitness and population size, for 
-each of our 18 scenarios, combining the results for all 100 iterations under each scenario. For each time series we calculated the mean and 5th and 95th percentiles at each time step (Figs. \ref{fig:fig_3} and S2).
-We also summarized all scenarios in a pair of box plots.
-
-Next, to better understand changes in population size and distribution,
-we mapped before and after comparisons of population density for all 18
-main scenarios (Fig. S4).
-Each population density map is calculated as
-the mean population density at each cell on the landscape,
-averaged across all 100 iterations.
-
-Finally, to visualize maladaptation, we plotted each scenario's
-mean phenotypic distributions before and after climate change as scatter plots of the density of individuals occurring across
-two-dimensional trait space. We plotted lines and wedges depicting the average maladaptation
-observed across each scenario's 100 iterations (Fig. \ref{fig:fig_4}).
-We refer to the wedge as 'persistent maladaptation,'
-and we calculate it as the difference between: a) the area 
-within two-dimensional trait space that the population’s phenotypic distribution 
-would have needed to shift through during the climate change event, so as to remain 
-optimally fit to its environment, and b) the observed area of phenotypic shift within
-a scenario's 100 simulations.
-We qualify this metric as 'persistent' to emphasize that it does
-not reflect transient maladaptation that arises but then
-resides during the period of climate change but rather reflects
-only maladaptation that remains at the end of the climate change period.
-To measure this area, we first determined the triangular area between 
-the expected central tendency lines of the optimal two-dimensional phenotypic distributions
-before and after the climate change event.
-Then, for each model run, we used ordinary least squares (OLS)
-to fit a central tendency line to the 100-iteration ensemble phenotypic distribution
-observed at the end of the climate change event
-(arithmetically fixing the y-intercept at the (1,1) point in phenotypic 
-space, the unchanging phenotypic optimum at the leftmost extent of the landscape).
-The area of the wedge between the expected and observed post-change central tendency
-lines provides our measure of a scenario's persistent maladaptation.
-We plot before and after scatter plots of the ensemble datasets
-of individuals' two-dimensional phenotypes
-(binned to a grid of regular points for interpretability).
-We also produce these plots (Fig. S3) using data from our null simulations to demonstrate that all differences
-in maladaptation observed between scenarios were attributable to climate change.
-
-To statistically evaluate our results,
-we ran simple linear regressions
-for each of our three response variables measuring
-population-level changes during the climate change event --- change in mean fitness, change in population size,
-and persistent maladaptation --- with polygenicity,
-linkage, redundancy, and nullness serving as explanatory variables.
-We modeled nullness as a binary categorical variable (null = 0, main = 1)
-and again model the genomic architecture components
-as integer variables, as described above.
-We used these regressions to test our second 
-(polygenicity and linkage) and third (redundancy) hypotheses.
-Specifically, our second hypothesis predicts that
-the coefficients of the linkage and polygenicity terms are significantly
-non-zero and negative (for changes in fitness-change
-and population size) and positive (for the maladaptation
-model),
-while our third hypothesis predicts significantly non-zero
-redundancy coefficients with the opposite signs.
-
-} % end matmethods
-
-
-
-
-\showmatmethods{} % Display the Materials and Methods section
 
 \acknow{We thank A. Bishop, T. Dawson,  J. Frederick, N. Graham, M. Kelly, M. McElroy, E. Westeen, G. Wogan, and M. Yuan for feedback and guidance on various iterations of the simulations presented herein. We thank Berkeley Research Computing for providing access to the Savio computing cluster. We thank D. Ehrenfeld, N. Fefferman, M. Fitzpatrick, and L. Plough for cultivating an interest in conservation genetics. Lastly, we thank M. Terasaki Hart, C. Nemec-Hart, G. Hart, J. Hart, and M. Tylka for supporting and encouraging a lifetime of curiosity about nature, and C. S. aTunde Adjuah, B. Evans, R. Pérez Joglar, Y. Y. Ma, and J. Redman for the great company during long periods of solitude. This work was supported by a Berkeley Fellowship from University of California, Berkeley (to D.E.T.H.) and by National Science Foundation grant DEB1845682 (to I.J.W.).}
 
