@@ -160,7 +160,7 @@ We run 100 pairs of climate change simulations
 and null (i.e., stable climate) simulations for each of eighteen scenarios
 resulting from the full factorial crossing of three key components
 of genomic architecture: genotypic redundancy, polygenicity, and linkage
-(Tab. \ref{tab:tab_1}).
+(Table \ref{tab:tab_1}).
 
 \begin{table}
 \begin{tabular}{b{0.35\linewidth}b{0.05\linewidth}b{0.45\linewidth}}
@@ -221,7 +221,7 @@ in population size and mean fitness.
 
 \section*{Methods}
 
-\subsection{Simulations}
+\subsection*{Simulations}
 
 We performed simulations using \texttt{Geonomics} \cite{terasaki_hart},
 a Python \cite{rossum} package for forward-time, agent-based, continuous-space landscape genomic simulations.
@@ -239,11 +239,11 @@ that would vary across iterations and introduce noise in our results.
 The fitness of individuals is a function of the difference between their local
 environmental values and their phenotypes, which are determined by the
 additive effects of multiple loci (i.e., without pleiotropy or epistasis), a reasonable approximation of many traits in real populations \cite{sella}.
-Local environmental values are derived from the landscape cells within which individuals' continuous-space locations fall.
+Local environmental values are derived from the landscape cells within which individuals' locations fall.
 Individuals' locations update during each time step's movement phase,
 when each individual moves along a vector composed of a randomly drawn direction
-(from a uniform circular distribution, in our simulations) and a randomly drawn distance
-(distributed ~Wald(0.25, 0.5), such that most movements are less than one landscape cell in length).
+(from a uniform circular distribution) and a randomly drawn distance
+(from a Wald(0.25, 0.5) distribution, such that most movements are less than one landscape cell in length).
 
 Simulations start with a neutral burn-in period that does not include differential fitness.
 The burn-in is concluded when statistical tests
@@ -263,9 +263,9 @@ leading to the emergence of novel conditions
 \cite{williams_novel_climates,williams_projected_novel_disappearing,fitzpatrick}.
 This generates spatially heterogeneous rates of climate change, ranging from no change at the leftmost edge to 0.002 units per timestep at the rightmost edge.
 We chose this scenario because one with spatially homogeneous rates of change would generate an artefact of range expansion
-whose genomic signal could not reliably by disentangled from that of
+whose genomic signal could not reliably be disentangled from that of
 climate change adaptation. Hence, the approach we chose here allows us
-to best isolate the evolutionary dynamics
+to isolate the evolutionary dynamics
 resulting from the components of genomic architecture
 that define our scenarios and hypotheses.
 
@@ -274,14 +274,14 @@ each trait (parameter \texttt{n\_loci}),
 the recombination rate between neighboring loci
 (parameter \texttt{recomb}),
 and the level of genotypic redundancy (parameter \texttt{redund}).
-The values we assign to these parameters are provided in Tab. \ref{tab:tab_1}, and a visual depiction, across all possible phenotypes, of the difference between low- and high-redundancy scenarios is provided in Fig. S1.
+The values we assign to these parameters are provided in Table \ref{tab:tab_1}, and a visual depiction, across all possible phenotypes, of the difference between low- and high-redundancy scenarios is provided in Fig. S1.
 We used that script to run the simulations on the 
 savio3 partition of UC Berkeley’s Savio computing cluster (each node has 96 GB RAM and 32, 
 2.1-GHz Skylake processors). For each scenario, we ran a total of 100 iterations, featuring a 250 time-step climate change period (henceforth, 
 the ‘main’ scenarios), and 100 iterations of a paired null scenario without natural 
 selection (henceforth, the ‘null’ scenarios). 
 \texttt{Geonomics} is a complex simulation framework that features numerous other 
-parameters; we set these at their default values.
+parameters; we set those at their default values.
 Some values of interest that might be explicit parameter settings in
 other simulation programs are instead
 emergent properties in \texttt{Geonomics}; for example, the population size values we report emerge from the interaction
@@ -293,7 +293,7 @@ The complete set of \texttt{Geonomics} parameters and the values
 we assigned to them across all models are provided in Appendix 1.
 
 Using a combination of internal \texttt{Geonomics} functions and custom Python code, we 
-designed a set of data outputs from each model run,
+designed a set of data outputs from each model run
 to visualize results and test hypotheses.
 We saved tables of the locations and phenotypes for all individuals at
 the beginning and end of the climate change period. We also saved time 
@@ -322,7 +322,7 @@ and to omit leftward (down-gradient) gene flow which would be maladaptive for
 the positive-effect loci we tracked and, thus, low irrespective of scenario.
 
 
-\subsection{Analysis}
+\subsection*{Analysis}
 
 We analyzed the results from all of our simulations using custom scripts written in 
 Python \cite{rossum} and R \cite{r_core_team}. To test our first hypothesis --- that up-gradient gene flow should be greater under climate change scenarios --- we first produced a visualization of the directional 
@@ -334,7 +334,7 @@ yielding 12 parameter estimates defining each simulation's fitted mixture distri
 the 18 scenarios, we then plotted the probability density function 
 described by the means of all vectors of fitted parameters. We did this 
 separately for null scenarios and for main scenarios then overlaid the results for the main scenarios (in red)
-on top of the null results (in blue), providing a visualization of the directionality of gene flow within each 
+on top of the null results (Fig. \ref{fig:fig_2}, in blue), providing a visualization of the directionality of gene flow within each 
 climate change scenario as compared to its null expectation.
 
 We also ran a simple linear regression
@@ -377,7 +377,7 @@ observed across each scenario's 100 iterations (Fig. \ref{fig:fig_4}).
 We refer to the wedge as 'persistent maladaptation,'
 and we calculate it as the difference between: a) the area 
 within two-dimensional trait space that the population’s phenotypic distribution 
-would have needed to shift through during the climate change event, so as to remain 
+would have needed to shift through during the climate change event to remain 
 optimally fit to its environment, and b) the observed area of phenotypic shift within
 a scenario's 100 simulations.
 We qualify this metric as 'persistent' to emphasize that it does
@@ -422,11 +422,11 @@ redundancy coefficients with the opposite signs.
 
 \section*{Results}
 
-\subsection{Gene flow}
+\subsection*{Gene flow}
 Under our simulations, climate change led to a nearly universal increase in up-gradient gene flow
 compared to null simulations with no change to either environmental variable. For all 18 of our simulated scenarios (Fig. \ref{fig:fig_2}), the simulations with climate change exhibited greater up-gradient gene flow than the null scenarios, and linear regressions modeling the effects of linkage, redundancy, and polygenicity on up-gradient gene flow found that the 
 fitted 95\% confidence intervals for up-gradient gene flow were $>0$ for all but
-one scenario (the moderate-polygenicity, low-linkage, high-redundancy scenario; Tab. S1).
+one scenario (the moderate-polygenicity, low-linkage, high-redundancy scenario; Table S1).
 However, the magnitude of this increase was minimal under
 some scenarios. We found that the difference in up-gradient gene flow between climate change and null simulations was positively correlated with linkage
 ($\beta_{l} = 0.0129\pm0.0006, P<1\times10^{-15}$)
@@ -453,7 +453,7 @@ high-redundancy scenarios were minor.
 \end{figure}
 
 
-\subsection{Linkage and polygenicity}
+\subsection*{Linkage and polygenicity}
 As expected, our null simulations showed essentially no changes
 in mean fitness (Fig. \ref{fig:fig_2}) or population size (Fig. S2), aside from small modeling artefacts that applied to both the 
 null and climate-change scenarios, and the phenotypic distributions for the populations in these simulations were
@@ -508,7 +508,7 @@ and the simulated population ceased to occupy the rightmost, fastest-changing po
 \label{fig:fig_4}
 \end{figure*}
 
-\subsection{Genotypic redundancy}
+\subsection*{Genotypic redundancy}
 Our high-redundancy scenarios showed
 consistently smaller demographic impacts of climate change and higher adaptive capacity
 than their low-redundancy counterparts 
