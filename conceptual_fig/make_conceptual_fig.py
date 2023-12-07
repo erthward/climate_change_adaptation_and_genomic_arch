@@ -33,8 +33,8 @@ contour_axislab_fontsize = 10
 contour_ticklab_fontsize = 7
 annot_fontsize = 14
 cbar_fontsize = 14
-fig_width = 5
-fig_height = 4
+fig_width = 14
+fig_height = 28
 dpi = 400
 n_ticklabels = 5
 contour_alpha = 0.5
@@ -57,6 +57,57 @@ savefig=True
 x_buff=max_x/20
 orientation='landscape'
 savefig=True
+
+
+def make_landscape_rasterstack_plot(ax, b4_or_af):
+    x = np.arange(0, 52, 1)
+    y = np.arange(0, 52, 1)
+    X, Y  = np.meshgrid(x, y)
+    Z = np.zeros(X.shape)
+    b4 = np.linspace(1, 0, 52)
+    af = np.linspace(1, 0.5, 52)
+    b4 = np.vstack([b4 for _ in range(len(b4))])
+    af = np.vstack([af for _ in range(len(b4))])
+    if b4_or_af == 'b4':
+        cc = b4
+        box_color='gray'
+    else:
+        cc= af
+        box_color='yellow'
+    norm = plt.Normalize(vmin=0, vmax=1)
+    ax.plot_surface(X, Y, Z+1.5, facecolors=plt.cm.bwr(norm(cc)))
+    ax.plot_surface(X, Y, Z+0.5, facecolors=plt.cm.gray(norm(b4)))
+    box_surfs = [np.meshgrid(np.arange(i, i+4, 1), np.arange(-2, 54, 1)) for i
+                             in [0, 24, 48]]
+    for box_surf in box_surfs:
+        ax.plot_surface(box_surf[0],
+                        box_surf[1],
+                        np.zeros(box_surf[0].shape) + 1.51,
+                        color=box_color,
+                        alpha=0.6,
+                       )
+        ax.plot_surface(box_surf[0],
+                        box_surf[1],
+                        np.zeros(box_surf[0].shape) + 0.51,
+                        color=box_color,
+                        alpha=0.6,
+                       )
+    ax.set_xlabel('')
+    ax.set_ylabel('')
+    ax.set_zlabel('')
+    ax.set_xticks(())
+    ax.set_yticks(())
+    ax.set_zticks(())
+    # add dotted lines connecting layers
+    ax.plot([1,1], [1,1], [0.5,1.5], ':k', alpha=0.9)
+    ax.plot([1,1], [50,50], [0.5,1.5], ':k', alpha=0.9)
+    ax.plot([50,50], [1,1], [0.5,1.5], ':k', alpha=0.9)
+    ax.plot([50,50], [50,50], [0.5,1.5], ':k', alpha=0.9)
+    plt.axis('off')
+    ax.set_zlim(0,2)
+    ax.set_xlim(0,52)
+    ax.set_ylim(-2,52)
+    ax.view_init(elev=20, azim=270)
 
 
 # some 3D arrow code stolen from:
@@ -126,12 +177,6 @@ def delete_ticks(ax):
     return
 
 
-fig = plt.figure(dpi=dpi,
-                 figsize=(fig_width, fig_height))
-
-gs = fig.add_gridspec(nrows=9, ncols=5,
-                      height_ratios=[1,1,1,1,1.5,1,1,1,1])
-
 # get the horizontal values used in the non-shifting landscape layer
 # and in the before- and after-shifting shifting layer,
 # then set as dict of x and y values for plotting horizontal expectation lines
@@ -158,24 +203,37 @@ edgecolors = {'b4': 'gray',
 # PART I:
 # plot the before/after-split landscape at top
 colors = ['#555555', highlight_col]
+b4_af_strs = ['b4', 'af']
 for i, landscape in enumerate([landscape_b4, landscape_af]):
-    ax = fig.add_subplot(gs[i*2:(i*2)+2, 1:4])
-    im = ax.imshow(landscape, cmap='bwr')
-    landscape[13:, :] = np.nan
-    im = ax.imshow(landscape, cmap='gray')
-    #ax.plot([0,26], [26,26], '--k', linewidth=2)
-    # separate the two landscape layers with a dashed line
-    ax.plot([0,52], [12.5,12.5], '--k', linewidth=1)
-    ax.plot([0.25,2,2,0.25,0.25], [0.25,0.25,24.75,24.75,0.25], '-',
-            color=colors[i], linewidth=1)
-    ax.plot([24,25.75,25.75,24,24], [0.25,0.25,24.75,24.75,0.25], '-',
-            color=colors[i], linewidth=1)
-    ax.plot([49.5,51,51,49.5,49.5], [0.25,0.25,24.75,24.75,0.25], '-',
-            color=colors[i], linewidth=1)
 
-    ax.set_xlim([-0.5, 51.75])
-    ax.set_ylim([-0.5, 25.5])
-    delete_ticks(ax)
+    fig = plt.figure(dpi=dpi, figsize=(10,10))
+    ax = fig.add_subplot(1, 1, 1, projection='3d')
+    b4_or_af = b4_af_strs[i]
+    make_landscape_rasterstack_plot(ax, b4_or_af)
+    #im = ax.imshow(landscape, cmap='bwr')
+    #landscape[13:, :] = np.nan
+    #im = ax.imshow(landscape, cmap='gray')
+    ##ax.plot([0,26], [26,26], '--k', linewidth=2)
+    ## separate the two landscape layers with a dashed line
+    #ax.plot([0,52], [12.5,12.5], '--k', linewidth=1)
+    #ax.plot([0.25,2,2,0.25,0.25], [0.25,0.25,24.75,24.75,0.25], '-',
+    #        color=colors[i], linewidth=1)
+    #ax.plot([24,25.75,25.75,24,24], [0.25,0.25,24.75,24.75,0.25], '-',
+    #        color=colors[i], linewidth=1)
+    #ax.plot([49.5,51,51,49.5,49.5], [0.25,0.25,24.75,24.75,0.25], '-',
+    #        color=colors[i], linewidth=1)
+
+    #ax.set_xlim([-0.5, 51.75])
+    #ax.set_ylim([-0.5, 25.5])
+    #delete_ticks(ax)
+    fig.subplots_adjust(left=subplots_adj_left,
+                    bottom=subplots_adj_bottom,
+                    right=subplots_adj_right,
+                    top=subplots_adj_top,
+                    wspace=subplots_adj_wspace,
+                    hspace=subplots_adj_hspace)
+    fig.savefig('ch2_conceptual_fig_RAW_scape_%s.png' % b4_or_af,
+                dpi=dpi, orientation='portrait')
 
 
 # PART II:
@@ -190,7 +248,9 @@ positions_and_fits = {0.5:{'b4':(1,1),
                            },
                      }
 # plot before-after fitness landscapes at ends and middle of landscape
-ax = fig.add_subplot(gs[5:, :], projection='3d')
+
+fig = plt.figure(dpi=dpi, figsize=(16,8))
+ax = fig.add_subplot(1, 1, 1, projection='3d')
 #ax.set_aspect('equal')
 ax.invert_yaxis()
 #ax.invert_xaxis()
@@ -279,8 +339,11 @@ fig.subplots_adjust(left=subplots_adj_left,
                     hspace=subplots_adj_hspace)
 
 
-fig.show()
 
 if save_it:
-    fig.savefig('ch2_conceptual_fig_RAW.png',
+    fig.savefig('ch2_conceptual_fig_RAW_adaptive_scape.png',
                 dpi=dpi, orientation='portrait')
+
+
+# now open LibreOffice Draw, add and organize all three images,
+# add labels/etc, select all, then save selection as a high-res jpg
