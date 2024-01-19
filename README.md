@@ -1,7 +1,6 @@
-**This repository contains code for Chapter 2 of Drew Terasaki Hart's PhD dissertation: A study of the influence
-of genomic architecture on the nature of adaptation to shifting gradients under climate change.**
+**This repository contains the code from: Genomic architecture controls multivariate adaptation to climate change (chapter 2 of Drew E. Terasaki Hart's PhD dissertation)**
 
-#### Workflow:
+#### Workflow used:
 
 1. set `redundancy = 'hi'` in ./sim/batch_script.py
 2. run 5 jobs of ./sim/ch2_sim_job.sh (each producing 20 sets of results) 
