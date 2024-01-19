@@ -1,6 +1,10 @@
 # Code from: Genomic architecture controls multivariate adaptation to climate change
 ### (chapter 2 of Drew E. Terasaki Hart's PhD dissertation)
 
+
+-----------
+
+
 #### Workflow used:
 
 1. set `redundancy = 'hi'` in ./sim/batch_script.py
