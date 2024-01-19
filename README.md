@@ -1,6 +1,9 @@
 # Code from: Genomic architecture controls multivariate adaptation to climate change
 ### (chapter 2 of Drew E. Terasaki Hart's PhD dissertation)
 
+Code: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10531208.svg)](https://doi.org/10.5281/zenodo.10531208)
+
+Data: 
 
 -----------
 
