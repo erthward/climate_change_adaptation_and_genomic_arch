@@ -14,7 +14,7 @@
 
 \affil[a]{Department of Environmental Science, Policy, and Management, University of California, Berkeley, CA 94720, USA}
 \affil[b]{The Nature Conservancy, Arlington, VA 22203, USA}
-\affil[c]{CSIRO Environment, Brisbane, Queensland 4102, Australia}
+\affil[c]{CSIRO Environment, Brisbane, QLD 4102, Australia}
 
 % Please give the surname of the lead author for the running footer
 \leadauthor{Terasaki Hart} 
@@ -24,7 +24,6 @@
 \authordeclaration{The authors declare no competing interests.}
 \correspondingauthor{\textsuperscript{1}To whom correspondence should be addressed. E-mail: drew.hart@berkeley.edu}
 
-% At least three keywords are required at submission. Please provide three to five keywords, separated by the pipe symbol.
 \keywords{adaptation $|$ climate change $|$ $|$ landscape genomics $|$ spatial simulation $|$ gene flow $|$ genomic architecture $|$ genetic redundancy} 
 
 \begin{abstract}
@@ -62,8 +61,10 @@ and suggests opportunities for better understanding the climatic vulnerability o
 \thispagestyle{firststyle}
 \ifthenelse{\boolean{shortarticle}}{\ifthenelse{\boolean{singlecolumn}}{\abscontentformatted}{\abscontent}}{}
 
+\pagebreak
 
-\dropcap{C}limate change is one of the foremost threats to biodiversity in the Anthropocene.
+\section*{Introduction}
+Climate change is one of the foremost threats to biodiversity in the Anthropocene.
 The ability of species to persist within their current ranges will likely depend largely upon their abilities to
 locally adapt to new climate conditions --- a concept frequently referred to 
 as `adaptive capacity’ or `evolutionary potential’ \cite{chevin,harrisson,nicotra,vilas,wade}.
@@ -191,7 +192,7 @@ of genomic architecture: genotypic redundancy, polygenicity, and linkage
 
 \begin{figure}%[tbhp]
 \centering
-\includegraphics[width=.8\linewidth]{pub/figs_and_stats/FIG_1_conceptual.jpg}
+\includegraphics[width=.8\linewidth]{pub/figs_and_stats/FIG_1_conceptual.png}
     \caption{Conceptual model of adaptation to climate change. The top panel depicts the two-layered physical landscape used in our simulations, showing the shifting environmental gradient ($e_{1}$) in a blue-red color ramp and the stable gradient ($e_{2}$) in a white-black color ramp. The landscape is shown both before climate change ($t_{1}$) and after ($t_{2}$). The bottom panel depicts a fitness landscape for two traits adapted to the shifting ($e_{1}$) and stable gradients ($e_{2}$). Three example positions on the physical landscape ($x_{1}$, $x_{2}$, $x_{3}$) are shown as boxes delinated y-axis cross-sections, both before climate change (gray) and after (yellow), and their corresponding fitness peaks are shown as color-matched kernels on the fitness landscape. The gray and yellow lines on the fitness landscape indicate the fitness optima defined by the environments that exist before ($t_{1}$) and after climate change ($t_{2}$). Shifts in local fitness peaks are shown as labeled arrows ($x_{2}$, $x_{3}$); the environment at the far left of the physical landscape does not change, so $x_{1}$'s fitness peaks are overlapping and have no shift.}
 \label{fig:fig_1}
 \end{figure}
@@ -221,7 +222,7 @@ will facilitate adaptation to shifting gradients, much as it does on stable grad
 in population size and mean fitness.
 
 
-\section*{Methods}
+\section*{Materials and Methods}
 
 \subsection*{Simulations}
 
@@ -450,7 +451,7 @@ in up-gradient gene flow, though differences between moderate- and
 high-redundancy scenarios were minor.
 \begin{figure}
 \centering
-\includegraphics[width=.8\linewidth]{pub/figs_and_stats/FIG_2_gene_flow.jpg}
+\includegraphics[width=.8\linewidth]{pub/figs_and_stats/FIG_2_gene_flow.png}
     \caption{Distributions of gene flow directions during the climate change period of our climate change simulations (red) compared to null simulations (blue) for our 18 scenarios.  The shifting environmental gradient moves to the right (in the direction of the arrow) in our simulations, so rightward gene flow represents up-gradient gene flow, and upward and downward (i.e., `on contour’) gene flow is perpendicular to the environmental gradients. Down-gradient gene flow is expected to be maladaptive under all scenarios, explaining why it is universally suppressed relative to the null results (as evidenced by the blue distributional 'margins' extending to the left of the red distributions in all scenarios). There is a general trend toward increasing on-contour gene flow and decreasing up-gradient gene flow with decreasing linkage and increasing polygenicity.
 }
 \label{fig:fig_2}
@@ -498,7 +499,7 @@ and the simulated population ceased to occupy the rightmost, fastest-changing po
 
 \begin{figure*}
 \centering
-\includegraphics[width=15.8cm]{pub/figs_and_stats/FIG_3_fit_over_time.jpg}
+\includegraphics[width=15.8cm]{pub/figs_and_stats/FIG_3_fit_over_time.png}
 \caption{Left: Mean fitness for all scenarios during the 250 time steps before, during, and after the climate change period (separated by red, dashed lines). Black lines represent the mean values, and the shaded red and blue areas represent variability envelopes (5th percentile to
 95th percentile) for all replicates for climate change and null simulations, respectively.  Right: Boxplots of changes in mean fitness during the climate change period for all scenarios. Null scenarios are plotted on the top in blue, and main scenarios are plotted on the bottom, in red. Within each plot, the scenarios are organized by polygenicity (number of loci per trait) on the x-axis and shaded by the strength of linkage.
 }
@@ -507,7 +508,7 @@ and the simulated population ceased to occupy the rightmost, fastest-changing po
 
 \begin{figure*}
 \centering
-\includegraphics[width=15.8cm]{pub/figs_and_stats/FIG_4_phenotypic_shift.jpg}
+\includegraphics[width=15.8cm]{pub/figs_and_stats/FIG_4_phenotypic_shift.png}
 \caption{Scatterplots of the observed versus expected phenotypic shift during the climate change period for all 18 of our simulated scenarios. For each scenario, the left ('before') scatterplot shows the distribution of phenotypes before climate change begins, and the right ('after') scatterplot shows how the distribution has shifted by the end of the climate change period. The trait adapted to the shifting environmental gradient is distributed along the x-axis, with the trait adapted to the stable gradient on the y-axis. Each plot is an ensemble of the results for all 100 replicates of each scenario. The size and opacity of each point represents the number of individuals exhibiting that two-dimensional phenotype. The gridded arrangement of the points in each scatterplot is a function of the number of loci per trait, which determines the set of possible phenotypes. Solid black lines delineate the shifts in the phenotypic distributions’ central tendencies that are expected to take place during the climate change period, dotted black lines depict the observed distributions’ central tendencies, and red wedges depict the differences between the expected and observed distributions (‘phenotypic shortfall’).
 }
 \label{fig:fig_4}
@@ -709,7 +710,7 @@ for climate change research, and suggest that the genomic architecture underlyin
 adapted to those gradients has direct consequences for how species respond to environmental change.
 
 
-\acknow{We thank A. P. Bishop, T. Dawson,  J. Frederick, N. Graham, M. Kelly, M. McElroy, E. Westeen, G. Wogan, and M. Yuan for feedback and guidance on various iterations of the simulations presented herein. We thank Berkeley Research Computing for providing access to the Savio computing cluster. We thank D. Ehrenfeld, N. Fefferman, M. Fitzpatrick, and L. Plough for cultivating an interest in conservation genetics. Lastly, we thank M. Terasaki Hart, C. Nemec-Hart, G. Hart, J. Hart, and M. Tylka for supporting and encouraging a lifetime of curiosity about nature, and C. Adjuah, B. Evans, R. Pérez Joglar, Y. Y. Ma, and J. Redman for the great company during long periods of solitude. This work was supported by a Berkeley Fellowship from University of California, Berkeley (to D.E.T.H.), by a Bezos Earth Fund grant to The Nature Conservancy (which covered some time for D.E.T.H.), and by National Science Foundation grant DEB1845682 (to I.J.W.).}
+\acknow{We thank A. P. Bishop, T. Dawson,  J. Frederick, N. Graham, M. Kelly, M. McElroy, E. Westeen, G. Wogan, and M. Yuan for feedback and guidance on various iterations of the simulations presented herein. We thank Berkeley Research Computing for providing access to the Savio computing cluster. We thank D. Ehrenfeld, N. Fefferman, M. Fitzpatrick, and L. Plough for cultivating an interest in conservation genetics. Lastly, we thank M. Terasaki Hart, C. Nemec-Hart, G. Hart, J. Hart, and M. Tylka for supporting and encouraging a lifetime of curiosity about nature, and C. Adjuah, B. Evans, R. Pérez Joglar, Y. Y. Ma, and J. Redman for the great company during long periods of solitude. This work was supported by a Berkeley Fellowship from University of California, Berkeley (to D.E.T.H.), by a Bezos Earth Fund grant to The Nature Conservancy (which covered some time for D.E.T.H.), and by National Science Foundation grant DEB1845682 (to I.J.W.). The authors calim no conflicts of interest.}
 
 \showacknow{} % Display the acknowledgments section
 
