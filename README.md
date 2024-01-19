@@ -1,4 +1,5 @@
-**This repository contains the code from: Genomic architecture controls multivariate adaptation to climate change (chapter 2 of Drew E. Terasaki Hart's PhD dissertation)**
+# Code from: Genomic architecture controls multivariate adaptation to climate change
+### (chapter 2 of Drew E. Terasaki Hart's PhD dissertation)
 
 #### Workflow used:
 
